@@ -11,20 +11,19 @@ COPY package.json package-lock.json ./
 COPY server/package.json ./server/
 COPY web/package.json ./web/
 
-# Install server workspace (better-sqlite3 compiles here)
-RUN npm ci --omit=dev --workspace=server --include-workspace-root \
-  || npm install --omit=dev --workspace=server --include-workspace-root
+# Include devDeps so we can compile TS (tsx is NOT available with --omit=dev)
+RUN npm ci --workspace=server --include-workspace-root \
+  || npm install --workspace=server --include-workspace-root
 
 COPY server ./server
 COPY extension ./extension
 COPY downloads ./downloads
 COPY nestos-v2-demo.html login.html extension-demo.html extension-guide.html NestOS-Trial-Operations-Guide.html ./
 
-# Refresh extension zip for download link
-RUN mkdir -p downloads /tmp/nestos-naukri-helper \
+RUN npm run build -w server \
+  && mkdir -p downloads /tmp/nestos-naukri-helper /data/uploads \
   && cp -r extension/. /tmp/nestos-naukri-helper/ \
-  && (cd /tmp && zip -r /nestos/downloads/nestos-naukri-helper.zip nestos-naukri-helper) \
-  && mkdir -p /data/uploads
+  && (cd /tmp && zip -r /nestos/downloads/nestos-naukri-helper.zip nestos-naukri-helper)
 
 ENV NODE_ENV=production
 ENV PORT=4100
@@ -36,4 +35,4 @@ ENV COOKIE_SECURE=1
 EXPOSE 4100
 
 WORKDIR /nestos/server
-CMD ["npx", "tsx", "src/index.ts"]
+CMD ["node", "dist/index.js"]
