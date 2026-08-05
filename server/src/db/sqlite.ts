@@ -6,15 +6,41 @@ import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-/** Use DATA_DIR=/data (or similar) on always-on hosts so DB survives restarts. */
-const DATA_DIR = process.env.DATA_DIR
-  ? path.resolve(process.env.DATA_DIR)
-  : path.resolve(__dirname, "../../data");
+
+/** Prefer DATA_DIR=/data on cloud hosts; fall back if volume is not writable. */
+function resolveDataDir(): string {
+  const tried: string[] = [];
+  const candidates = [
+    process.env.DATA_DIR,
+    process.env.DATA_DIR ? undefined : path.resolve(__dirname, "../../data"),
+    "/data",
+    path.join(process.cwd(), "data"),
+    path.join("/tmp", "nestos-data"),
+  ].filter(Boolean) as string[];
+
+  for (const raw of candidates) {
+    const dir = path.resolve(raw);
+    tried.push(dir);
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      fs.mkdirSync(path.join(dir, "uploads"), { recursive: true });
+      fs.accessSync(dir, fs.constants.W_OK);
+      if (dir !== path.resolve(process.env.DATA_DIR || "")) {
+        console.log(`  DATA_DIR using ${dir} (tried: ${tried.join(" → ")})`);
+      } else {
+        console.log(`  DATA_DIR ${dir}`);
+      }
+      return dir;
+    } catch (err) {
+      console.warn(`  DATA_DIR not usable: ${dir}`, err instanceof Error ? err.message : err);
+    }
+  }
+  throw new Error(`No writable data directory. Tried: ${tried.join(", ")}`);
+}
+
+const DATA_DIR = resolveDataDir();
 const DB_PATH = path.join(DATA_DIR, "nestos.sqlite");
 const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
-
-fs.mkdirSync(DATA_DIR, { recursive: true });
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 export const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
