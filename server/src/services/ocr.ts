@@ -144,7 +144,7 @@ async function azureExtractText(buffer: Buffer): Promise<string | null> {
       "Ocp-Apim-Subscription-Key": config.azureKey,
       "Content-Type": "application/pdf",
     },
-    body: buffer,
+    body: new Uint8Array(buffer),
   });
   if (!start.ok) {
     const err = await start.text();

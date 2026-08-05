@@ -257,7 +257,29 @@ export const sqliteStore = {
     return byName ? rowToCandidate(byName) : null;
   },
 
-  upsertCandidate(c: ReturnType<typeof rowToCandidate> & { created_by?: string; service?: string }) {
+  upsertCandidate(c: {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    role: string | null;
+    skills: string[];
+    experience: string | null;
+    ctc: string | null;
+    notice: string | null;
+    location: string | null;
+    stage: string;
+    source: string;
+    service?: string;
+    resume_path: string | null;
+    resume_original_name: string | null;
+    raw_text_preview: string | null;
+    parse_confidence: number;
+    parse_method: string | null;
+    created_at: string;
+    updated_at: string;
+    created_by?: string;
+  }) {
     const existing = db.prepare("SELECT id FROM candidates WHERE id=?").get(c.id);
     const skills = JSON.stringify(c.skills || []);
     if (existing) {

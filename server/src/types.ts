@@ -11,11 +11,12 @@ export type Candidate = {
   location: string | null;
   stage: string;
   source: string;
+  service?: string;
   resume_path: string | null;
   resume_original_name: string | null;
   raw_text_preview: string | null;
   parse_confidence: number;
-  parse_method: string;
+  parse_method: string | null;
   created_at: string;
   updated_at: string;
 };
