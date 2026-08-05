@@ -1,0 +1,9 @@
+# Railway — set JWT_SECRET in dashboard. Optional: attach a volume at /data
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"

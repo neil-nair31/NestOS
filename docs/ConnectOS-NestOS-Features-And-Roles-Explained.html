@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ConnectOS &amp; NestOS — Features &amp; Roles Explained</title>
+  <style>
+    @page { size: A4; margin: 10mm 9mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: #17181c; background: #f4f4f1; line-height: 1.48; font-size: 8.8pt;
+    }
+    .page {
+      max-width: 210mm; margin: 14px auto; background: #fff;
+      padding: 10mm 11mm; box-shadow: 0 6px 22px rgba(23,24,28,.08);
+    }
+    @media print {
+      body { background: #fff; font-size: 8.3pt; }
+      .page { margin: 0; box-shadow: none; padding: 0; }
+      .no-print { display: none !important; }
+      h2 { break-after: avoid; }
+      .feat { break-inside: avoid; }
+    }
+    .print-btn {
+      display: block; margin: 0 auto 10px; padding: 8px 18px;
+      background: #0b6b53; color: #fff; border: none; border-radius: 6px; cursor: pointer;
+    }
+    .header {
+      border-bottom: 3px solid #0b6b53; padding-bottom: 8px; margin-bottom: 10px;
+    }
+    .header h1 { font-size: 14pt; color: #0b6b53; }
+    .header p { color: #6b6d72; font-size: 8.5pt; margin-top: 4px; }
+    h2 {
+      font-size: 10pt; color: #0b6b53; margin: 12px 0 6px;
+      border-bottom: 1px solid #e8e8e4; padding-bottom: 2px;
+    }
+    h3 { font-size: 9pt; margin: 8px 0 4px; color: #17181c; }
+    p { margin-bottom: 6px; }
+    ul { margin: 0 0 6px 16px; }
+    li { margin-bottom: 2px; }
+    table { width: 100%; border-collapse: collapse; margin: 6px 0 8px; font-size: 8pt; }
+    th, td { border: 1px solid #e8e8e4; padding: 4px 6px; vertical-align: top; text-align: left; }
+    th { background: #f4f4f1; font-weight: 600; }
+    .box {
+      background: #fafaf8; border: 1px solid #e8e8e4; border-radius: 5px;
+      padding: 7px 9px; margin-bottom: 7px;
+    }
+    .box strong { color: #0b6b53; }
+    .feat {
+      border-left: 3px solid #0b6b53; padding: 5px 8px 5px 10px;
+      margin-bottom: 7px; background: #fafaf8;
+    }
+    .feat h3 { margin-top: 0; color: #0b6b53; font-size: 9pt; }
+    .meta { font-size: 7.8pt; color: #6b6d72; margin-top: 3px; }
+    .tag {
+      display: inline-block; font-size: 7pt; font-weight: 600;
+      padding: 1px 5px; border-radius: 3px; margin-right: 4px;
+    }
+    .tag-role { background: #e8f0ff; color: #1f47c7; }
+    .tag-nest { background: #e8f5f0; color: #0b6b53; }
+    .tag-con { background: #eef4ff; color: #1f47c7; }
+    .yes { color: #0b6b53; font-weight: 700; }
+    .part { color: #6b6d72; font-size: 7.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+    .footer { margin-top: 10px; font-size: 7.5pt; color: #6b6d72; border-top: 1px solid #e8e8e4; padding-top: 6px; }
+  </style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">Print / Save as PDF</button>
+  <div class="page">
+
+    <div class="header">
+      <h1>ConnectOS &amp; NestOS — Plain-English Guide</h1>
+      <p>What each product is, what each <strong>role</strong> does, and what every <strong>feature/screen</strong> is actually for. Written so you can explain it to Mani without jargon.</p>
+    </div>
+
+    <h2>Start here — the 30-second picture</h2>
+    <div class="box">
+      <p><strong>ConnectOS</strong> = the <em>back office for a company website</em>. When someone fills a form on connectorshr.com (job seeker, employer, contact), it lands in a secure admin inbox. That's it. No interviews, no Naukri, no recruiter pipeline.</p>
+      <p style="margin-bottom:0"><strong>NestOS</strong> = the <em>full staffing company operating system</em> for HummingBrains / RTS. Recruiters source candidates, run client interviews, log calls, get tasks, managers track team activity, sales handles clients and money. It's internal ops — not a public website.</p>
+    </div>
+
+    <h2>HummingBrains business lines (why NestOS has so many modules)</h2>
+    <p>RTS / HummingBrains sells three main services. NestOS modules map to these:</p>
+    <table>
+      <tr><th>Business line</th><th>Plain meaning</th><th>NestOS modules involved</th></tr>
+      <tr>
+        <td><strong>Staff Augmentation</strong></td>
+        <td>Client hires our people on contract (e.g. React dev on Trigo's team). We place engineers and they bill monthly.</td>
+        <td>Talent Hub, Clients, Resdex, Activity log</td>
+      </tr>
+      <tr>
+        <td><strong>Talent Acquisition (TA)</strong></td>
+        <td>Client pays a <em>placement fee</em> to hire someone permanently (e.g. find a CTO for NovaCart). One-time search + hire.</td>
+        <td>Talent Hub, Leads → Clients, Resdex, Analytics pipeline</td>
+      </tr>
+      <tr>
+        <td><strong>Interview-as-a-Service (IaaS)</strong></td>
+        <td>Client sends <em>their</em> candidates; <em>we</em> interview them and deliver a professional assessment report. Like outsourced technical interviewing.</td>
+        <td>IaaS Operations, Team (interviewers), Audit, Workspace</td>
+      </tr>
+    </table>
+    <p class="meta">Custom software projects (e.g. BlueOrbit) show in Revenue/Clients but are not the core staffing demo.</p>
+
+    <h2>Part 1 — ConnectOS (ConnectorsHR)</h2>
+    <p class="part">Production product · website + admin</p>
+
+    <div class="feat">
+      <h3>Public website (connectorshr.com)</h3>
+      <p><strong>What it is:</strong> Marketing site for ConnectorsHR recruitment brand.</p>
+      <p><strong>What it does:</strong> Explains services; has forms so visitors can enquire.</p>
+      <p><strong>Key pages:</strong></p>
+      <ul>
+        <li><strong>Job Hunter</strong> — candidates upload CV + details (looking for a job).</li>
+        <li><strong>For Employers</strong> — companies ask for hiring help (B2B lead).</li>
+        <li><strong>Careers</strong> — people applying to work <em>at</em> ConnectorsHR.</li>
+        <li><strong>Contact</strong> — general enquiry.</li>
+      </ul>
+      <p class="meta"><span class="tag tag-con">ConnectOS</span> Forms send data to the API — not just email.</p>
+    </div>
+
+    <div class="feat">
+      <h3>ConnectOS API (server)</h3>
+      <p><strong>What it is:</strong> Backend that receives form submissions, stores them in MySQL, handles CV file upload.</p>
+      <p><strong>What it does:</strong> Validates input, blocks spam (honeypot), records which page the lead came from, can email sales (optional).</p>
+      <p class="meta">You don't demo this screen — it runs in the background.</p>
+    </div>
+
+    <div class="feat">
+      <h3>ConnectOS Admin (/admin)</h3>
+      <p><strong>What it is:</strong> Password-protected inbox for everyone who submitted a form.</p>
+      <p><strong>What it does:</strong></p>
+      <ul>
+        <li>List all submissions with type filter (candidate / employer / career / contact).</li>
+        <li>Search by name, email, company.</li>
+        <li>Open one submission → see full details + download CV.</li>
+        <li>Export CSV for Excel or CRM import.</li>
+      </ul>
+      <p><strong>Who uses it:</strong> ConnectorsHR owner / sales / ops — <em>not</em> the same as NestOS recruiter roles.</p>
+      <p class="meta"><span class="tag tag-con">ConnectOS</span> There is only one admin role in ConnectOS today (login user).</p>
+    </div>
+
+    <h2>Part 2 — NestOS roles (who is who)</h2>
+    <p class="part">Demo uses dropdown "Viewing as" — each role sees a different menu</p>
+
+    <table>
+      <tr><th>Role</th><th>Demo person</th><th>Real-world job</th><th>What they care about</th><th>Menu they see</th></tr>
+      <tr>
+        <td><strong>Recruiter</strong></td>
+        <td>Arjun M.</td>
+        <td>Sources candidates, does outreach, may run IaaS interviews. Day-to-day hiring work.</td>
+        <td>"What do I do today?" — Naukri, candidates, interviews, log my calls, my tasks.</td>
+        <td>Home, Log calls, Messages &amp; tasks, All candidates, Naukri, Interviews, My analytics</td>
+      </tr>
+      <tr>
+        <td><strong>Manager</strong></td>
+        <td>Priya N.</td>
+        <td>Team lead. Assigns work, reviews interviews, oversees recruiters, validates activity.</td>
+        <td>Team output, interview quality, utilization, assigning tasks, sign-out reviews.</td>
+        <td>Almost everything Admin sees except Settings — no system config.</td>
+      </tr>
+      <tr>
+        <td><strong>Admin</strong></td>
+        <td>Karthikeyan</td>
+        <td>Owner / ops head. Full visibility, integrations, phases, sign-off on compliance.</td>
+        <td>Whole business: revenue, clients, ATS, audit, who is idle, platform setup.</td>
+        <td>All modules + Settings + task command bar + sign-out reviews.</td>
+      </tr>
+      <tr>
+        <td><strong>Sales</strong></td>
+        <td>Divya R.</td>
+        <td>Account management — clients, renewals, website leads, revenue (read-focused).</td>
+        <td>Clients renewing, new leads, MRR, churn signals — not sourcing candidates.</td>
+        <td>Dashboard, Workspace, Activity, Analytics, Clients, Leads, Revenue</td>
+      </tr>
+    </table>
+
+    <div class="box">
+      <strong>Easy memory trick:</strong><br />
+      <strong>Recruiter</strong> = finds people &amp; runs interviews.<br />
+      <strong>Sales</strong> = finds <em>companies</em> &amp; keeps contracts.<br />
+      <strong>Manager</strong> = runs the team.<br />
+      <strong>Admin</strong> = runs the system + sees everything.
+    </div>
+
+    <h3>Who can do what (quick matrix)</h3>
+    <table>
+      <tr><th>Action</th><th>Recruiter</th><th>Manager</th><th>Admin</th><th>Sales</th></tr>
+      <tr><td>Log calls / outreach</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>End day sign-out</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ (review others)</td><td>—</td></tr>
+      <tr><td>Assign tasks to others</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td><td>—</td></tr>
+      <tr><td>Import from Naukri Resdex</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>—</td></tr>
+      <tr><td>Run IaaS interview + AI report</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>—</td></tr>
+      <tr><td>Convert lead → client</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>See full revenue / MRR</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>ATS connectors / Settings</td><td>—</td><td>—</td><td class="yes">✓</td><td>—</td></tr>
+      <tr><td>Audit &amp; idle tracking (all staff)</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td><td>—</td></tr>
+    </table>
+
+    <h2>Part 3 — NestOS features (every screen explained)</h2>
+    <p class="part">Each module = one area of work</p>
+
+    <div class="feat">
+      <h3>Home / Dashboard</h3>
+      <p><strong>Recruiter view ("Your day"):</strong> Shortcut cards — today's interview, Naukri queue, candidate count, tasks. Answer: "What should I do right now?"</p>
+      <p><strong>Admin view:</strong> Platform KPIs — Resdex imports, ATS sync, phase status, import queue. Answer: "Is the machine working?"</p>
+      <p><strong>Sales view:</strong> MRR, client count, hot leads, renewal warnings.</p>
+      <p class="meta"><span class="tag tag-role">All roles</span> Different content per role — same idea: morning briefing.</p>
+    </div>
+
+    <div class="feat">
+      <h3>Talent Hub / All candidates</h3>
+      <p><strong>What it is:</strong> Central database of every person the company is tracking.</p>
+      <p><strong>What it does:</strong> Store resume (PDF), parse skills into structured fields, see stage (Sourced → Screening → Interview → Offer), match to job requirements, push to client's ATS, share resume internally.</p>
+      <p><strong>Real life:</strong> Replaces scattered folders + Excel. Once imported from Naukri or upload, the candidate stays forever as a company asset.</p>
+      <p class="meta"><span class="tag tag-role">Recruiter, Manager, Admin</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Find on Naukri (Resdex Sourcing)</h3>
+      <p><strong>What it is:</strong> Workflow helper for Naukri Resdex (paid CV database recruiters use daily).</p>
+      <p><strong>What it does:</strong> Search/match candidates to open reqs, manage folders (Shortlist, Personal), track CV credits, block duplicate views (save money), one-click import into Talent Hub.</p>
+      <p><strong>Real life:</strong> Today recruiters search Naukri in browser and save CVs locally. This brings shortlisted people into NestOS without re-buying the same CV.</p>
+      <p class="meta"><span class="tag tag-role">Recruiter, Manager, Admin</span> Demo simulates helper — not live Naukri API.</p>
+    </div>
+
+    <div class="feat">
+      <h3>IaaS Operations / Run interviews</h3>
+      <p><strong>What it is:</strong> End-to-end workflow when a <em>client</em> asks HummingBrains to interview <em>their</em> candidate.</p>
+      <p><strong>Steps in the system:</strong></p>
+      <ol>
+        <li><strong>Requested</strong> — client submits role + stack + candidate.</li>
+        <li><strong>Assigned</strong> — manager picks interviewer (AI suggests best match).</li>
+        <li><strong>Scheduled</strong> — date/time + auto Google Meet / Teams / Zoom link.</li>
+        <li><strong>Live capture</strong> — interviewer scores rubric during call (not from memory later).</li>
+        <li><strong>AI report</strong> — system writes formal assessment in ~2 minutes.</li>
+        <li><strong>Delivered</strong> — report sent to client; logged in audit.</li>
+      </ol>
+      <p class="meta"><span class="tag tag-role">Recruiter (if interviewer), Manager, Admin</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Workspace / Messages &amp; tasks</h3>
+      <p><strong>What it is:</strong> Internal team collaboration — like Slack + task list inside NestOS.</p>
+      <p><strong>What it does:</strong> Message teammates, attach/share resumes (tracked in audit), see tasks assigned to you (due date, priority). Managers assign new tasks here or via bottom task bar.</p>
+      <p><strong>Real life:</strong> Stops "check WhatsApp / email for that CV" — shares are logged.</p>
+      <p class="meta"><span class="tag tag-role">All roles</span> Recruiters see only their tasks; Admin/Manager see all + can assign.</p>
+    </div>
+
+    <div class="feat">
+      <h3>Activity Log / Log calls &amp; outreach</h3>
+      <p><strong>What it is:</strong> Diary of every touchpoint with candidates or clients.</p>
+      <p><strong>What it does:</strong> Log Call, WhatsApp, Email, LinkedIn with who, why (REQ id), outcome. Marks <strong>Verified</strong> if complete; <strong>Incomplete</strong> if missing notes. Workspace messages also log here.</p>
+      <p><strong>Why it matters:</strong> Managers can prove work happened. Unlogged work = zero credit in analytics (ConnectOS-style discipline).</p>
+      <p class="meta"><span class="tag tag-role">All roles</span> Recruiters must use daily; Admin sees everyone's log.</p>
+    </div>
+
+    <div class="feat">
+      <h3>End day (sign-out)</h3>
+      <p><strong>What it is:</strong> End-of-shift form for recruiters/managers.</p>
+      <p><strong>What it does:</strong> Shows auto-summary (logs, tasks, interviews today). User adds extra work they forgot to log → submits → <strong>Admin gets notified</strong> to review and optionally backfill activity.</p>
+      <p class="meta"><span class="tag tag-role">Recruiter, Manager submit</span> <span class="tag tag-role">Admin reviews</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Task command bar (bottom of screen)</h3>
+      <p><strong>What it is:</strong> Sticky bar for Admin/Manager only.</p>
+      <p><strong>What it does:</strong> Shows open assigned tasks across team; quick "Assign task" without hunting menus.</p>
+      <p class="meta"><span class="tag tag-role">Admin, Manager only</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Analytics / My analytics</h3>
+      <p><strong>What it is:</strong> Charts and numbers — one window for business intelligence.</p>
+      <p><strong>Tabs:</strong></p>
+      <ul>
+        <li><strong>Pipeline</strong> — how many candidates at each stage (Sourced → Placed).</li>
+        <li><strong>Sourcing</strong> — Resdex vs upload vs referral; CV credits saved.</li>
+        <li><strong>Outreach</strong> — calls, messages, emails per week (from activity log).</li>
+        <li><strong>Team</strong> — utilization scores, sign-out compliance.</li>
+        <li><strong>IaaS</strong> — interview volume, report turnaround time.</li>
+        <li><strong>Leads</strong> — website enquiry funnel (sales).</li>
+      </ul>
+      <p class="meta"><span class="tag tag-role">Recruiter</span> sees own-scoped view. <span class="tag tag-role">Admin/Manager/Sales</span> see firm-wide.</p>
+    </div>
+
+    <div class="feat">
+      <h3>Clients</h3>
+      <p><strong>What it is:</strong> CRM for paying companies (Trigo, Kredmint, Vantara, etc.).</p>
+      <p><strong>What it does:</strong> Account health score, MRR, renewal date, services (Staff Aug / IaaS / TA), owner, notes, churn warnings. Click client → history + interviews linked.</p>
+      <p class="meta"><span class="tag tag-role">Sales, Manager, Admin</span> Recruiters don't need this daily.</p>
+    </div>
+
+    <div class="feat">
+      <h3>Leads</h3>
+      <p><strong>What it is:</strong> <em>Pre-client</em> enquiries — companies that contacted HummingBrains but aren't customers yet.</p>
+      <p><strong>What it does:</strong> Hot/warm/cold scoring, source (website, LinkedIn, referral), status (New → Contacted → Converted). Convert button creates a Client record.</p>
+      <p><strong>Not the same as:</strong> Talent Hub candidates (people looking for jobs). Leads = <em>companies</em> looking for staffing help.</p>
+      <p class="meta"><span class="tag tag-role">Sales, Manager, Admin</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Revenue</h3>
+      <p><strong>What it is:</strong> Money dashboard — not accounting/payroll.</p>
+      <p><strong>What it does:</strong> MRR, ARR, revenue by line (Staff Aug, IaaS, placement fees, projects), trends, concentration risk (e.g. one client = 30% of MRR).</p>
+      <p class="meta"><span class="tag tag-role">Sales, Manager, Admin</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Team &amp; Live Tracking</h3>
+      <p><strong>What it is:</strong> Live view of what each employee is doing right now.</p>
+      <p><strong>What it does:</strong> Status (online, in interview, on call, away), current task label, hours today, sessions. Monthly reports per person (interviews, placements, validation flags).</p>
+      <p class="meta"><span class="tag tag-role">Manager, Admin</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Audit &amp; Compliance</h3>
+      <p><strong>What it is:</strong> Immutable log of system events + idle detection.</p>
+      <p><strong>What it does:</strong> Records who did what, when, for how long. Flags idle blocks (&gt;8 min no activity). Export for compliance (DPDP). Principle: <em>verified activity only</em> counts toward scores.</p>
+      <p class="meta"><span class="tag tag-role">Manager, Admin</span></p>
+    </div>
+
+    <div class="feat">
+      <h3>Settings</h3>
+      <p><strong>What it is:</strong> Platform configuration (Admin only).</p>
+      <p><strong>What it does:</strong> User roles list, video meeting connectors (Meet/Teams/Zoom), ATS two-way sync (Greenhouse, Workday), module phase status, data retention policy.</p>
+      <p class="meta"><span class="tag tag-role">Admin only</span></p>
+    </div>
+
+    <h2>Part 4 — Confusing terms decoded</h2>
+    <table>
+      <tr><th>Term</th><th>Means</th><th>Not the same as</th></tr>
+      <tr><td><strong>Lead</strong> (NestOS)</td><td>Company enquiry before they pay you</td><td>Candidate in Talent Hub</td></tr>
+      <tr><td><strong>Lead</strong> (ConnectOS)</td><td>Any form submission on website</td><td>NestOS lead (different product)</td></tr>
+      <tr><td><strong>Candidate</strong></td><td>Person you might place in a job</td><td>Client company</td></tr>
+      <tr><td><strong>Client</strong></td><td>Company paying HummingBrains</td><td>Candidate</td></tr>
+      <tr><td><strong>Requirement (REQ)</strong></td><td>Open job order from a client</td><td>Random Naukri search</td></tr>
+      <tr><td><strong>Resdex</strong></td><td>Naukri's paid recruiter CV database</td><td>LinkedIn or job boards</td></tr>
+      <tr><td><strong>IaaS</strong></td><td>You interview client's candidate; deliver report</td><td>Staff aug (you supply the engineer)</td></tr>
+      <tr><td><strong>Staff Aug</strong></td><td>Your engineer works on client's team</td><td>IaaS (you only assess)</td></tr>
+      <tr><td><strong>ATS</strong></td><td>Client's Applicant Tracking System (Greenhouse, etc.)</td><td>NestOS Talent Hub (yours)</td></tr>
+      <tr><td><strong>Verified activity</strong></td><td>Logged call/outreach with context + outcome</td><td>Assuming someone worked without proof</td></tr>
+      <tr><td><strong>MRR</strong></td><td>Monthly recurring revenue from retainers</td><td>One-time placement fee</td></tr>
+      <tr><td><strong>Phase 1–4</strong></td><td>Build roadmap buckets in demo</td><td>All phases are "live" in current demo</td></tr>
+    </table>
+
+    <h2>Part 5 — How ConnectOS pieces relate to NestOS</h2>
+    <table>
+      <tr><th>ConnectOS has…</th><th>NestOS equivalent (broader)</th></tr>
+      <tr><td>Website forms</td><td>Leads module (+ could connect real website later)</td></tr>
+      <tr><td>Admin submissions inbox</td><td>Leads + Workspace notifications</td></tr>
+      <tr><td>CV upload storage</td><td>Talent Hub + Resdex import</td></tr>
+      <tr><td>CSV export</td><td>Analytics + audit export</td></tr>
+      <tr><td>—</td><td>Activity log, sign-out, tasks, IaaS, team tracking (NestOS only)</td></tr>
+    </table>
+
+    <div class="footer">
+      ConnectOS &amp; NestOS — Features &amp; Roles Explained · Jul 2026 · Pair with Mani-Meeting-ConnectOS-NestOS-Guide.pdf for demo steps.
+    </div>
+  </div>
+</body>
+</html>

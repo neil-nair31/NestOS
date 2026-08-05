@@ -1,0 +1,20 @@
+{
+  "name": "nestos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NestOS — live ops platform for HummingBrains",
+  "scripts": {
+    "dev": "npm run dev -w server",
+    "dev:server": "npm run dev -w server",
+    "dev:web": "npm run dev -w web",
+    "install:all": "npm install",
+    "pack:extension": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/pack-extension.ps1"
+  },
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -1,0 +1,92 @@
+:root {
+  --ink: #17181c;
+  --muted: #6b6d72;
+  --line: #e8e8e4;
+  --panel: #f4f4f1;
+  --card: #fff;
+  --accent: #0b6b53;
+  --accent-tint: #e8f5f0;
+  --amber: #b45309;
+  --amber-soft: #fef3c7;
+  --red: #b91c1c;
+  --font: "Segoe UI", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background: linear-gradient(165deg, #eef5f2 0%, #f4f4f1 40%, #f7f3ea 100%);
+  min-height: 100vh;
+}
+button, input, select, textarea { font: inherit; }
+.app { max-width: 1100px; margin: 0 auto; padding: 24px 18px 48px; }
+.top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px; margin-bottom: 20px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.mark {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, #0b6b53, #0d8f6e);
+}
+.brand h1 { font-size: 22px; margin: 0; letter-spacing: -0.02em; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill {
+  font-size: 11px; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+}
+.pill.on { background: var(--accent-tint); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.pill.warn { background: var(--amber-soft); border-color: #f59e0b; color: var(--amber); }
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.tab {
+  border: 1px solid var(--line); background: var(--card); padding: 8px 14px;
+  border-radius: 8px; cursor: pointer; color: var(--muted);
+}
+.tab.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 1px 0 rgba(23,24,28,.03);
+}
+.card h2 { margin: 0 0 6px; font-size: 16px; }
+.card .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+.drop {
+  border: 2px dashed #b8cfc6; border-radius: 12px; padding: 28px 16px;
+  text-align: center; background: var(--accent-tint); cursor: pointer;
+}
+.drop:hover, .drop.drag { border-color: var(--accent); }
+.drop b { display: block; margin-bottom: 4px; }
+.drop span { color: var(--muted); font-size: 13px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line); background: var(--card); padding: 7px 12px;
+  border-radius: 8px; cursor: pointer; font-size: 13px;
+}
+.btn.pri { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: default; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 14px; }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.muted { color: var(--muted); font-size: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.field input, .field select, .field textarea {
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff;
+}
+.toast {
+  position: fixed; bottom: 18px; right: 18px; background: var(--ink); color: #fff;
+  padding: 10px 14px; border-radius: 8px; font-size: 13px; max-width: 360px;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.toast.on { opacity: 1; }
+.status-Valid { color: var(--accent); font-weight: 600; }
+.status-Warning, .status-Review { color: var(--amber); font-weight: 600; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+@media (max-width: 700px) { .kpis { grid-template-columns: 1fr 1fr; } }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.kpi .l { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+.kpi .v { font-size: 22px; font-weight: 700; margin-top: 4px; }

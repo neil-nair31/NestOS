@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NestOS — Sign in · HummingBrains</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#1c2430;
+  --muted:#5c6b7a;
+  --line:#d8dee6;
+  --bg:#eef1f5;
+  --card:#ffffff;
+  --accent:#0f4c81;
+  --accent-hover:#0c3d68;
+  --danger:#9b1c1c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  font-family:"Source Sans 3", "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+}
+.topbar{
+  height:52px;
+  background:#0f4c81;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  padding:0 28px;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.02em;
+}
+.topbar span{opacity:.75;font-weight:400;margin-left:10px;font-size:13px}
+.wrap{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+}
+.card{
+  width:100%;
+  max-width:400px;
+  background:var(--card);
+  border:1px solid var(--line);
+  padding:36px 32px 28px;
+}
+.card h1{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  margin-bottom:4px;
+}
+.card .sub{
+  font-size:13.5px;
+  color:var(--muted);
+  margin-bottom:24px;
+  line-height:1.45;
+}
+label{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+input{
+  width:100%;
+  height:40px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  font:inherit;
+  font-size:14px;
+  margin-bottom:14px;
+  background:#fff;
+  color:var(--ink);
+}
+input:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(15,76,129,.15);
+}
+.btn{
+  width:100%;
+  height:42px;
+  border:0;
+  background:var(--accent);
+  color:#fff;
+  font:inherit;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:4px;
+}
+.btn:hover{background:var(--accent-hover)}
+.btn:disabled{opacity:.65;cursor:wait}
+.err{
+  display:none;
+  background:#f8e8e8;
+  color:var(--danger);
+  border:1px solid #e8c4c4;
+  padding:10px 12px;
+  font-size:13px;
+  margin-bottom:14px;
+}
+.err.on{display:block}
+.accounts{
+  margin-top:22px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.accounts p{
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.accounts button{
+  display:block;
+  width:100%;
+  text-align:left;
+  background:#f7f9fb;
+  border:1px solid var(--line);
+  padding:9px 12px;
+  margin-bottom:6px;
+  font:inherit;
+  font-size:13px;
+  cursor:pointer;
+  color:var(--ink);
+}
+.accounts button:hover{border-color:var(--accent);background:#eef4fa}
+.accounts button b{font-weight:600}
+.accounts button span{float:right;color:var(--muted);font-size:12px}
+.footer{
+  text-align:center;
+  padding:16px;
+  font-size:12px;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+  background:#fff;
+}
+</style>
+</head>
+<body>
+<div class="topbar">NestOS <span>HummingBrains Technologies</span></div>
+<div class="wrap">
+  <div class="card">
+    <h1>Sign in</h1>
+    <p class="sub">Staffing operations platform — access is role-based (Admin, Manager, Recruiter, Sales).</p>
+    <div class="err" id="err"></div>
+    <form id="form">
+      <label for="email">Work email</label>
+      <input id="email" type="email" autocomplete="username" value="recruiter@hummingbrains.com" required/>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" value="Recruiter@123" required/>
+      <button class="btn" id="go" type="submit">Sign in</button>
+    </form>
+    <div class="accounts">
+      <p>Demo accounts</p>
+      <button type="button" data-e="admin@hummingbrains.com" data-p="Admin@123"><b>Admin</b><span>Admin@123</span></button>
+      <button type="button" data-e="manager@hummingbrains.com" data-p="Manager@123"><b>Manager</b><span>Manager@123</span></button>
+      <button type="button" data-e="recruiter@hummingbrains.com" data-p="Recruiter@123"><b>Recruiter</b><span>Recruiter@123</span></button>
+      <button type="button" data-e="sales@hummingbrains.com" data-p="Sales@123"><b>Sales</b><span>Sales@123</span></button>
+    </div>
+  </div>
+</div>
+<div class="footer">© HummingBrains Technologies · NestOS test environment</div>
+<script>
+const API = location.protocol === "file:" ? "http://localhost:4100" : "";
+document.querySelectorAll(".accounts button").forEach(el=>{
+  el.onclick=()=>{ email.value=el.dataset.e; password.value=el.dataset.p; };
+});
+fetch(API+"/api/auth/me",{credentials:"include"}).then(r=>r.ok?r.json():null).then(d=>{
+  if(d?.user) location.href="/app";
+}).catch(()=>{});
+
+form.onsubmit=async(e)=>{
+  e.preventDefault();
+  err.classList.remove("on");
+  go.disabled=true; go.textContent="Signing in…";
+  try{
+    const res=await fetch(API+"/api/auth/login",{
+      method:"POST",
+      credentials:"include",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({email:email.value.trim(),password:password.value})
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||"Login failed");
+    if(data.token) sessionStorage.setItem("nestos_token", data.token);
+    location.href="/app";
+  }catch(ex){
+    err.textContent=ex.message||"Login failed";
+    err.classList.add("on");
+    go.disabled=false; go.textContent="Sign in";
+  }
+};
+</script>
+</body>
+</html>

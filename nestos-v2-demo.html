@@ -1,0 +1,2621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NestOS — Operations Platform for HummingBrains</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
+
+:root{
+  --canvas:#F7F7F4; --panel:#FBFBF9; --card:#FFFFFF;
+  --line:#E7E7E2; --line-2:#E7E7E2;
+  --ink:#17181C; --muted:#565B63; --faint:#8B9097;
+  --accent:#0B6B53; --accent-tint:#E9F3EF;
+  --mint:#0B6B53; --mint-soft:#E9F3EF;
+  --amber:#9A6A00; --amber-soft:#FBF3E4;
+  --red:#B3261E; --red-soft:#FBEDEC;
+  --blue:#3B5BDB; --blue-2:#0B6B53; --blue-soft:#ECF0FC;
+  --payoff-new:#3DDC97;
+  --chrome-1:#17181C; --chrome-2:#17181C;
+  --r-card:6px; --r-ctrl:4px;
+  --sh-drawer:0 8px 32px rgba(23,24,28,.12);
+  --sh-toast:0 8px 24px rgba(23,24,28,.18);
+  --ease:cubic-bezier(.22,.8,.32,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Instrument Sans',-apple-system,sans-serif;background:var(--canvas);color:var(--ink);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1}
+button{font-family:inherit;cursor:pointer;border:0;background:none;font-size:inherit;color:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-ctrl)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#D4D4CE;border-radius:4px;border:2px solid var(--canvas)}
+::-webkit-scrollbar-track{background:transparent}
+svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+svg.ico{width:12px;height:12px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ══ Light rail ══ */
+.rail{width:220px;background:var(--canvas);border-right:1px solid var(--line);display:flex;flex-direction:column;flex:none}
+.nav{padding:12px 10px;flex:1;overflow-y:auto}
+.nav .grp{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600;padding:14px 12px 6px}
+.nitem{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 12px;border-radius:var(--r-ctrl);color:var(--muted);font-weight:500;margin-bottom:1px;font-size:13px;transition:background .14s var(--ease),color .14s}
+.nitem:hover{background:var(--panel);color:var(--ink)}
+.nitem.on{background:var(--accent-tint);color:var(--accent);font-weight:600}
+.nitem.on::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:0 1px 1px 0;background:var(--accent)}
+.nitem .bdg{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:var(--r-ctrl)}
+.rail .foot{padding:12px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);display:flex;align-items:center;gap:7px}
+.rail .foot .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);animation:pulse 2.4s infinite}
+.rail .foot b{color:var(--muted);font-weight:600}
+
+/* ══ Global header ══ */
+.shell{flex:1;display:flex;flex-direction:column;min-width:0}
+.gheader{height:48px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:16px;flex:none;z-index:10}
+.gbrand{display:flex;align-items:center;gap:9px;flex:none}
+.gmark{width:18px;height:18px;background:var(--accent);border-radius:2px;flex:none}
+.gname{font-weight:700;font-size:14px;letter-spacing:.06em;color:var(--ink)}
+.search-wrap{flex:1;display:flex;justify-content:center;max-width:480px;margin:0 auto}
+.search{display:flex;align-items:center;gap:8px;background:var(--canvas);border:1px solid var(--line);border-radius:var(--r-ctrl);padding:6px 11px;width:100%;max-width:360px;color:var(--faint);font-size:12.5px;transition:border-color .15s}
+.search:hover{border-color:#D4D4CE}
+.search input{border:0;background:transparent;flex:1;outline:none;font-size:12.5px}
+.search kbd{font-family:inherit;font-size:10px;font-weight:600;color:var(--faint);background:var(--card);border:1px solid var(--line);border-radius:3px;padding:1px 5px}
+.gheader-right{display:flex;align-items:center;gap:14px;flex:none;margin-left:auto}
+.org-label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
+.roleswitch{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctrl);padding:4px 10px;font-size:11.5px;color:var(--faint)}
+.roleswitch select{border:0;background:transparent;font-weight:600;color:var(--ink);padding:2px;font-size:12px}
+.roleswitch select option{color:var(--ink)}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+
+/* ══ Page header + main ══ */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.pagehdr{padding:16px 20px 0;flex:none}
+.crumb{font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:var(--faint);margin-bottom:4px}
+.pagehdr h1{font-size:18px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+.pagehdr .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.sp{flex:1}
+
+/* ══ Content ══ */
+.content{flex:1;overflow-y:auto;padding:12px 20px 20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px;position:relative;overflow:hidden}
+.kpi .l{font-size:10px;color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.kpi .v{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .d{font-size:11px;margin-top:8px;color:var(--muted);font-weight:500}
+.kpi .d.up,.kpi .d.warn,.kpi .d.bad{display:inline-block;padding:2px 7px;border-radius:var(--r-ctrl);font-size:11px;font-weight:600;margin-top:8px}
+.kpi .d.up{color:var(--mint);background:var(--mint-soft)}
+.kpi .d.warn{color:var(--amber);background:var(--amber-soft)}
+.kpi .d.bad{color:var(--red);background:var(--red-soft)}
+.kpi .spark{position:absolute;right:12px;top:14px;opacity:.85}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);margin-bottom:12px;overflow:hidden}
+.card .hd{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.card .hd h3{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+.card .hd .sub{font-size:12px;color:var(--muted)}
+.card .hd .sp{flex:1}
+.card .bd{padding:14px 16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid32{display:grid;grid-template-columns:3fr 2fr;gap:12px}
+@media(max-width:1100px){.grid2,.grid32{grid-template-columns:1fr}}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-feature-settings:"tnum" 1}
+th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600;padding:0 14px;height:36px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--canvas)}
+td{padding:0 14px;height:44px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer;transition:background .12s}
+tr.click:hover td{background:#FAFAF8}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:0;background:transparent;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.pill.blue{color:var(--blue)}
+.pill.mint{color:var(--mint)}
+.pill.amber{color:var(--amber)}
+.pill.red{color:var(--red)}
+.pill.grey{color:var(--muted)}
+.pill.navy{color:var(--ink)}
+.pill.solid{color:var(--ink)}.pill.solid::before{background:var(--mint)}
+.pill .ico{width:10px;height:10px;stroke-width:2.2}
+
+.tag{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:var(--r-ctrl);background:var(--card);color:var(--muted);margin-right:4px;border:1px solid var(--line)}
+
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px;padding:7px 14px;border-radius:var(--r-ctrl);transition:background .14s var(--ease),border-color .14s}
+.btn.pri{background:var(--accent);color:#fff}
+.btn.pri:hover{background:#095a46}
+.btn.gho{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.btn.gho:hover{border-color:#D4D4CE;background:var(--panel)}
+.btn.mint{background:var(--accent);color:#fff}
+.btn.mint:hover{background:#095a46}
+.btn.sm{padding:5px 10px;font-size:11.5px}
+.btn:disabled{opacity:.5;cursor:default}
+
+.healthbar{width:74px;height:5px;background:var(--line);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.healthbar i{display:block;height:100%;border-radius:2px}
+
+.alertrow{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border-radius:0;margin-bottom:8px;font-size:12.5px;border:1px solid var(--line);border-left-width:2px}
+.alertrow.red{background:var(--red-soft);border-left-color:var(--red)}
+.alertrow.amber{background:var(--amber-soft);border-left-color:var(--amber)}
+.alertrow.blue{background:var(--blue-soft);border-left-color:var(--blue)}
+.alertrow .dot{display:none}
+.alertrow b{font-weight:700}
+
+.projrow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:5px}
+.projrow b{color:var(--ink);font-weight:600}
+
+/* ══ Kanban ══ */
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:start}
+@media(max-width:1200px){.kanban{grid-template-columns:repeat(3,1fr)}}
+.kcol{background:var(--canvas);border-top:1px solid var(--line);padding:10px 8px 0}
+.kcol .kh{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);padding:0 4px 10px;display:flex;justify-content:space-between;align-items:center}
+.kcol .kh span{font-size:10px;line-height:1;color:var(--muted);border:1px solid var(--line);border-radius:var(--r-ctrl);padding:1px 6px;background:var(--card)}
+.kcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:11px 12px;margin-bottom:8px;cursor:pointer;transition:border-color .14s var(--ease),transform .14s var(--ease)}
+.kcard:hover{border-color:#D4D4CE;transform:translateY(-1px)}
+.kcard .t{font-weight:600;font-size:12.5px;margin-bottom:2px}
+.kcard .s{font-size:11.5px;color:var(--muted)}
+.kcard .m{margin-top:8px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+
+/* ══ Drawer ══ */
+.scrim{position:fixed;inset:0;background:rgba(23,24,28,.32);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:580px;max-width:94vw;background:var(--card);border-left:1px solid var(--line);box-shadow:var(--sh-drawer);transform:translateX(100%);transition:transform .26s var(--ease);z-index:50;display:flex;flex-direction:column;overflow:hidden;border-radius:0}
+.drawer.on{transform:translateX(0)}
+.drawer .dh{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px;background:var(--card)}
+.drawer .dh h2{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.drawer .dh .ctx{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600;margin-bottom:4px}
+.drawer .dh .x{margin-left:auto;width:30px;height:30px;border-radius:var(--r-ctrl);display:grid;place-items:center;color:var(--muted);transition:background .12s;border:1px solid var(--line)}
+.drawer .dh .x:hover{background:var(--panel)}
+.drawer .db{flex:1;overflow-y:auto;padding:18px 20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:4px}
+.field .val{font-size:13px;font-weight:500}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.rubric{border:1px solid var(--line);border-radius:var(--r-card);padding:13px 14px;margin-bottom:10px;background:var(--card)}
+.rubric:focus-within{border-color:var(--accent)}
+.rubric .rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rubric .rh b{font-size:12.5px;font-weight:600}
+.rubric .score{font-weight:700;color:var(--accent);font-size:15px;font-variant-numeric:tabular-nums;min-width:26px;text-align:right}
+.rubric input[type=range]{width:100%;accent-color:var(--accent)}
+.rubric textarea{width:100%;border:1px solid var(--line);border-radius:var(--r-ctrl);padding:8px 10px;font-size:12px;resize:vertical;min-height:36px;margin-top:8px;background:var(--panel)}
+.rubric textarea:focus{outline:none;border-color:var(--accent);background:var(--card)}
+
+.timer{display:inline-flex;align-items:center;gap:8px;background:var(--red-soft);color:var(--red);font-weight:600;font-size:12.5px;padding:5px 12px;border-radius:var(--r-ctrl);font-variant-numeric:tabular-nums;border:1px solid var(--red);border-left-width:2px}
+.timer .rec{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media(prefers-reduced-motion:reduce){.timer .rec,.rail .foot .dot{animation:none}}
+
+/* ══ Generation cinematic ══ */
+.genwrap{padding:28px 8px;max-width:400px;margin:0 auto}
+.genwrap .gt{text-align:center;font-weight:600;font-size:14px;margin-bottom:20px;color:var(--ink)}
+.gstep{display:flex;align-items:center;gap:12px;padding:8px 4px;font-size:13px;color:var(--faint);transition:color .3s}
+.gstep .gi{width:20px;height:20px;border-radius:var(--r-ctrl);border:1.5px solid var(--line);display:grid;place-items:center;flex:none;font-size:10px;font-weight:700;transition:all .3s}
+.gstep.run{color:var(--ink);font-weight:600}
+.gstep.run .gi{border-color:var(--accent);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+.gstep.done{color:var(--muted)}
+.gstep.done .gi{border-color:var(--accent);background:var(--accent);color:#fff;animation:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.payoff{background:var(--ink);color:#fff;border-radius:8px;padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden}
+.payoff::after{content:"";position:absolute;top:0;left:-60%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.06),transparent);animation:sweep 2.8s var(--ease) 1}
+@keyframes sweep{to{left:130%}}
+.payoff .pl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600}
+.payoff .row{display:flex;align-items:baseline;gap:14px;margin-top:8px;flex-wrap:wrap}
+.payoff .old{font-size:15px;font-weight:500;color:var(--faint);text-decoration:line-through}
+.payoff .arrow{color:var(--faint);font-size:14px}
+.payoff .new{font-size:30px;font-weight:700;color:var(--payoff-new);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.payoff .mult{margin-left:auto;background:transparent;color:var(--payoff-new);font-weight:700;font-size:12px;padding:3px 10px;border-radius:var(--r-ctrl);border:1px solid rgba(61,220,151,.4)}
+
+.report{border:1px solid var(--line);border-radius:var(--r-card);padding:20px 22px;background:var(--card)}
+.report h4{font-size:14.5px;font-weight:700;margin-bottom:2px}
+.report .meta{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+.report h5{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:600;margin:14px 0 4px}
+.report p{font-size:12.5px;color:var(--muted);margin-bottom:6px;line-height:1.6}
+.report .rec{display:inline-block;font-weight:700;font-size:12px;padding:4px 12px;border-radius:var(--r-ctrl);margin-bottom:8px;border:1px solid var(--line)}
+
+.matchrow{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-card);margin-bottom:8px;background:var(--card)}
+.matchrow:hover{border-color:#D4D4CE;background:var(--panel)}
+.matchrow .pct{font-weight:700;font-size:15px;color:var(--accent);min-width:46px;font-variant-numeric:tabular-nums}
+.matchrow .nm{font-weight:600;font-size:12.5px}
+.matchrow .why{font-size:11px;color:var(--muted)}
+
+.bar{display:flex;align-items:center;gap:11px;margin-bottom:10px;font-size:12px}
+.bar .bl{width:150px;color:var(--muted);flex:none;font-weight:500}
+.bar .bt2{flex:1;height:6px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar .bt2 i{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .7s var(--ease)}
+.bar .bv{width:66px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;flex:none}
+
+.narrative{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px;font-size:12.5px;color:var(--ink);line-height:1.66}
+.narrative .nl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.narrative .nl .dot-sq{width:6px;height:6px;background:var(--accent);border-radius:1px;flex:none}
+
+.roadmap{border-top:1px dashed var(--line);padding-top:14px;margin-top:4px}
+.roadmap-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.roadmap-tag{font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:var(--accent);background:var(--accent-tint);padding:2px 8px;border-radius:var(--r-ctrl);border:1px solid var(--line)}
+.p4tile{border:1px dashed var(--line);border-radius:var(--r-card);padding:14px 16px;background:var(--panel);margin-bottom:8px}
+.p4tile .t{font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:8px}
+.p4tile p{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.55}
+
+.trend{display:flex;align-items:flex-end;gap:10px;height:112px;padding:6px 4px 0}
+.trend .tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.trend .tb i{width:72%;background:var(--line);border-radius:2px 2px 0 0;min-height:4px;transition:height .7s var(--ease)}
+.trend .tb span{font-size:10px;color:var(--faint);font-weight:600;font-feature-settings:"tnum" 1}
+.trend .tb.cur i{background:var(--accent)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--chrome-1);color:#fff;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:var(--r-ctrl);box-shadow:var(--sh-toast);transition:transform .28s var(--ease);z-index:80;display:flex;align-items:center;gap:9px}
+.toast::before{content:"";width:16px;height:16px;border-radius:var(--r-ctrl);background:var(--accent);flex:none;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M2 6.2 4.8 9 10 3.5'/%3E%3C/svg%3E") center/10px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M2 6.2 4.8 9 10 3.5'/%3E%3C/svg%3E") center/10px no-repeat}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* entrance animation */
+.anim{opacity:1;transform:translateY(0);animation:rise .4s var(--ease) both}
+@keyframes rise{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.anim{animation:none;opacity:1;transform:none}.payoff::after{animation:none}.kcard:hover{transform:none}.live-dot,.live-pulse{animation:none}}
+
+/* ══ Live tracking ══ */
+.livehdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:livepulse 1.8s infinite}
+@keyframes livepulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.9)}}
+.livegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px}
+.empcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:12px 13px;transition:border-color .2s}
+.empcard:hover{border-color:#D4D4CE}
+.empcard .top{display:flex;align-items:flex-start;gap:9px;margin-bottom:8px}
+.empcard .av{width:34px;height:34px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:12px;color:var(--accent);flex:none}
+.empcard .nm{font-weight:600;font-size:12.5px;line-height:1.3}
+.empcard .ofc{font-size:10.5px;color:var(--faint)}
+.empcard .task{font-size:11.5px;color:var(--muted);line-height:1.45;min-height:32px}
+.empcard .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:10.5px;color:var(--faint)}
+.statusdot{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600}
+.statusdot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.statusdot.online{color:var(--mint)}
+.statusdot.interview{color:var(--blue)}
+.statusdot.call{color:var(--amber)}
+.statusdot.focus{color:var(--ink)}
+.statusdot.away{color:var(--faint)}
+
+/* ══ Module map ══ */
+.modgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.modtile{border:1px solid var(--line);border-radius:var(--r-card);padding:12px 13px;background:var(--card)}
+.modtile .ph{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600}
+.modtile h4{font-size:12.5px;font-weight:700;margin:5px 0 3px}
+.modtile p{font-size:11.5px;color:var(--muted);line-height:1.45}
+.modtile.live{border-left:2px solid var(--accent)}
+.modtile.phase{border-style:dashed;background:var(--panel)}
+
+/* ══ Performance reports ══ */
+.repbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.repbar select{border:1px solid var(--line);border-radius:var(--r-ctrl);padding:6px 10px;background:var(--card);font-size:12px}
+
+/* ══ Tabs ══ */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 16px;background:var(--canvas)}
+.tab{padding:10px 14px;font-size:12px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .14s,border-color .14s}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ══ Audit & compliance ══ */
+.utilstack{display:flex;height:8px;border-radius:2px;overflow:hidden;background:var(--line);min-width:120px}
+.utilstack i{display:block;height:100%}
+.utilstack .act{background:var(--mint)}
+.utilstack .idl{background:var(--faint)}
+.utilstack .mtg{background:var(--blue)}
+.utilstack .fcs{background:var(--ink)}
+.auditrow{display:grid;grid-template-columns:140px 1fr 100px 90px 80px;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px}
+.auditrow.hd{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600;background:var(--canvas);border-top:1px solid var(--line)}
+.auditrow:last-child{border-bottom:0}
+.auditrow .ok{color:var(--mint);font-weight:600}
+.auditrow .flag{color:var(--amber);font-weight:600}
+.auditrow .bad{color:var(--red);font-weight:600}
+.policygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.policytile{border:1px solid var(--line);border-radius:var(--r-card);padding:12px;background:var(--panel)}
+.policytile h5{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:4px}
+.policytile p{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ══ Workspace / messaging ══ */
+.wsgrid{display:grid;grid-template-columns:220px 1fr 280px;gap:12px;min-height:520px}
+@media(max-width:1100px){.wsgrid{grid-template-columns:1fr}}
+.pdir{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.pdir .phd{padding:10px 12px;border-bottom:1px solid var(--line);font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.pitem{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);transition:background .12s}
+.pitem:hover,.pitem.on{background:var(--accent-tint)}
+.pitem .av{width:30px;height:30px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:11px;color:var(--accent);flex:none}
+.pitem .nm{font-weight:600;font-size:12px}
+.pitem .st{font-size:10px;color:var(--faint)}
+.msgpane{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);display:flex;flex-direction:column;overflow:hidden}
+.msgpane .mhd{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.msgpane .mhd b{font-size:13px}
+.msgbody{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:380px;background:var(--canvas)}
+.bubble{max-width:78%;padding:9px 12px;border-radius:var(--r-card);font-size:12.5px;line-height:1.5}
+.bubble.them{align-self:flex-start;background:var(--card);border:1px solid var(--line)}
+.bubble.me{align-self:flex-end;background:var(--accent-tint);border:1px solid #C8E4DB}
+.bubble .meta{font-size:10px;color:var(--faint);margin-top:4px}
+.bubble .attach{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctrl);font-size:11.5px;font-weight:600}
+.msginput{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--card)}
+.msginput input{flex:1;border:1px solid var(--line);border-radius:var(--r-ctrl);padding:8px 10px;background:var(--panel)}
+.taskcol{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.taskcol .thd{padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.taskitem{padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px}
+.taskitem .tt{font-weight:600;margin-bottom:3px}
+.taskitem .tm{font-size:11px;color:var(--muted)}
+.taskitem .tp{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+
+/* ══ IaaS workflow ══ */
+.flowbar{display:flex;align-items:center;gap:0;margin-bottom:14px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);overflow-x:auto}
+.fstep{display:flex;align-items:center;gap:8px;flex:none;font-size:11.5px;color:var(--faint);font-weight:600;white-space:nowrap}
+.fstep .num{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:10px;font-weight:700}
+.fstep.done{color:var(--mint)}.fstep.done .num{background:var(--mint-soft);border-color:var(--mint);color:var(--mint)}
+.fstep.cur{color:var(--ink)}.fstep.cur .num{background:var(--accent);border-color:var(--accent);color:#fff}
+.fstep::after{content:"→";margin:0 10px;color:var(--line);font-weight:400}
+.fstep:last-child::after{display:none}
+.wizcard{border:1px solid var(--line);border-radius:var(--r-card);padding:14px;background:var(--panel);margin-bottom:12px}
+.wizcard h4{font-size:12.5px;font-weight:700;margin-bottom:8px}
+.wizcard .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.wizcard label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);display:block;margin-bottom:3px}
+.wizcard input,.wizcard select,.wizcard textarea{width:100%;border:1px solid var(--line);border-radius:var(--r-ctrl);padding:7px 10px;background:var(--card);font-size:12px}
+.suggest{border:1px solid var(--line);border-radius:var(--r-card);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;background:var(--card);cursor:pointer;transition:border-color .12s}
+.suggest:hover{border-color:var(--accent)}
+.suggest .match{font-weight:700;color:var(--accent);font-size:14px;min-width:40px}
+.svcgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+@media(max-width:900px){.svcgrid{grid-template-columns:1fr}}
+.svctile{border:1px solid var(--line);border-radius:var(--r-card);padding:14px;background:var(--card);cursor:pointer;transition:border-color .14s,box-shadow .14s}
+.svctile:hover{border-color:var(--accent)}
+.svctile.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.svctile h4{font-size:13px;font-weight:700;margin:6px 0 3px}
+.svctile p{font-size:11.5px;color:var(--muted);line-height:1.45}
+.svctile .cnt{font-size:22px;font-weight:700;color:var(--accent)}
+
+/* ══ Header actions ══ */
+.hact{display:flex;align-items:center;gap:8px}
+.hbtn{width:34px;height:34px;border-radius:var(--r-ctrl);border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--muted);position:relative;transition:background .12s,border-color .12s}
+.hbtn:hover{background:var(--panel);border-color:#D4D4CE;color:var(--ink)}
+.hbtn .nb{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:var(--r-ctrl);min-width:16px;text-align:center}
+.msgfly{position:fixed;top:52px;right:20px;width:360px;max-height:calc(100vh - 80px);background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-drawer);z-index:60;display:flex;flex-direction:column;transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.msgfly.on{opacity:1;pointer-events:auto;transform:none}
+.msgfly .fh{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+
+/* ══ Upload & video ══ */
+label.uploadzone{position:relative}
+.uploadzone{border:2px dashed var(--line);border-radius:var(--r-card);padding:28px 20px;text-align:center;background:var(--panel);cursor:pointer;transition:border-color .14s,background .14s}
+.uploadzone:hover,.uploadzone.drag{border-color:var(--accent);background:var(--accent-tint)}
+.uploadzone .ico{font-size:28px;margin-bottom:8px;opacity:.5}
+.uploadzone b{display:block;font-size:13px;margin-bottom:4px}
+.uploadzone span{font-size:11.5px;color:var(--muted)}
+.resbadge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:var(--r-ctrl);background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+.resbadge.has{color:var(--mint);border-color:#C8E4DB;background:var(--mint-soft)}
+.vidgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:800px){.vidgrid{grid-template-columns:1fr}}
+.vidtile{border:1px solid var(--line);border-radius:var(--r-card);padding:14px;background:var(--card);text-align:center;cursor:pointer;transition:border-color .14s}
+.vidtile:hover,.vidtile.on{border-color:var(--accent);background:var(--accent-tint)}
+.vidtile .logo{font-size:22px;margin-bottom:6px}
+.vidtile h5{font-size:12.5px;font-weight:700}
+.vidtile p{font-size:11px;color:var(--muted);margin-top:3px}
+.meetbar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--blue-soft);border:1px solid var(--line);border-left:2px solid var(--blue);border-radius:var(--r-card);margin-bottom:12px;flex-wrap:wrap}
+.meetbar b{font-size:12.5px}
+.meetbar .link{font-family:monospace;font-size:11px;color:var(--blue);background:var(--card);padding:4px 8px;border-radius:var(--r-ctrl);border:1px solid var(--line)}
+.foldergrid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.foldertile{border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--card);cursor:pointer;font-size:12px;min-width:88px}
+.foldertile.on{border-color:var(--accent);background:var(--accent-tint);color:var(--accent);font-weight:600}
+.foldertile .cnt{font-size:15px;font-weight:700;display:inline;margin-right:4px}
+.importrow{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font-size:13px}
+.importrow:last-child{border-bottom:0}
+.importrow .nm{font-weight:600;font-size:14px}
+.importrow .meta{color:var(--muted);font-size:12px;grid-column:1}
+.importrow .actions{grid-row:1 / span 2;align-self:center}
+.rdx-wrap{max-width:920px}
+.rdx-explain{font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:18px;max-width:64ch}
+.rdx-search{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:18px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+@media(max-width:900px){.rdx-search{grid-template-columns:1fr 1fr;}.rdx-search .go{grid-column:1/-1}}
+.rdx-search label{display:block;font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.rdx-search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;background:var(--card)}
+.rdx-results{border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden}
+.rdx-results .hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.rdx-results .hd h3{font-size:14px;font-weight:600;margin:0}
+.rdx-empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13px;line-height:1.5}
+.rdx-foot{margin-top:14px;font-size:12px;color:var(--faint);line-height:1.45}
+.rdx-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+@media(max-width:900px){.rdx-steps{grid-template-columns:1fr 1fr}}
+.rdx-step{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--card);font-size:12px}
+.rdx-step .n{width:22px;height:22px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:11px;flex:none}
+.rdx-step b{display:block;font-size:12.5px;margin-bottom:2px}
+.rdx-step p{margin:0;color:var(--muted);font-size:11.5px;line-height:1.35}
+.rdx-step.cur{border-color:var(--accent);background:var(--accent-tint)}
+.rdx-step.cur .n{background:var(--accent);color:#fff;border-color:var(--accent)}
+.rdx-step.done{opacity:.85}
+.rdx-step.done .n{background:var(--mint);color:#fff;border-color:var(--mint)}
+.rdx-naukri-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid var(--line);border-left:3px solid #0a66c2;border-radius:8px;background:#f4f8fc;margin-bottom:12px}
+.rdx-naukri-bar b{display:block;font-size:13.5px}
+.rdx-naukri-bar span{font-size:12px;color:var(--muted)}
+.rdx-naukri-actions{display:flex;flex-wrap:wrap;gap:8px}
+.rdx-helper{font-size:12.5px;line-height:1.5;color:var(--muted);padding:12px 14px;border:1px dashed var(--line);border-radius:8px;margin-bottom:14px;background:var(--panel)}
+.rdx-helper.on{border-style:solid;border-color:var(--accent);background:var(--accent-tint);color:var(--ink)}
+.rdx-helper b{color:var(--ink)}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+
+
+/* Recruiter-friendly cleanup */
+.phasebar{background:var(--panel)!important}
+.kpi.click{cursor:pointer}
+.kpi.click:hover{border-color:var(--accent)}
+body.is-recruiter .ux-hero,
+body.is-recruiter .actiongrid,
+body.is-recruiter .ux-tip,
+body.is-recruiter .previewbanner,
+body.is-recruiter .payoff,
+body.is-recruiter .modgrid,
+body.is-recruiter .narrative,
+body.is-recruiter .flowbar,
+body.is-recruiter .svcgrid,
+body.is-recruiter .rdx-steps{display:none!important}
+
+/* ══ Phase delivery ══ */
+.phasebar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--accent-tint);border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.phasebar b{color:var(--accent);font-weight:700}
+.phasebar .phsteps{display:flex;gap:6px;flex-wrap:wrap}
+.phstep{padding:3px 9px;border-radius:var(--r-ctrl);font-size:11px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--muted)}
+.phstep.done{background:var(--mint-soft);color:var(--mint);border-color:#C8E4DB}
+.phstep.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+.phstep.future{opacity:.65}
+.phlock{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+.previewbanner{padding:10px 14px;background:var(--amber-soft);border:1px solid var(--line);border-left:2px solid var(--amber);border-radius:var(--r-card);margin-bottom:12px;font-size:12.5px}
+
+/* ══ Recruiter-friendly UX ══ */
+.ux-hero{padding:16px 18px;background:linear-gradient(135deg,var(--accent-tint) 0%,#fff 70%);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-card);margin-bottom:14px}
+.ux-hero h2{font-size:15px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.ux-hero p{font-size:13px;color:var(--muted);line-height:1.55;max-width:760px}
+.ux-hero .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:14px}
+.ux-step{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:12px 13px}
+.ux-step .n{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;margin-bottom:8px}
+.ux-step b{font-size:12px;display:block;margin-bottom:3px;color:var(--ink)}
+.ux-step span{font-size:11.5px;color:var(--muted);line-height:1.45;display:block}
+.ux-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actioncard{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);cursor:pointer;transition:border-color .14s,box-shadow .14s;text-align:left;width:100%}
+.actioncard:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(11,107,83,.08)}
+.actioncard .ic{width:36px;height:36px;border-radius:var(--r-card);background:var(--accent-tint);display:grid;place-items:center;font-size:18px;flex:none}
+.actioncard b{font-size:13px;display:block;margin-bottom:3px}
+.actioncard span{font-size:12px;color:var(--muted);line-height:1.45}
+.actiongrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:14px}
+.ux-tip{font-size:12px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:10px 12px;margin-bottom:12px;line-height:1.5}
+.ux-tip b{color:var(--ink)}
+.ux-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-bottom:10px}
+.ux-legend span{display:inline-flex;align-items:center;gap:5px}
+.welcomebar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.welcomebar b{color:var(--ink)}
+details.ux-tech{margin-top:12px;font-size:12px;color:var(--muted)}
+details.ux-tech summary{cursor:pointer;font-weight:600;color:var(--ink);margin-bottom:6px}
+
+/* ══ Activity · Analytics · Task dock (ConnectOS parity) ══ */
+.shell.hasdock .main{padding-bottom:58px}
+.taskdock{position:fixed;left:var(--rail-w);right:0;bottom:0;height:48px;background:var(--card);border-top:1px solid var(--line);display:none;align-items:center;gap:12px;padding:0 18px;z-index:35;box-shadow:0 -4px 20px rgba(23,24,28,.06)}
+.taskdock.on{display:flex}
+.taskdock .tl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);white-space:nowrap}
+.taskdock .items{display:flex;gap:8px;flex:1;overflow-x:auto;min-width:0}
+.taskdock .tchip{flex:none;font-size:11.5px;padding:5px 10px;border:1px solid var(--line);border-radius:var(--r-ctrl);background:var(--panel);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.taskdock .tchip:hover{border-color:var(--accent)}
+.taskdock .tchip b{font-weight:600}
+.hbtn.signout{background:var(--amber-soft);border-color:var(--amber)}
+.hbtn.signout:hover{background:#F5E6C8}
+.logbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.logbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);font-size:12.5px;font-weight:500;cursor:pointer;transition:border-color .12s,background .12s}
+.logbtn:hover{border-color:var(--accent);background:var(--accent-tint)}
+.logbtn .em{font-size:16px}
+.outrow{display:grid;grid-template-columns:88px 1fr 100px 90px 72px;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px;align-items:center}
+.outrow.hd{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);background:var(--panel)}
+.outrow:hover{background:var(--panel)}
+.anatabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.anatab{padding:7px 12px;border:1px solid var(--line);border-radius:var(--r-ctrl);font-size:12px;font-weight:500;cursor:pointer;background:var(--card);color:var(--muted)}
+.anatab.on{background:var(--accent-tint);border-color:var(--accent);color:var(--accent)}
+.barchart{display:flex;align-items:flex-end;gap:8px;height:140px;padding:12px 8px 0;border-bottom:1px solid var(--line)}
+.bbar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.bbar i{display:block;width:100%;max-width:48px;border-radius:4px 4px 0 0;background:var(--accent);min-height:4px;transition:height .3s}
+.bbar span{font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
+.bbar b{font-size:11px;font-weight:600;color:var(--ink)}
+.funnel{display:grid;gap:8px}
+.funnelrow{display:grid;grid-template-columns:120px 1fr 48px;gap:10px;align-items:center;font-size:12px}
+.funnelrow .bar{height:22px;background:var(--line);border-radius:4px;overflow:hidden}
+.funnelrow .bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.signsum{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:12px 14px;margin-bottom:14px;font-size:12px;line-height:1.55}
+.signsum b{color:var(--ink)}
+.signpending{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:var(--r-card);margin-bottom:8px;font-size:12px;background:var(--amber-soft)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <nav class="nav" id="nav"></nav>
+    <div class="foot"><span class="dot"></span>All systems live · <b>Pragma</b></div>
+  </aside>
+  <div class="shell">
+    <header class="gheader">
+      <div class="gbrand"><div class="gmark"></div><div class="gname">NestOS</div></div>
+      <div class="search-wrap">
+        <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input placeholder="Search candidates, clients, interviews…"/><kbd>⌘K</kbd></div>
+      </div>
+      <div class="gheader-right">
+        <span class="org-label">HummingBrains Technologies</span>
+        <div class="hact">
+          <button class="hbtn" id="logActBtn" title="Log call or outreach"><svg class="i" viewBox="0 0 24 24"><path d="M6.5 3.5h11l2 2V20a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 4.5 20V5A1.5 1.5 0 0 1 6 3.5z"/><path d="M8.5 8h7M8.5 12h5"/></svg></button>
+          <button class="hbtn" id="msgBtn" title="Messages"><svg class="i" viewBox="0 0 24 24"><path d="M4 5.5h16v10H7.5L4 19z"/></svg><span class="nb" id="msgBadge">3</span></button>
+          <button class="hbtn" id="taskBtn" title="Tasks" onclick="state.view='workspace';render()"><svg class="i" viewBox="0 0 24 24"><path d="M5 6.5h14M5 12h14M5 17.5h9"/></svg><span class="nb" id="taskBadge">4</span></button>
+          <button class="hbtn signout" id="signOutBtn" title="End day — log extra work">End day</button>
+        </div>
+        <div class="roleswitch">Signed in as
+          <strong id="roleLabel" style="font-weight:600;margin-left:4px">—</strong>
+          <button class="btn gho sm" id="logoutBtn" style="margin-left:8px;padding:4px 8px">Log out</button>
+        </div>
+        <div class="avatar" id="avatar">K</div>
+      </div>
+    </header>
+    <div class="phasebar" id="phaseBar"></div>
+    <div class="main">
+      <div class="pagehdr">
+        <div class="crumb" id="crumb">Overview / Dashboard</div>
+        <h1 id="title">Dashboard</h1>
+        <div class="sub" id="subtitle"></div>
+      </div>
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="toast" id="toast"></div>
+<div class="msgfly" id="msgFly"><div class="fh"><span>Quick messages</span><div class="sp"></div><button class="btn gho sm" onclick="state.view='workspace';closeMsgFly();render()">Open Workspace</button><button class="x" id="msgFlyX" style="width:28px;height:28px;border:1px solid var(--line);border-radius:var(--r-ctrl);display:grid;place-items:center">✕</button></div><div class="msgbody" id="msgFlyBody"></div></div>
+<div class="taskdock" id="taskDock"></div>
+
+<script>
+/* ══════════════════ LIVE API (real NestOS backend) ══════════════════ */
+const NESTOS_API = location.protocol === "file:" ? "http://localhost:4100" : "";
+let LIVE_INVOICES = [];
+let LIVE_VERIFICATIONS = [];
+let LIVE_API_OK = false;
+let LIVE_OCR_MODE = "—";
+let LIVE_USER = null;
+let LIVE_MODEL = "—";
+let AUTH_TOKEN = sessionStorage.getItem("nestos_token") || "";
+let LIVE_RESDEX_COUNTS = { total: 0, folders: {} };
+let RESDEX_LOADED = false;
+let RESDEX_FOLDER_COUNTS = { total: 0, folders: {} };
+let RESDEX_LOADING = false;
+
+const SEED_CANDIDATES = [
+ {id:1,name:"Rohini Menon",role:"Senior React Developer",skills:["React","TypeScript","Node"],exp:"6.5 yrs",ctc:"₹28L",notice:"30 days",service:"Staff Aug",stage:"Client Interview",loc:"Bengaluru",resume:"Rohini_Menon_Resume.pdf",source:"Resdex",resdexViewed:"2 Jul",atsSynced:"Workday"},
+ {id:2,name:"Farhan Ali",role:"DevOps Engineer",skills:["AWS","K8s","Terraform"],exp:"5 yrs",ctc:"₹24L",notice:"Immediate",service:"Staff Aug",stage:"Shortlisted",loc:"Hyderabad",resume:"Farhan_Ali_Resume.pdf",source:"Upload",resdexViewed:null,atsSynced:"Workday"},
+ {id:3,name:"Sneha Kulkarni",role:"Product Manager",skills:["B2B SaaS","Roadmapping"],exp:"7 yrs",ctc:"₹34L",notice:"60 days",service:"Talent Acq",stage:"Offer",loc:"Pune",resume:"Sneha_Kulkarni_Resume.pdf",source:"Referral",resdexViewed:null},
+ {id:4,name:"Vikram Shetty",role:"Backend Engineer (Go)",skills:["Go","Postgres","gRPC"],exp:"4 yrs",ctc:"₹21L",notice:"45 days",service:"Talent Acq",stage:"Screening",loc:"Bengaluru",resume:null,source:"Resdex",resdexViewed:"8 Jul"},
+ {id:5,name:"Ananya Iyer",role:"Data Engineer",skills:["Spark","Airflow","Python"],exp:"5.5 yrs",ctc:"₹26L",notice:"30 days",service:"IaaS",stage:"Assessment Done",loc:"Chennai",resume:"Ananya_Iyer_Resume.pdf",source:"Client submit",resdexViewed:null,atsSynced:"Greenhouse"},
+ {id:6,name:"Karthik Raja",role:"Senior React Developer",skills:["React","Next.js","GraphQL"],exp:"7 yrs",ctc:"₹30L",notice:"15 days",service:"Staff Aug",stage:"Sourced",loc:"Bengaluru",resume:"Karthik_Raja_Resume.pdf",source:"Resdex",resdexViewed:"Today",atsSynced:null},
+ {id:7,name:"Meera Pillai",role:"QA Automation Lead",skills:["Playwright","CI/CD"],exp:"8 yrs",ctc:"₹27L",notice:"30 days",service:"Talent Acq",stage:"Client Interview",loc:"Kochi",resume:"Meera_Pillai_Resume.pdf",source:"Upload",resdexViewed:null},
+ {id:8,name:"Aditya Rao",role:"ML Engineer",skills:["PyTorch","LLMs","MLOps"],exp:"4.5 yrs",ctc:"₹32L",notice:"Immediate",service:"IaaS",stage:"Scheduled",loc:"Bengaluru",resume:"Aditya_Rao_Resume.pdf",source:"Resdex",resdexViewed:"5 Jul"},
+ {id:9,name:"Priyanka Das",role:"Frontend Engineer",skills:["React","Tailwind"],exp:"3 yrs",ctc:"₹16L",notice:"30 days",service:"Staff Aug",stage:"Sourced",loc:"Remote",resume:null,source:"Resdex",resdexViewed:"Today"},
+ {id:10,name:"Suresh Nair",role:"Engineering Manager",skills:["Leadership","Java","AWS"],exp:"11 yrs",ctc:"₹52L",notice:"90 days",service:"Talent Acq",stage:"Screening",loc:"Bengaluru",resume:"Suresh_Nair_Resume.pdf",source:"LinkedIn",resdexViewed:null},
+];
+let CANDIDATES = SEED_CANDIDATES.map(c=>({...c}));
+
+/* ══════════════════ DATA ══════════════════ */
+const TODAY = new Date(2026, 6, 10); // Fri 10 Jul 2026
+
+function asSkills(v){
+  if(Array.isArray(v)) return v.map(String).filter(Boolean);
+  if(typeof v==="string" && v.trim()){
+    try{const j=JSON.parse(v); if(Array.isArray(j)) return j.map(String).filter(Boolean);}catch(_){}
+    return v.split(/[,;|]/).map(s=>s.trim()).filter(Boolean);
+  }
+  return [];
+}
+function mapApiCandidate(c){
+  return {
+    id:c.id,
+    name:c.name,
+    role:c.role||"Parsed from resume",
+    skills:asSkills(c.skills),
+    exp:c.experience||"—",
+    ctc:c.ctc||"—",
+    notice:c.notice||"—",
+    service:"Talent Acq",
+    stage:c.stage||"Sourced",
+    loc:c.location||"—",
+    resume:c.resume_original_name||null,
+    source:c.source||"Bulk PDF",
+    resdexViewed:null,
+    atsSynced:null,
+    email:c.email||null,
+    phone:c.phone||null,
+    live:1,
+    parse_method:c.parse_method,
+    parse_confidence:c.parse_confidence,
+  };
+}
+function findCand(id){return CANDIDATES.find(x=>String(x.id)===String(id));}
+async function nestosFetch(path,opts={}){
+  const headers=Object.assign({},opts.headers||{});
+  if(AUTH_TOKEN) headers.Authorization="Bearer "+AUTH_TOKEN;
+  const res=await fetch(NESTOS_API+path,{...opts,headers,credentials:"include"});
+  if(res.status===401){
+    location.href="/";
+    throw new Error("Login required");
+  }
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error||res.statusText);
+  return data;
+}
+async function ensureAuth(){
+  try{
+    const me=await nestosFetch("/api/auth/me");
+    LIVE_USER=me.user;
+    state.role=LIVE_USER.role;
+    ROLE_NAMES[LIVE_USER.role]=LIVE_USER.name;
+    const rl=$("#roleLabel"); if(rl) rl.textContent=`${LIVE_USER.role} — ${LIVE_USER.name}`;
+    return true;
+  }catch(e){
+    location.href="/";
+    return false;
+  }
+}
+async function syncLiveResdex(opts={}){
+  try{
+    RESDEX_LOADING=true;
+    const q = opts.query!=null ? opts.query : (state.resdexQuery||"");
+    const loc = opts.location!=null ? opts.location : (state.resdexLoc||"");
+    // Always fetch Chrome-helper captures into NestOS (integrated with extension)
+    const params=new URLSearchParams({q:q||"",location:loc||"",helper:"1"});
+    const res=await nestosFetch("/api/resdex/search?"+params.toString());
+    const prevCount = state.helperCaptureCount||0;
+    RESDEX_QUEUE.length=0;
+    (res.data||[]).forEach(p=>RESDEX_QUEUE.push({
+      id:p.id,name:p.name,role:p.role,skills:p.skills||[],exp:p.experience,ctc:p.ctc,notice:p.notice,
+      loc:p.location,folder:p.folder||"Shortlist",freshness:p.freshness,credit:p.credit,dup:p.dup?1:0,
+      capture_source:p.capture_source||"naukri-helper",
+      page_url:p.page_url||null
+    }));
+    const folders={};
+    RESDEX_QUEUE.forEach(p=>{folders[p.folder]=(folders[p.folder]||0)+1});
+    RESDEX_FOLDER_COUNTS={total:RESDEX_QUEUE.length,folders};
+    state.helperCaptureCount = res.helperCaptures != null ? res.helperCaptures : RESDEX_QUEUE.length;
+    state.resdexHelperOn = 1;
+    if(state.helperCaptureCount>0) state.resdexStep=Math.max(state.resdexStep,3);
+    // Notify when new captures arrive from extension
+    if(opts.quiet!==true && state.helperCaptureCount>prevCount && prevCount>=0 && opts.fromPoll){
+      toast(`${state.helperCaptureCount-prevCount} new profile(s) from Chrome helper`);
+    }
+    updateHeaderBadges();
+    return RESDEX_QUEUE.length;
+  }catch(e){
+    console.warn("Resdex sync failed",e);
+    return 0;
+  }finally{
+    RESDEX_LOADING=false;
+  }
+}
+let RESDEX_POLL_TIMER=null;
+function startResdexPoll(){
+  if(RESDEX_POLL_TIMER) return;
+  RESDEX_POLL_TIMER=setInterval(async()=>{
+    if(state.view!=="sourcing" || !LIVE_API_OK) return;
+    if(LIVE_USER?.role==="sales") return;
+    const before=state.helperCaptureCount||0;
+    const n=await syncLiveResdex({quiet:true,fromPoll:true});
+    if(state.view==="sourcing" && (n!==before || (state.helperCaptureCount||0)!==before)) render();
+  },4000);
+}
+function stopResdexPoll(){
+  if(RESDEX_POLL_TIMER){clearInterval(RESDEX_POLL_TIMER);RESDEX_POLL_TIMER=null;}
+}
+async function goToView(view){
+  const prev=state.view;
+  if(view==="sourcing" && prev!=="sourcing"){
+    state.resdexFolder="Shortlist";
+  }
+  state.view=view;
+  if(view==="sourcing") startResdexPoll(); else if(prev==="sourcing") stopResdexPoll();
+  render();
+  if(view==="sourcing"){
+    const n=await syncLiveResdex();
+    if(state.view==="sourcing"){
+      render();
+      if(n>0) toast(`${n} profile(s) from Chrome helper — ready to save`);
+    }
+  }
+}
+async function syncLiveCandidates(){
+  try{
+    const h=await nestosFetch("/api/health");
+    LIVE_API_OK=!!h.ok;
+    LIVE_OCR_MODE=h.azureOcr?"Azure Document Intelligence":"unpdf (text PDFs)";
+    LIVE_MODEL=h.model||LIVE_OCR_MODE;
+    const {data}=await nestosFetch("/api/candidates");
+    const live=(data||[]).map(mapApiCandidate);
+    const seedKeep=SEED_CANDIDATES.filter(s=>!live.some(l=>l.name.toLowerCase()===s.name.toLowerCase()));
+    CANDIDATES=[...live,...seedKeep.map(c=>({...c}))];
+    const stages=["Sourced","Screening","Shortlisted","Client Interview","Offer","Placed"];
+    ANALYTICS.pipeline.stages=stages.map(st=>[st,CANDIDATES.filter(c=>c.stage===st||(st==="Placed"&&c.stage==="Offer")).length]);
+    try{
+      const inv=await nestosFetch("/api/invoices");
+      LIVE_INVOICES=inv.data||[];
+    }catch(_){LIVE_INVOICES=[];}
+    try{
+      const out=await nestosFetch("/api/comms/outreach");
+      const apiRows=(out.data||[]).map(o=>({
+        id:o.id,user:o.user_name||"Live",type:o.type,target:o.target,context:o.context||"—",module:"Live",
+        duration:"—",outcome:o.outcome||"—",ts:(o.created_at||"").slice(0,16).replace("T"," "),verified:1
+      }));
+      const seedOnly=OUTREACH_LOG.filter(x=>!String(x.id).startsWith("live-"));
+      state.outreachLog=[...apiRows.map(r=>({...r,id:"live-"+r.id})),...seedOnly];
+    }catch(_){}
+    try{
+      const v=await nestosFetch("/api/verify");
+      LIVE_VERIFICATIONS=v.data||[];
+    }catch(_){LIVE_VERIFICATIONS=[];}
+    // Always sync extension captures into NestOS so Find on Naukri stays up to date
+    if(LIVE_USER?.role!=="sales"){
+      try{ await syncLiveResdex({quiet:true}); }catch(_){}
+    }
+    try{
+      const m=await nestosFetch("/api/model/status");
+      LIVE_MODEL=m.engine||LIVE_MODEL;
+    }catch(_){}
+    return true;
+  }catch(e){
+    LIVE_API_OK=false;
+    console.warn("NestOS API offline — demo data only",e);
+    return false;
+  }
+}
+async function liveCreateInvoice(){
+  openInvoiceDrawer();
+}
+function openInvoiceDrawer(){
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Revenue / Invoice</div><h2>Create invoice</h2><p style="font-size:12px;color:var(--muted);margin-top:4px">IaaS · Staff Aug · Talent Acquisition</p></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db"><div class="wizcard">
+    <div class="field"><label>Client</label><input id="invClient" value="Kredmint Technologies"/></div>
+    <div class="field"><label>Service line</label><select id="invLine"><option>IaaS</option><option>Staff Aug</option><option>Talent Acq</option></select></div>
+    <div class="field"><label>Description</label><input id="invDesc" value="Interview package — 10 assessments"/></div>
+    <div class="row"><div><label>Amount (₹)</label><input type="number" id="invAmt" value="85000"/></div>
+    <div><label>GST %</label><input type="number" id="invGst" value="18"/></div></div>
+    <button class="btn pri" id="submitInv" style="width:100%">Create invoice</button>
+  </div></div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  $("#submitInv").onclick=async()=>{
+    try{
+      await nestosFetch("/api/invoices",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        client_name:$("#invClient").value||"Client",
+        service_line:$("#invLine").value,
+        description:$("#invDesc").value||"Services",
+        amount:Number($("#invAmt").value)||0,
+        gst_percent:Number($("#invGst").value)||18
+      })});
+      await syncLiveCandidates();
+      toast("Invoice created · live revenue");
+      closeDrawer(); state.view="revenue"; render();
+    }catch(e){toast(e.message||"Invoice failed");}
+  };
+}
+async function liveVerifyDoc(candidateId,file){
+  if(!file)return;
+  const fd=new FormData();
+  fd.append("candidateId",String(candidateId));
+  fd.append("docType","ID / Resume");
+  fd.append("file",file);
+  try{
+    const v=await nestosFetch("/api/verify",{method:"POST",body:fd});
+    await syncLiveCandidates();
+    toast(`Doc verification: ${v.status} — ${v.notes}`);
+    openCandidate(candidateId);
+  }catch(e){toast(e.message||"Verify failed");}
+}
+async function handleResumeUpload(files){
+  const list=files?.length?Array.from(files):[];
+  if(!list.length){toast("No files selected");return;}
+  if(!LIVE_API_OK){toast("API offline — run NestOS server");return;}
+  toast(`Parsing ${list.length} resume(s)…`);
+  try{
+    const fd=new FormData();
+    list.forEach(f=>fd.append("files",f));
+    const res=await nestosFetch("/api/candidates/bulk-upload",{method:"POST",body:fd});
+    await syncLiveCandidates();
+    state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`Bulk OCR upload: ${res.created} created · ${res.updated} updated · ${res.ocr}`,module:"Talent",type:"active",dur:"—",ok:1});
+    toast(`Done — ${res.created} new · ${res.updated} updated · OCR: ${res.ocr}`);
+    state.view="talent";render();
+  }catch(e){toast("Upload failed: "+(e.message||e));}
+}
+async function liveWhatsApp(candidateId){
+  const c=findCand(candidateId); if(!c?.phone){toast("No phone on this candidate");return;}
+  try{
+    const r=await nestosFetch("/api/comms/whatsapp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({candidateId:String(c.id),phone:c.phone,message:`Hi ${c.name.split(" ")[0]}, this is HummingBrains regarding an opportunity.`})});
+    window.open(r.link,"_blank");
+    await syncLiveCandidates();
+    toast("WhatsApp opened · logged to activity");
+  }catch(e){toast(e.message||"WhatsApp failed");}
+}
+async function liveEmail(candidateId){
+  const c=findCand(candidateId); if(!c?.email){toast("No email on this candidate");return;}
+  try{
+    const r=await nestosFetch("/api/comms/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({candidateId:String(c.id),to:c.email,subject:"Opportunity with HummingBrains",body:`Hi ${c.name.split(" ")[0]},\n\nWe'd like to discuss an opportunity with you.\n\nRegards,\nHummingBrains`})});
+    await syncLiveCandidates();
+    toast(r.mode==="console-stub"?"Email stubbed (add RESEND_API_KEY)":"Email sent via Resend");
+  }catch(e){toast(e.message||"Email failed");}
+}
+
+const INTERVIEWS = [
+ {id:"IV-1042",client:"Kredmint Technologies",candidate:"Aditya Rao",role:"ML Engineer",seniority:"Senior",stack:"PyTorch · LLMs · MLOps",interviewer:"Priya N.",date:"Mon 13 Jul, 11:00",status:"Scheduled",meetProvider:"Google Meet",meetLink:"https://meet.google.com/nest-iaas-1042"},
+ {id:"IV-1041",client:"Aurelia Systems",candidate:"Ananya Iyer",role:"Data Engineer",seniority:"Mid–Senior",stack:"Spark · Airflow · Python",interviewer:"Arjun M.",date:"Today, 15:30",status:"Report Pending",scores:null,meetProvider:"Microsoft Teams",meetLink:"https://teams.microsoft.com/l/meetup-join/nest-1041"},
+ {id:"IV-1040",client:"Vantara Retail",candidate:"Devika Suresh",role:"Java Backend",seniority:"Mid",stack:"Java · Spring · SQL",interviewer:"Priya N.",date:"Today, 10:00",status:"Delivered",tat:"1m 52s"},
+ {id:"IV-1039",client:"Kredmint Technologies",candidate:"Nikhil Bhat",role:"SDET",seniority:"Mid",stack:"Selenium · API testing",interviewer:"Arjun M.",date:"Yesterday",status:"Delivered",tat:"1m 47s"},
+ {id:"IV-1043",client:"Trigo Health",candidate:"Ritu Sharma",role:"React Native Dev",seniority:"Senior",stack:"React Native · Firebase",interviewer:"—",date:"Requested 9 Jul",status:"Requested",meetProvider:null,meetLink:null},
+ {id:"IV-1044",client:"NovaCart",candidate:"Imran K.",role:"Solutions Architect",seniority:"Senior",stack:"AWS · Microservices",interviewer:"—",date:"Requested today",status:"Requested",meetProvider:null,meetLink:null},
+ {id:"IV-1038",client:"Aurelia Systems",candidate:"Tanvi Joshi",role:"Data Analyst",seniority:"Junior",stack:"SQL · Power BI",interviewer:"Priya N.",date:"Wed 8 Jul",status:"Delivered",tat:"1m 58s"},
+ {id:"IV-1045",client:"Vantara Retail",candidate:"Gaurav Mehta",role:"Java Backend",seniority:"Mid",stack:"Java · Spring",interviewer:"Arjun M.",date:"Tue 14 Jul, 14:00",status:"Assigned"},
+];
+
+const CLIENTS = [
+ {id:1,name:"Trigo Health",industry:"Healthtech",services:["Staff Aug"],mrr:240000,renewal:"2026-10-05",health:88,owner:"Divya R.",last:"2 days ago",note:"3 augmented engineers on-site; very engaged."},
+ {id:2,name:"Kredmint Technologies",industry:"Fintech",services:["IaaS","Staff Aug"],mrr:185000,renewal:"2026-08-02",health:82,owner:"Divya R.",last:"Yesterday",note:"12 interviews/month steady. Expansion likely."},
+ {id:3,name:"Vantara Retail",industry:"Retail tech",services:["IaaS","Talent Acq"],mrr:110000,renewal:"2026-07-19",health:69,owner:"Karthikeyan",last:"6 days ago",note:"Renewal in 9 days — schedule call this week."},
+ {id:4,name:"Aurelia Systems",industry:"B2B SaaS",services:["IaaS"],mrr:95000,renewal:"2026-07-28",health:61,owner:"Divya R.",last:"11 days ago",note:"Response rate declining; fewer new requests raised.",churn:"Engagement down 40% over 3 weeks"},
+ {id:5,name:"NovaCart",industry:"E-commerce",services:["Talent Acq"],mrr:0,fee:"Placement fees",renewal:"2026-09-14",health:74,owner:"Karthikeyan",last:"4 days ago",note:"2 active searches. Solutions Architect is priority."},
+ {id:6,name:"BlueOrbit Analytics",industry:"Data/AI",services:["Custom Dev"],mrr:0,fee:"Project ₹6.5L",renewal:"2026-11-30",health:80,owner:"Divya R.",last:"Yesterday",note:"Milestone 2 of 4 delivered on time."},
+];
+
+const LEADS = [
+ {name:"Rahul Kapoor",company:"Finlytica",intent:"IaaS — 20 interviews/mo",source:"Website assistant",score:"Hot",date:"Today, 09:40",status:"New"},
+ {name:"S. Venkatesh",company:"Chakra Logistics",intent:"Staff augmentation — 4 devs",source:"Referral (Trigo)",score:"Hot",date:"Yesterday",status:"Contacted"},
+ {name:"Anita George",company:"MedLoop",intent:"Talent acquisition — CTO search",source:"LinkedIn",score:"Warm",date:"8 Jul",status:"Contacted"},
+ {name:"Deepak R.",company:"—",intent:"General enquiry",source:"Website assistant",score:"Cold",date:"7 Jul",status:"Nurture"},
+ {name:"Meghna Shah",company:"Zapkart",intent:"IaaS pilot — 5 interviews",source:"Website assistant",score:"Warm",date:"6 Jul",status:"New"},
+];
+
+const TEAM = [
+ {id:1,name:"Priya N.",role:"Manager · Interviewer",office:"Bengaluru",interviews:14,reports:14,avgTat:"1m 51s",util:86,status:"online",task:"Reviewing IV-1041 assessment rubric",hoursToday:5.8,sessionsToday:4,monthly:{interviews:14,reports:14,placements:0,clientCalls:8,requirements:3,validationFlags:0,utilAvg:86,hoursLogged:142,score:92}},
+ {id:2,name:"Arjun M.",role:"Recruiter · Interviewer",office:"Bengaluru",interviews:11,reports:10,avgTat:"1m 55s",util:78,status:"interview",task:"Live IaaS capture — Ananya Iyer",hoursToday:6.1,sessionsToday:5,monthly:{interviews:11,reports:10,placements:1,clientCalls:5,requirements:6,validationFlags:1,utilAvg:78,hoursLogged:128,score:88}},
+ {id:3,name:"Divya R.",role:"Sales / Accounts",office:"Bengaluru",interviews:0,reports:0,avgTat:"—",util:71,status:"call",task:"Renewal call — Vantara Retail",hoursToday:4.5,sessionsToday:3,monthly:{interviews:0,reports:0,placements:0,clientCalls:14,requirements:0,validationFlags:0,utilAvg:71,hoursLogged:118,score:85}},
+ {id:4,name:"Sanjay K.",role:"Recruiter",office:"Bengaluru",interviews:6,reports:6,avgTat:"2m 04s",util:64,status:"focus",task:"Resdex shortlist — REQ-91",hoursToday:3.2,sessionsToday:2,monthly:{interviews:6,reports:6,placements:0,clientCalls:2,requirements:8,validationFlags:1,utilAvg:64,hoursLogged:96,score:74}},
+ {id:5,name:"Lakshmi V.",role:"Interviewer (panel)",office:"Bengaluru",interviews:9,reports:9,avgTat:"1m 49s",util:82,status:"online",task:"Panel prep — Solutions Architect role",hoursToday:4.0,sessionsToday:3,monthly:{interviews:9,reports:9,placements:0,clientCalls:1,requirements:0,validationFlags:0,utilAvg:82,hoursLogged:110,score:90}},
+ {id:6,name:"Ravi de Vries",role:"Delivery Lead",office:"Netherlands",interviews:0,reports:0,avgTat:"—",util:76,status:"online",task:"BlueOrbit milestone review — EU client sync",hoursToday:5.4,sessionsToday:2,monthly:{interviews:0,reports:0,placements:0,clientCalls:6,requirements:1,validationFlags:0,utilAvg:76,hoursLogged:124,score:87}},
+];
+
+
+const TRACK_TASKS = [
+ "Reviewing IV-1041 assessment rubric","Live IaaS capture — candidate session","Renewal call — client account",
+ "Resdex shortlist — active requirement","Panel prep — technical interview","Client status email draft",
+ "ATS export QA — structured profiles","Client status sync","Candidate outreach — hot lead"
+];
+const TRACK_STATUS = ["online","interview","call","focus","away"];
+const STATUS_LABEL = {online:"Online",interview:"In interview",call:"On client call",focus:"Focus mode",away:"Away"};
+
+const VALIDATION = [
+ {who:"Sanjay K.",what:"Interview IV-1037 logged 4 min duration with full rubric completed",rule:"Duration vs. depth mismatch",when:"Yesterday"},
+ {who:"Arjun M.",what:"Client call logged with no conversation notes",rule:"Connected + no notes",when:"2 days ago"},
+];
+
+const AUDIT_PROFILES = [
+ {id:1,active:5.2,idle:0.4,meeting:0.8,focus:0.3,away:0.1,score:98,flags:0},
+ {id:2,active:5.0,idle:0.6,meeting:0.2,focus:0.2,away:0.1,score:94,flags:1},
+ {id:3,active:3.8,idle:0.5,meeting:1.2,focus:0.0,away:0.0,score:96,flags:0},
+ {id:4,active:2.6,idle:1.1,meeting:0.0,focus:0.4,away:0.1,score:78,flags:2},
+ {id:5,active:3.5,idle:0.3,meeting:0.2,focus:0.8,away:0.2,score:97,flags:0},
+ {id:6,active:4.6,idle:0.2,meeting:0.6,focus:0.0,away:0.0,score:99,flags:0},
+];
+
+const AUDIT_LOG = [
+ {ts:"10 Jul, 15:42",user:"Arjun M.",action:"IaaS live capture started",module:"IaaS",type:"active",dur:"ongoing",ok:1},
+ {ts:"10 Jul, 15:38",user:"Sanjay K.",action:"Idle session detected — no input 12 min",module:"Talent",type:"idle",dur:"12m",ok:0},
+ {ts:"10 Jul, 15:22",user:"Priya N.",action:"Report IV-1040 delivered to client",module:"IaaS",type:"active",dur:"4m",ok:1},
+ {ts:"10 Jul, 14:55",user:"Divya R.",action:"Client call — Vantara renewal",module:"Clients",type:"meeting",dur:"28m",ok:1},
+ {ts:"10 Jul, 14:30",user:"Sanjay K.",action:"Resdex sourcing — REQ-91",module:"Talent",type:"active",dur:"22m",ok:1},
+ {ts:"10 Jul, 13:10",user:"Lakshmi V.",action:"Panel prep — documented",module:"IaaS",type:"focus",dur:"35m",ok:1},
+ {ts:"10 Jul, 12:45",user:"Ravi de Vries",action:"Client delivery sync — BlueOrbit",module:"Clients",type:"meeting",dur:"40m",ok:1},
+ {ts:"10 Jul, 11:20",user:"Arjun M.",action:"Call logged without notes",module:"Clients",type:"meeting",dur:"8m",ok:0},
+];
+
+const OUTREACH_LOG = [
+ {id:"O-101",user:"Arjun M.",type:"Call",target:"Ritu Sharma",context:"REQ-88 follow-up · React role",module:"Sourcing",duration:"8m",outcome:"Interested · screen scheduled",ts:"Today 14:20",verified:1},
+ {id:"O-100",user:"Divya R.",type:"Call",target:"Vantara Retail",context:"Renewal discussion",module:"Clients",duration:"28m",outcome:"Meeting booked Fri",ts:"Today 14:55",verified:1},
+ {id:"O-99",user:"Sanjay K.",type:"WhatsApp",target:"Farhan Ali",context:"DevOps shortlist outreach",module:"Talent",duration:"—",outcome:"Replied · shared CTC",ts:"Today 13:40",verified:1},
+ {id:"O-98",user:"Arjun M.",type:"Email",target:"Ananya Iyer",context:"IaaS prep · Aurelia",module:"IaaS",duration:"—",outcome:"Confirmed slot",ts:"Today 11:05",verified:1},
+ {id:"O-97",user:"Sanjay K.",type:"LinkedIn",target:"Imran Khanna",context:"Solutions Architect — NovaCart",module:"Sourcing",duration:"—",outcome:"InMail sent",ts:"Today 10:22",verified:1},
+ {id:"O-96",user:"Priya N.",type:"Call",target:"Kredmint HR",context:"IV-1040 delivery walkthrough",module:"IaaS",duration:"15m",outcome:"Client approved report",ts:"Yesterday 16:10",verified:1},
+ {id:"O-95",user:"Arjun M.",type:"Call",target:"Unknown",context:"—",module:"Clients",duration:"8m",outcome:"—",ts:"Yesterday 11:20",verified:0},
+];
+
+const SIGNOUT_REQUESTS = [
+ {id:"SO-12",user:"Sanjay K.",date:"9 Jul 2026",autoSummary:"4 Resdex imports · 2 calls logged · 1 task completed",extraWork:"Followed up 3 candidates on WhatsApp after hours — not in system yet.",status:"Reviewed",adminNote:"Logged retroactively by Priya"},
+ {id:"SO-13",user:"Arjun M.",date:"Today",autoSummary:"2 interviews · 5 outreach logs · 3 messages",extraWork:"",status:"Pending",adminNote:""},
+];
+
+const ANALYTICS = {
+ pipeline:{stages:[["Sourced",42],["Screening",18],["Interview",9],["Offer",3],["Placed",2]],weekly:[[3,5,4,6,8,7,9],[2,3,2,4,5,4,6],[1,2,1,2,3,2,3]]},
+ sourcing:{channels:[["Resdex",23],["Upload",8],["Referral",4],["LinkedIn",3]],creditsSaved:124,importsWeek:23},
+ outreach:{calls:47,messages:62,emails:28,linkedin:15,weekly:[[6,8,7,9,11,10,12],[8,10,9,12,14,13,15]]},
+ team:{utilAvg:78,scores:[["Priya N.",92],["Arjun M.",88],["Sanjay K.",74],["Divya R.",85]],flags:2},
+ iaas:{volume:31,delivered:28,avgTat:"1m 53s",weekly:[[4,5,6,5,7,6,8]]},
+ leads:{new:5,hot:2,converted:1,funnel:[["New",3],["Contacted",2],["Converted",1]]},
+};
+
+const MESSAGES = {
+ 1:[{from:"them",text:"Can you review IV-1041 rubric before the 15:30 session?",time:"14:20",who:"Priya N."},{from:"me",text:"On it — I'll have it ready in 10 min.",time:"14:22"}],
+ 2:[{from:"them",text:"Sharing Ananya Iyer's profile for Aurelia — strong Spark fit.",time:"13:05",who:"Arjun M.",attach:"Ananya_Iyer_Resume.pdf"},{from:"me",text:"Thanks, adding to shortlist now.",time:"13:08"}],
+ 3:[{from:"them",text:"Vantara renewal call moved to 4pm. Can you join?",time:"11:40",who:"Divya R."}],
+ 4:[{from:"them",text:"REQ-91 shortlist ready — 4 matches above 85%.",time:"10:15",who:"Sanjay K."}],
+ 5:[{from:"them",text:"Solutions Architect panel notes attached.",time:"Yesterday",who:"Lakshmi V.",attach:"Panel_Rubric_SA.pdf"}],
+ 6:[{from:"them",text:"BlueOrbit milestone 3 on track — EU client happy.",time:"Yesterday",who:"Ravi de Vries"}],
+};
+
+const TASKS = [
+ {id:"T-41",title:"Complete IV-1041 assessment report",assignee:"Arjun M.",assigner:"Priya N.",due:"Today",priority:"High",module:"IaaS",status:"In progress"},
+ {id:"T-42",title:"Shortlist 5 DevOps profiles — Trigo",assignee:"Sanjay K.",assigner:"Priya N.",due:"11 Jul",priority:"Medium",module:"Staff Aug",status:"Open"},
+ {id:"T-43",title:"Vantara renewal prep deck",assignee:"Divya R.",assigner:"Karthikeyan",due:"12 Jul",priority:"High",module:"Clients",status:"Open"},
+ {id:"T-44",title:"NovaCart EM search — client screen",assignee:"Sanjay K.",assigner:"Karthikeyan",due:"14 Jul",priority:"Medium",module:"Talent Acq",status:"Open"},
+ {id:"T-45",title:"Assign interviewer — IV-1043",assignee:"Priya N.",assigner:"System",due:"Today",priority:"High",module:"IaaS",status:"Open"},
+ {id:"T-46",title:"Kredmint UAT coordination",assignee:"Ravi de Vries",assigner:"Priya N.",due:"18 Jul",priority:"Low",module:"Clients",status:"Open"},
+];
+
+const STAFF_AUG = [
+ {candidate:"Rohini Menon",client:"Trigo Health",role:"Senior React Dev",since:"Mar 2026",util:94,status:"Deployed"},
+ {candidate:"Farhan Ali",client:"Trigo Health",role:"DevOps Engineer",since:"May 2026",util:88,status:"Deployed"},
+ {candidate:"Karthik Raja",client:"Bench",role:"Senior React Dev",since:"—",util:0,status:"Available"},
+ {candidate:"Priyanka Das",client:"Bench",role:"Frontend Engineer",since:"—",util:0,status:"Available"},
+];
+
+const TA_SEARCHES = [
+ {id:"TA-07",role:"Engineering Manager",client:"NovaCart",stage:"Client Interview",candidates:4,fee:"₹4.5L",owner:"Sanjay K."},
+ {id:"TA-04",role:"Product Manager",client:"Internal",stage:"Offer",candidates:2,fee:"₹3.2L",owner:"Priya N."},
+ {id:"TA-09",role:"CTO",client:"MedLoop (lead)",stage:"Sourcing",candidates:1,fee:"TBD",owner:"Karthikeyan"},
+];
+
+const RESDEX_QUEUE = [];
+
+const VIDEO_PROVIDERS = [
+ {id:"meet",name:"Google Meet",desc:"OAuth · auto link on IaaS schedule",enabled:1,phase:3},
+ {id:"teams",name:"Microsoft Teams",desc:"EU clients · NL office sync",enabled:1,phase:3},
+ {id:"zoom",name:"Zoom",desc:"Panel interviews · optional recording",enabled:1,phase:3},
+];
+
+const ATS_CONNECTORS = [
+ {id:"greenhouse",name:"Greenhouse",client:"Kredmint Technologies",status:"connected",lastSync:"2 min ago",pushed:47,pulled:12},
+ {id:"workday",name:"Workday",client:"Trigo Health",status:"connected",lastSync:"15 min ago",pushed:23,pulled:8},
+ {id:"zoho",name:"Zoho Recruit",client:"NovaCart",status:"pending",lastSync:"—",pushed:0,pulled:0},
+ {id:"lever",name:"Lever",client:"Available",status:"available",lastSync:"—",pushed:0,pulled:0},
+];
+
+const MODULE_PHASE = {dash:1,talent:1,workspace:1,settings:1,activity:1,analytics:1,clients:2,leads:2,revenue:2,iaas:3,team:3,audit:3,sourcing:4};
+const PHASE_META = {
+ 1:{label:"Foundation",weeks:"Week 1–2",desc:"Auth · roles · Talent Hub V1 · resume upload · structured profiles"},
+ 2:{label:"Client & Revenue",weeks:"Week 3–4",desc:"CRM · renewal alerts · MRR dashboard"},
+ 3:{label:"IaaS Operations",weeks:"Week 5–6",desc:"Interview workflow · Meet/Teams/Zoom links · AI reports"},
+ 4:{label:"ATS & Sourcing",weeks:"Complete",desc:"Resdex helper · ATS two-way sync"},
+};
+
+const REQUIREMENTS = [
+ {id:"REQ-88",label:"Senior React Developer — Kredmint",skills:["React","TypeScript"],ctcMax:30,matches:[[6,94,"Skills exact · 15-day notice · CTC in band"],[1,89,"Skills exact · interviewing elsewhere"],[9,64,"Skills partial · junior for band"]]},
+ {id:"REQ-91",label:"DevOps Engineer — Trigo Health",skills:["AWS","K8s"],ctcMax:26,matches:[[2,92,"Skills exact · immediate joiner"],[8,58,"MLOps overlap only"],[4,41,"Backend, not infra"]]},
+ {id:"REQ-93",label:"Engineering Manager — NovaCart",skills:["Leadership","AWS"],ctcMax:55,matches:[[10,90,"11 yrs · leadership + AWS"],[3,52,"PM not EM"],[1,44,"IC profile"]]},
+];
+
+const REVENUE = {
+ mrr:630000, arr:7560000, projectQ:920000, placementQ:340000,
+ lines:[["Staff Augmentation",425000],["Interview-as-a-Service",205000],["Talent Acquisition (fees, quarterly)",340000],["Custom Software Dev (project, quarterly)",920000]],
+ split:[["Recurring retainers",62,"var(--accent)"],["Project fees",27,"#6B9E8A"],["Placement fees",11,"#B8CFC6"]],
+ trend:[["Feb",4.6],["Mar",4.9],["Apr",5.3],["May",5.6],["Jun",6.0],["Jul",6.3]],
+};
+
+/* ══════════════════ ICONS ══════════════════ */
+const IC = {
+ dash:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></svg>',
+ talent:'<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 20c.6-3.4 2.9-5.2 5.5-5.2s4.9 1.8 5.5 5.2"/><path d="M16 4.6a3.4 3.4 0 0 1 0 6.8M17.7 15c1.7.8 2.8 2.4 3.2 5"/></svg>',
+ iaas:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="M12 3.5v2.6M12 17.9v2.6M3.5 12h2.6M17.9 12h2.6"/></svg>',
+ team:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.2"/><path d="M5.5 20c.7-3.6 3.2-5.4 6.5-5.4s5.8 1.8 6.5 5.4"/></svg>',
+ clients:'<svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="7" width="17" height="13" rx="2"/><path d="M8.5 7V5.4A2.4 2.4 0 0 1 10.9 3h2.2a2.4 2.4 0 0 1 2.4 2.4V7M3.5 12.5h17"/></svg>',
+ leads:'<svg class="i" viewBox="0 0 24 24"><path d="M4 12.5 20 4l-5.2 16-3.1-6.5L4 12.5z"/></svg>',
+ revenue:'<svg class="i" viewBox="0 0 24 24"><path d="M6 4h12M6 8.5h12M6 4c4.5 0 7 1.6 7 4.5S10.5 13 6 13l7 7"/></svg>',
+ projects:'<svg class="i" viewBox="0 0 24 24"><path d="M4 7.5h16M4 12h10M4 16.5h14"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>',
+ audit:'<svg class="i" viewBox="0 0 24 24"><path d="M9 3.5h6l4 4V20a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5.5 20V5A1.5 1.5 0 0 1 7 3.5z"/><path d="M14.5 3.5V8h4.5M9 13.5h6M9 17h4"/></svg>',
+ workspace:'<svg class="i" viewBox="0 0 24 24"><path d="M4 6.5h16v11H4z"/><path d="M8 6.5V4.5h8v2M8.5 11h7M8.5 14.5h5"/></svg>',
+ sourcing:'<svg class="i" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M4 20c.8-3.5 2.8-5.5 6-5.5s5.2 2 6 5.5"/><path d="M17 5.5h5M19.5 3v5"/><path d="M16 14h6l-2 5-2-5z"/></svg>',
+ activity:'<svg class="i" viewBox="0 0 24 24"><path d="M5 4.5h14v15H5z"/><path d="M8 9h8M8 12.5h6M8 16h4"/><circle cx="17" cy="7" r="2.5"/></svg>',
+ analytics:'<svg class="i" viewBox="0 0 24 24"><path d="M4 19.5V4.5M4 19.5h16"/><rect x="7" y="11" width="3" height="6" rx=".8"/><rect x="12" y="8" width="3" height="9" rx=".8"/><rect x="17" y="5" width="3" height="12" rx=".8"/></svg>',
+ settings:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6 18 18M18 6l-1.4 1.4M7.4 16.6 6 18"/></svg>',
+};
+const GLYPH={
+ bolt:'<svg class="ico" viewBox="0 0 12 12"><path d="M6.8 1 4 6.2h2.4L5 11l4.2-5.4H7L9.6 1z"/></svg>',
+ plus:'<svg class="ico" viewBox="0 0 12 12"><path d="M6 2v8M2 6h8"/></svg>',
+ sync:'<svg class="ico" viewBox="0 0 12 12"><path d="M1.5 4.5h7.5M8.5 2.5 10 4l-1.5 1.5M10.5 7.5H3M3.5 9.5 2 8l1.5-1.5"/></svg>',
+ target:'<svg class="ico" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4"/><circle cx="6" cy="6" r="1.2"/></svg>',
+ close:'<svg class="ico" viewBox="0 0 12 12"><path d="M2.5 2.5 9.5 9.5M9.5 2.5 2.5 9.5"/></svg>',
+ nl:'<span class="dot-sq"></span>',
+};
+
+/* ══════════════════ ROLE CONFIG ══════════════════ */
+const NAV = {
+ admin:[["Main",[["dash","Home"],["talent","Candidates"],["sourcing","Find on Naukri"],["iaas","Interviews"],["workspace","Messages"],["activity","Activity"]]],["Business",[["clients","Clients"],["leads","Leads"],["revenue","Revenue"]]],["Team",[["team","Team"],["audit","Audit"],["analytics","Analytics"]]],["System",[["settings","Settings"]]]],
+ manager:[["Main",[["dash","Home"],["talent","Candidates"],["sourcing","Find on Naukri"],["iaas","Interviews"],["workspace","Messages"],["activity","Activity"]]],["Business",[["clients","Clients"],["leads","Leads"],["revenue","Revenue"]]],["Team",[["team","Team"],["audit","Audit"],["analytics","Analytics"]]]],
+ recruiter:[["Work",[["dash","Home"],["talent","Candidates"],["sourcing","Find on Naukri"],["iaas","Interviews"]]],["Day",[["activity","Log activity"],["workspace","Messages & tasks"],["analytics","My numbers"]]]],
+ sales:[["Work",[["dash","Home"],["clients","Clients"],["leads","Leads"],["revenue","Revenue"]]],["Day",[["workspace","Messages"],["activity","Activity"],["analytics","Analytics"]]]],
+};
+const ROLE_NAMES = {admin:"Karthikeyan",manager:"Priya N.",recruiter:"Arjun M.",sales:"Divya R."};
+const ROLE_TEAM_ID = {admin:0,manager:1,recruiter:2,sales:3};
+const TITLES = {dash:"Home",talent:"Candidates",sourcing:"Find on Naukri",iaas:"Interviews",clients:"Clients",leads:"Leads",revenue:"Revenue",team:"Team",audit:"Audit",workspace:"Messages & tasks",activity:"Activity",analytics:"Analytics",settings:"Settings"};
+const CRUMBS = {dash:"",talent:"",sourcing:"",iaas:"",clients:"",leads:"",revenue:"",team:"",audit:"",workspace:"",activity:"",analytics:"",settings:""};
+
+const RECRUITER_TITLES = {dash:"Home",talent:"Candidates",sourcing:"Find on Naukri",iaas:"Interviews",workspace:"Messages & tasks",activity:"Log activity",analytics:"My numbers"};
+const RECRUITER_SUBS = {
+  dash:"Your interviews, Naukri captures, and tasks for today",
+  talent:"Upload resumes or open a profile",
+  sourcing:"Profiles sent from the Chrome helper — save them here",
+  iaas:"Open a card to run the interview",
+  workspace:"Team chat and your assigned tasks",
+  activity:"Log calls, WhatsApp, and email",
+  analytics:"Your pipeline and outreach numbers",
+};
+
+let state = {role:"recruiter", view:"dash", deliveryPhase:4, previewAll:0, genDone:{}, reportMonth:"2026-07", liveTrack:{}, talentTab:"all", wsPeer:2, msgOpen:0, auditLog:[...AUDIT_LOG], outreachLog:[...OUTREACH_LOG], signOutRequests:[...SIGNOUT_REQUESTS], resdexFolder:"Shortlist", resdexQuery:"", resdexTitle:"", resdexLoc:"", resdexHelperOn:0, resdexStep:1, helperCaptureCount:0, videoProvider:"meet", atsConnector:"greenhouse", analyticsTab:"pipeline", activityFilter:"all"};
+
+const REPORT_MONTHS = [
+  {id:"2026-07",label:"July 2026"},
+  {id:"2026-06",label:"June 2026"},
+  {id:"2026-05",label:"May 2026"},
+];
+
+function initLiveTrack(){
+  TEAM.forEach(t=>{
+    state.liveTrack[t.id]={task:t.task,hours:t.hoursToday,sessions:t.sessionsToday,status:t.status,taskIdx:Math.floor(Math.random()*TRACK_TASKS.length)};
+  });
+}
+initLiveTrack();
+
+function buildLiveCards(){
+  return TEAM.map(t=>{
+    const l=state.liveTrack[t.id]||{task:t.task,hours:t.hoursToday,sessions:t.sessionsToday,status:t.status};
+    const st=STATUS_LABEL[l.status]||l.status;
+    const tz=t.office==="Netherlands"?"CET · ":"IST · ";
+    return `<div class="empcard" data-emp="${t.id}">
+      <div class="top">
+        <div class="av">${t.name.split(" ")[0][0]}${(t.name.split(" ")[1]||"")[0]||""}</div>
+        <div><div class="nm">${t.name}</div><div class="ofc">${t.role} · ${t.office}</div></div>
+      </div>
+      <div class="task">${l.task}</div>
+      <div class="meta">
+        <span class="statusdot ${l.status}">${st}</span>
+        <span>${tz}${l.hours}h · ${l.sessions} sessions</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function tickLiveTracking(){
+  const actions=["Candidate profile updated","Requirement match run","Client note logged","Resume shared internally","Task status updated","IaaS rubric saved"];
+  const modules=["Talent","IaaS","Clients","Workspace","Workspace","IaaS"];
+  TEAM.forEach(t=>{
+    const l=state.liveTrack[t.id]; if(!l)return;
+    const prevStatus=l.status;
+    if(Math.random()>0.55){
+      l.taskIdx=(l.taskIdx+1)%TRACK_TASKS.length;
+      l.task=TRACK_TASKS[l.taskIdx];
+    }
+    if(Math.random()>0.7) l.status=TRACK_STATUS[Math.floor(Math.random()*TRACK_STATUS.length)];
+    l.hours=Math.min(8.5,+(l.hours+0.08).toFixed(1));
+    if(Math.random()>0.85) l.sessions+=1;
+    if(l.status==="away"&&prevStatus!=="away"&&Math.random()>0.6){
+      const now=new Date();
+      state.auditLog.unshift({ts:now.toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:t.name,action:"Idle block detected — no verified activity",module:"Compliance",type:"idle",dur:"8m",ok:0});
+    }
+    if(Math.random()>0.92){
+      const i=Math.floor(Math.random()*actions.length);
+      const now=new Date();
+      state.auditLog.unshift({ts:now.toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:t.name,action:actions[i],module:modules[i],type:l.status==="away"?"idle":"active",dur:"—",ok:1});
+      if(state.auditLog.length>24)state.auditLog.pop();
+    }
+  });
+  const grid=document.querySelector(".livegrid");
+  if(grid&&state.view==="team") grid.innerHTML=buildLiveCards();
+  const alog=document.querySelector("#auditLogLive");
+  if(alog&&state.view==="audit") alog.innerHTML=buildAuditRows();
+}
+setInterval(tickLiveTracking,6000);
+
+function isRecruiter(){return state.role==="recruiter";}
+function canAssignTasks(){return state.role==="admin"||state.role==="manager";}
+function currentUserName(){return ROLE_NAMES[state.role];}
+function myOutreachLogs(){const me=currentUserName();return state.role==="admin"||state.role==="manager"?state.outreachLog:state.outreachLog.filter(o=>o.user===me);}
+function outreachTypePill(t){const m={Call:"blue",WhatsApp:"mint",Email:"grey",LinkedIn:"amber",Message:"blue"};return `<span class="pill ${m[t]||"grey"}">${t}</span>`;}
+function pendingSignOuts(){return state.signOutRequests.filter(s=>s.status==="Pending");}
+function getSignOutSummary(user){
+  const logs=state.outreachLog.filter(o=>o.user===user&&o.ts.startsWith("Today"));
+  const tasks=TASKS.filter(t=>t.assignee===user&&t.status!=="Open");
+  const ivs=INTERVIEWS.filter(i=>i.interviewer===user);
+  return `${logs.length} outreach logs today · ${tasks.length} tasks in progress/done · ${ivs.length} interviews on record`;
+}
+function renderBarChart(series,labels,maxH){
+  const mx=Math.max(...series,1);
+  return `<div class="barchart">${series.map((v,i)=>`<div class="bbar"><b>${v}</b><i style="height:${Math.round(v/mx*maxH)}px"></i><span>${labels[i]}</span></div>`).join("")}</div>`;
+}
+function renderFunnel(stages){
+  const mx=Math.max(...stages.map(s=>s[1]),1);
+  return `<div class="funnel">${stages.map(([l,n])=>`<div class="funnelrow"><span>${l}</span><div class="bar"><i style="width:${Math.round(n/mx*100)}%"></i></div><b>${n}</b></div>`).join("")}</div>`;
+}
+function buildOutreachRows(rows){
+  return rows.map(o=>`<div class="outrow">
+    <span style="color:var(--muted);font-size:11px">${o.ts}</span>
+    <span><b>${o.target}</b> — ${o.context}<br><span style="font-size:11px;color:var(--muted)">${o.user} · ${o.module}${o.outcome?` · ${o.outcome}`:""}</span></span>
+    <span>${outreachTypePill(o.type)}</span>
+    <span style="font-size:11.5px;color:var(--muted)">${o.duration}</span>
+    <span class="pill ${o.verified?"mint":"red"}">${o.verified?"Verified":"Incomplete"}</span>
+  </div>`).join("");
+}
+function updateHeaderBadges(){
+  const openTasks=TASKS.filter(t=>t.status!=="Done"&&t.status!=="Completed");
+  const myOpen=openTasks.filter(t=>t.assignee===currentUserName());
+  const tb=$("#taskBadge");if(tb)tb.textContent=canAssignTasks()?openTasks.length:myOpen.length;
+  const pending=pendingSignOuts().length;
+  const sb=$("#signOutBtn");
+  if(sb){
+    sb.style.display=state.role==="sales"?"none":"";
+    if(state.role==="recruiter"||state.role==="manager")sb.textContent="End day";
+    else if(state.role==="admin")sb.textContent=pending?`Sign-outs (${pending})`:"Sign-outs";
+  }
+}
+function renderTaskDock(){
+  const dock=$("#taskDock"),shell=document.querySelector(".shell");
+  if(!dock)return;
+  if(!canAssignTasks()){dock.classList.remove("on");shell?.classList.remove("hasdock");return;}
+  const open=TASKS.filter(t=>t.status==="Open"||t.status==="In progress").slice(0,5);
+  dock.classList.add("on");
+  shell?.classList.add("hasdock");
+  dock.innerHTML=`<span class="tl">Task command</span>
+    <div class="items">${open.map(t=>`<button type="button" class="tchip" data-gotask="${t.id}"><b>${t.assignee.split(" ")[0]}</b> · ${t.title}</button>`).join("")||`<span style="font-size:12px;color:var(--muted)">No open tasks</span>`}</div>
+    <button class="btn pri sm" id="dockAssignBtn">${GLYPH.plus} Assign task</button>
+    <button class="btn gho sm" onclick="state.view='workspace';render()">Open board</button>`;
+  $("#dockAssignBtn")?.addEventListener("click",openNewTask);
+  dock.querySelectorAll("[data-gotask]").forEach(el=>el.onclick=()=>{state.view="workspace";render();toast("Task: "+TASKS.find(t=>t.id===el.dataset.gotask)?.title);});
+}
+function uxHero(title,body,steps){
+  const stepsHtml=steps?`<div class="steps">${steps.map(([n,t,d])=>`<div class="ux-step"><div class="n">${n}</div><b>${t}</b><span>${d}</span></div>`).join("")}</div>`:"";
+  return `<div class="ux-hero"><h2>${title}</h2><p>${body}</p>${stepsHtml}</div>`;
+}
+function uxActionCard(icon,title,desc,go){
+  return `<button class="actioncard" data-go="${go}" type="button"><span class="ic">${icon}</span><span><b>${title}</b><span>${desc}</span></span></button>`;
+}
+
+/* ══════════════════ HELPERS ══════════════════ */
+const $=s=>document.querySelector(s);
+const fmtL=n=>n>=100000?("₹"+(n/100000).toFixed(n%100000?2:1).replace(/\.?0+$/,"")+"L"):("₹"+(n/1000)+"k");
+function daysTo(d){return Math.round((new Date(d)-TODAY)/86400000)}
+function healthColor(h){return h>=80?"var(--mint)":h>=70?"var(--amber)":"var(--red)"}
+function stagePill(s){const m={"Sourced":"grey","Screening":"blue","Shortlisted":"blue","Scheduled":"blue","Client Interview":"amber","Assessment Done":"mint","Offer":"mint"};return `<span class="pill ${m[s]||"grey"}">${s}</span>`}
+function statusPill(s){const m={"Requested":"grey","Assigned":"blue","Scheduled":"blue","Report Pending":"amber","Delivered":"mint"};return `<span class="pill ${m[s]}">${s}</span>`}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2600)}
+function spark(pts,color){
+  const w=64,h=26,mx=Math.max(...pts),mn=Math.min(...pts);
+  const xy=pts.map((p,i)=>[(i/(pts.length-1))*w,h-((p-mn)/(mx-mn||1))*(h-4)-2]);
+  const d=xy.map(p=>p.map(n=>n.toFixed(1)).join(",")).join(" ");
+  const c=color||"var(--accent)";
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${d}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function animateIn(){
+  document.querySelectorAll("#content .kpi, #content .card").forEach((el,i)=>{
+    el.classList.add("anim"); el.style.animationDelay=(i*45)+"ms";
+  });
+}
+
+/* ══════════════════ RENDER SHELL ══════════════════ */
+function renderPhaseBar(){
+  const bar=$("#phaseBar");
+  if(!bar)return;
+  // Clean status strip — no phase roadmap UI
+  const first=ROLE_NAMES[state.role].split(" ")[0];
+  const pending=INTERVIEWS.filter(i=>i.status==="Report Pending"&&!state.genDone[i.id]).length;
+  const helperN=state.helperCaptureCount||0;
+  const bits=[];
+  if(isRecruiter()){
+    if(pending) bits.push(`<b style="color:var(--red)">${pending} interview needs you</b>`);
+    else bits.push("No pending interview reports");
+    bits.push(`${CANDIDATES.length} candidates`);
+    if(helperN) bits.push(`<b>${helperN}</b> from Naukri helper`);
+  }else{
+    bits.push(`Signed in as <b>${ROLE_NAMES[state.role]}</b>`);
+    bits.push(`${CANDIDATES.length} candidates`);
+    if(helperN) bits.push(`${helperN} Naukri captures`);
+    if(LIVE_API_OK) bits.push("System online");
+  }
+  bar.innerHTML=`<span class="welcomebar" style="border:0;padding:0;width:100%"><b>Hi ${first}</b> — ${bits.join(" · ")}</span>`;
+}
+
+function phasePreviewBanner(id){
+  // Hide roadmap/phase banners — trial UI should feel like a product, not a delivery plan
+  return "";
+}
+
+function renderNav(){
+  renderPhaseBar();
+  const groups = NAV[state.role];
+  const iaasPending = INTERVIEWS.filter(i=>i.status==="Report Pending"&&!state.genDone[i.id]).length;
+  const renewals = CLIENTS.filter(c=>daysTo(c.renewal)<=30).length;
+  $("#nav").innerHTML = groups.map(([g,items])=>`<div class="grp">${g}</div>`+items.map(([id,label])=>{
+    let bdg="";
+    if(id==="iaas"&&iaasPending)bdg=`<span class="bdg">${iaasPending}</span>`;
+    if(id==="clients"&&renewals)bdg=`<span class="bdg">${renewals}</span>`;
+    if(id==="sourcing"&&(state.helperCaptureCount||0)>0)bdg=`<span class="bdg">${state.helperCaptureCount}</span>`;
+    return `<button class="nitem ${state.view===id?"on":""}" data-v="${id}">${IC[id]||""}${label}${bdg}</button>`;
+  }).join("")).join("");
+  $("#nav").querySelectorAll(".nitem").forEach(b=>b.onclick=()=>goToView(b.dataset.v));
+}
+
+function render(){
+  document.body.classList.toggle("is-recruiter", isRecruiter());
+  renderNav();
+  $("#title").textContent = (isRecruiter()&&RECRUITER_TITLES[state.view])?RECRUITER_TITLES[state.view]:(TITLES[state.view]||state.view);
+  $("#crumb").textContent = "";
+  $("#avatar").textContent = ROLE_NAMES[state.role][0];
+  const subs=isRecruiter()?RECRUITER_SUBS:{dash:"Overview",talent:"Candidate database",sourcing:"Naukri helper captures",iaas:"Interview pipeline",clients:"Accounts",leads:"Website enquiries",revenue:"Invoices & MRR",team:"Live team",audit:"Activity audit",workspace:"Messages & tasks",activity:"Outreach log",analytics:"Firm analytics",settings:"Integrations"};
+  $("#subtitle").textContent = subs[state.view]||"";
+  const V={dash:vDash,talent:vTalent,sourcing:vSourcing,iaas:vIaas,clients:vClients,leads:vLeads,revenue:vRevenue,team:vTeam,audit:vAudit,activity:vActivity,analytics:vAnalytics,workspace:vWorkspace,settings:vSettings};
+  const viewFn=V[state.view]||vDash;
+  try{
+    $("#content").innerHTML = viewFn();
+  }catch(err){
+    console.error("View render failed", state.view, err);
+    $("#content").innerHTML = `<div class="card"><div class="bd"><b>This screen hit an error.</b><p style="margin-top:8px;color:var(--muted);font-size:13px">${String(err.message||err)}</p><button type="button" class="btn pri sm" data-go="dash" style="margin-top:10px">Back to Home</button></div></div>`;
+  }
+  try{ bindView(); }catch(err){ console.error("bindView failed", err); toast("Some buttons failed to wire — refresh if needed"); }
+  try{ renderTaskDock(); }catch(_){}
+  try{ updateHeaderBadges(); }catch(_){}
+  animateIn();
+  $("#content").scrollTop=0;
+}
+
+/* ══════════════════ VIEWS ══════════════════ */
+function alertsBlock(){
+  const rows=[];
+  CLIENTS.filter(c=>daysTo(c.renewal)<=30).sort((a,b)=>daysTo(a.renewal)-daysTo(b.renewal)).forEach(c=>{
+    rows.push(`<div class="alertrow red"><span class="dot"></span><div><b>${c.name}</b> retainer renews in <b>${daysTo(c.renewal)} days</b> (${new Date(c.renewal).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}). Owner: ${c.owner}.</div></div>`);
+  });
+  CLIENTS.filter(c=>c.churn).forEach(c=>{
+    rows.push(`<div class="alertrow amber"><span class="dot"></span><div><b>Churn signal — ${c.name}:</b> ${c.churn}. Proactive outreach recommended.</div></div>`);
+  });
+  const trigoShare=Math.round(240000/630000*100);
+  rows.push(`<div class="alertrow blue"><span class="dot"></span><div><b>Revenue concentration:</b> Trigo Health is <b>${trigoShare}%</b> of MRR (threshold 30%). Diversification flag active.</div></div>`);
+  return rows.join("");
+}
+
+function vDash(){
+  const r=state.role;
+  const pendingIv=INTERVIEWS.filter(i=>i.status==="Report Pending"&&!state.genDone[i.id]).length;
+  if(r==="recruiter"){
+    const mine=INTERVIEWS.filter(i=>i.interviewer==="Arjun M."||i.status==="Report Pending").filter(i=>!state.genDone[i.id]&&i.status!=="Delivered").slice(0,5);
+    const myTasks=TASKS.filter(t=>t.assignee==="Arjun M.").slice(0,4);
+    const helperN=state.helperCaptureCount||RESDEX_QUEUE.length;
+    return `
+    <div class="kpis">
+      <div class="kpi click" data-go="iaas"><div class="l">Interviews needing you</div><div class="v">${pendingIv}</div><div class="d">${pendingIv?"Open Interviews":"All clear"}</div></div>
+      <div class="kpi click" data-go="sourcing"><div class="l">From Naukri helper</div><div class="v">${helperN}</div><div class="d">Save to Candidates</div></div>
+      <div class="kpi click" data-go="talent"><div class="l">Candidates</div><div class="v">${CANDIDATES.length}</div><div class="d">Open database</div></div>
+      <div class="kpi click" data-go="workspace"><div class="l">My tasks</div><div class="v">${myTasks.length}</div><div class="d">Messages & tasks</div></div>
+    </div>
+    <div class="grid32">
+      <div class="card"><div class="hd"><h3>Your interviews</h3><span class="sub">Click a row to continue</span></div>
+      <table><thead><tr><th>When</th><th>Candidate</th><th>Client</th><th>Status</th><th></th></tr></thead><tbody>
+      ${mine.length?mine.map(i=>`<tr class="click" data-iv="${i.id}"><td>${i.date}</td><td><b>${i.candidate}</b><br><span style="color:var(--muted);font-size:11px">${i.role}</span></td><td>${i.client}</td><td>${statusPill(state.genDone[i.id]?"Delivered":i.status)}</td><td><button class="btn pri sm" data-iv="${i.id}">${i.status==="Report Pending"?"Continue":"Open"}</button></td></tr>`).join(""):`<tr><td colspan="5" style="color:var(--muted);font-size:12px;padding:16px">No interviews assigned right now.</td></tr>`}
+      </tbody></table></div>
+      <div class="card"><div class="hd"><h3>Do next</h3></div><div class="bd" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn pri" data-go="sourcing">Find on Naukri</button>
+        <button class="btn gho" data-go="talent">Upload / open candidates</button>
+        <button class="btn gho" data-go="activity">Log a call or WhatsApp</button>
+        <button class="btn gho" data-go="workspace">Open messages</button>
+        ${helperN?`<p style="font-size:12px;color:var(--muted);margin:4px 0 0"><b>${helperN}</b> profile(s) waiting from the Chrome helper.</p>`:""}
+        ${myTasks.length?`<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:10px"><b style="font-size:12px">Tasks</b>${myTasks.map(t=>`<div style="font-size:12px;padding:6px 0;border-bottom:1px solid var(--line)">${t.title}<br><span style="color:var(--muted)">Due ${t.due}</span></div>`).join("")}</div>`:""}
+      </div></div>
+    </div>`;
+  }
+  const delivered=INTERVIEWS.filter(i=>state.genDone[i.id]||i.status==="Delivered").length;
+  if(r==="admin"||r==="manager"){
+    const atsSynced=ATS_CONNECTORS.filter(a=>a.status==="connected").reduce((s,a)=>s+a.pushed+a.pulled,0);
+    const signPending=pendingSignOuts();
+    return `
+    ${signPending.length?`<div class="card" style="margin-bottom:12px;border-left:3px solid var(--amber)"><div class="hd"><h3>Sign-out reviews pending</h3></div><div class="bd">${signPending.map(s=>`<div class="signpending"><div><b>${s.user}</b> · ${s.date}<br><span style="color:var(--muted)">${s.autoSummary}</span></div><button class="btn pri sm" data-review-sign="${s.id}">Review</button></div>`).join("")}</div></div>`:""}
+    <div class="kpis">
+      <div class="kpi"><div class="l">Candidates</div><div class="v">${CANDIDATES.length}</div></div>
+      <div class="kpi"><div class="l">Interviews delivered</div><div class="v">${delivered}</div></div>
+      <div class="kpi"><div class="l">ATS sync events</div><div class="v">${atsSynced}</div></div>
+      <div class="kpi"><div class="l">Pending reports</div><div class="v">${pendingIv}</div></div>
+    </div>
+    <div class="grid32">
+      <div class="card"><div class="hd"><h3>Alerts</h3></div><div class="bd">${alertsBlock()}</div></div>
+      <div class="card"><div class="hd"><h3>Quick links</h3></div><div class="bd" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn pri" data-go="sourcing">Find on Naukri</button>
+        <button class="btn gho" data-go="talent">Candidates</button>
+        <button class="btn gho" data-go="iaas">Interviews</button>
+        <button class="btn gho" data-go="clients">Clients</button>
+        <button class="btn gho" data-go="analytics">Analytics</button>
+      </div></div>
+    </div>`;
+  }
+  const renewals=CLIENTS.filter(c=>daysTo(c.renewal)<=30);
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">MRR</div><div class="v">${fmtL(REVENUE.mrr)}</div></div>
+    <div class="kpi"><div class="l">Active clients</div><div class="v">${CLIENTS.length}</div><div class="d">${renewals.length} renewals soon</div></div>
+    <div class="kpi"><div class="l">Open leads</div><div class="v">${LEADS.length}</div></div>
+    <div class="kpi"><div class="l">Interviews (mo)</div><div class="v">31</div></div>
+  </div>
+  <div class="grid32">
+    <div class="card"><div class="hd"><h3>Attention needed</h3></div><div class="bd">${alertsBlock()}</div></div>
+    <div class="card"><div class="hd"><h3>Go to</h3></div><div class="bd" style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn pri" data-go="leads">Leads</button>
+      <button class="btn gho" data-go="clients">Clients</button>
+      <button class="btn gho" data-go="revenue">Revenue</button>
+    </div></div>
+  </div>`;
+}
+
+function moduleMapBlock(){ return ""; }
+
+function vTalent(){
+  const tab=state.talentTab||"all";
+  const tabs=[["all","All",CANDIDATES.length],["staff","Staff Aug",CANDIDATES.filter(c=>c.service==="Staff Aug").length],["ta","Talent Acq",CANDIDATES.filter(c=>c.service==="Talent Acq").length],["iaas","IaaS",CANDIDATES.filter(c=>c.service==="IaaS").length]];
+  const filtered=tab==="all"?CANDIDATES:CANDIDATES.filter(c=>c.service===(tab==="staff"?"Staff Aug":tab==="ta"?"Talent Acq":"IaaS"));
+  return `
+  <div class="card"><div class="tabs">${tabs.map(([id,l,n])=>`<button type="button" class="tab ${tab===id?"on":""}" data-tab="${id}">${l} <span style="color:var(--faint)">(${n})</span></button>`).join("")}</div>
+  <div style="padding:12px 16px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
+    <label class="uploadzone" id="uploadZone" for="resumeFile" style="flex:1;min-width:220px;display:block;cursor:pointer">
+      <div class="ico">📄</div><b>Drop or click to upload resume(s)</b><span>PDF preferred · NestOS fills name, skills, experience</span>
+      <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,application/pdf" multiple style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"/>
+    </label>
+    <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px">
+      <button type="button" class="btn pri sm" id="addCandidateBtn">${GLYPH.plus} Add candidate manually</button>
+      <button type="button" class="btn gho sm" id="uploadResumeBtn">Upload resume file(s)</button>
+      <div style="font-size:11px;color:var(--faint)">${CANDIDATES.filter(c=>c.resume).length} of ${CANDIDATES.length} have a resume on file</div>
+    </div>
+  </div>
+  ${tab==="staff"?`<div style="padding:0 16px 12px"><table><thead><tr><th>Candidate</th><th>Client</th><th>Role</th><th>Since</th><th>Util</th><th>Status</th></tr></thead><tbody>
+  ${STAFF_AUG.map(s=>`<tr><td><b>${s.candidate}</b></td><td>${s.client}</td><td>${s.role}</td><td>${s.since}</td>
+  <td>${s.util?`<b class="num">${s.util}%</b>`:"—"}</td>
+  <td><span class="pill ${s.status==="Deployed"?"mint":"blue"}">${s.status}</span></td></tr>`).join("")}
+  </tbody></table></div>`:""}
+  ${tab==="ta"?`<div style="padding:0 16px 12px"><table><thead><tr><th>Search</th><th>Client</th><th>Stage</th><th class="num">Cands</th><th class="num">Fee</th><th>Owner</th></tr></thead><tbody>
+  ${TA_SEARCHES.map(s=>`<tr><td><b>${s.role}</b></td><td>${s.client}</td><td>${stagePill(s.stage)}</td><td class="num">${s.candidates}</td><td class="num">${s.fee}</td><td>${s.owner}</td></tr>`).join("")}
+  </tbody></table></div>`:""}
+  <table style="margin-top:4px"><thead><tr><th>Candidate</th><th>Resume</th><th>Skills</th><th>Exp / CTC</th><th>Source</th><th>Service</th><th>Stage</th><th></th></tr></thead><tbody>
+  ${filtered.map(c=>`<tr class="click" data-cand="${c.id}"><td><b>${c.name}</b>${c.live?` <span class="pill mint">Live</span>`:""}<br><span style="color:var(--muted);font-size:11.5px">${c.role} · ${c.loc}</span></td>
+  <td>${c.resume?`<span class="resbadge has">📄 ${c.resume}</span>`:`<span class="resbadge">No file</span>`}</td>
+  <td>${asSkills(c.skills).slice(0,3).map(s=>`<span class="tag">${s}</span>`).join("")||"—"}</td>
+  <td class="num">${c.exp}<br><span style="color:var(--muted);font-size:11.5px">${c.ctc}</span></td>
+  <td><span class="tag">${c.source||"—"}</span></td>
+  <td><span class="pill ${c.service==="IaaS"?"navy":c.service==="Staff Aug"?"blue":"grey"}">${c.service}</span></td>
+  <td>${stagePill(c.stage)}</td>
+  <td><button class="btn gho sm" data-share="${c.id}" onclick="event.stopPropagation()">Share</button></td></tr>`).join("")}
+  </tbody></table></div>
+  <div class="card" style="margin-top:12px"><div class="hd"><h3>Match to open job</h3><span class="sub">Pick a requirement — ranked fits below</span></div><div class="bd">
+    <div class="field"><label>Open requirement</label>
+      <select id="reqSel" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:#fff">
+      ${REQUIREMENTS.map(r=>`<option value="${r.id}">${r.label}</option>`).join("")}
+      </select></div>
+    <div id="matchList"></div>
+  </div></div>`;
+}
+
+function vSourcing(){
+  const helperOn = true; // extension is integrated — always show live capture queue
+  const fc = RESDEX_FOLDER_COUNTS.folders || {};
+  const totalShown = RESDEX_QUEUE.length;
+  const folderNames = ["Shortlist","Personal","Accessed CVs","Emailed","All"];
+  const folders = folderNames.map(id=>({
+    id,
+    label: id==="Accessed CVs"?"Viewed on Naukri":id==="All"?"Everything captured":id,
+    count: id==="All" ? totalShown : (fc[id]||0)
+  }));
+  const folder = state.resdexFolder || "Shortlist";
+  const queue = RESDEX_QUEUE.filter(q=>folder==="All"||q.folder===folder);
+  const qVal = (state.resdexQuery || "").replace(/"/g,"&quot;");
+  const locVal = (state.resdexLoc || "").replace(/"/g,"&quot;");
+  const loading = RESDEX_LOADING;
+  const nHelper = state.helperCaptureCount || RESDEX_QUEUE.length;
+
+  return `
+  <div class="rdx-wrap">
+    <p class="rdx-explain">Profiles from the Chrome helper land here. Open a folder, then <b>Save</b> to add them to Candidates.</p>
+
+    <div class="rdx-naukri-bar">
+      <div>
+        <b>${nHelper?`${nHelper} waiting to save`:"Waiting for captures"}</b>
+        <span>Auto-refreshes every 4s · use Send to NestOS on Naukri</span>
+      </div>
+      <div class="rdx-naukri-actions">
+        <a class="btn gho sm" href="/extension-guide" target="_blank" rel="noopener">Install guide</a>
+        <a class="btn pri sm" href="/downloads/nestos-naukri-helper.zip" download>Download extension</a>
+        <a class="btn gho sm" href="/extension-demo" target="_blank" rel="noopener">Test capture page</a>
+        <a class="btn gho sm" id="openNaukriLogin" href="https://www.naukri.com/recruit/login" target="_blank" rel="noopener">Open Naukri</a>
+        <button type="button" class="btn pri sm" id="pullNaukriShortlist">Refresh now</button>
+        ${queue.length?`<button type="button" class="btn pri sm" id="saveAllResdex">Save all (${queue.length})</button>`:""}
+      </div>
+    </div>
+
+    <div class="rdx-helper on">
+      ${nHelper
+        ? `<b>${nHelper} ready to save.</b> List updates when the helper sends more.`
+        : `<b>No captures yet.</b> On Naukri (or the <a href="/extension-demo" target="_blank">test page</a>), click <b>Send to NestOS</b>.`}
+    </div>
+
+    <div class="rdx-search">
+      <div>
+        <label for="rdxKw">Filter captured people</label>
+        <input id="rdxKw" placeholder="e.g. React, Java" value="${qVal}"/>
+      </div>
+      <div>
+        <label for="rdxLoc">City</label>
+        <input id="rdxLoc" placeholder="e.g. Bengaluru" value="${locVal}"/>
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button class="btn gho" id="clearResdexSearch" type="button" style="width:100%">Clear</button>
+      </div>
+      <div class="go">
+        <label>&nbsp;</label>
+        <button class="btn pri" id="runResdexSearch" type="button" style="width:100%">Filter</button>
+      </div>
+    </div>
+
+    <div class="rdx-results">
+      <div class="hd">
+        <h3>${loading?"Syncing from NestOS…":`${queue.length} from extension`}${folder!=="All"?` · ${folder}`:""}</h3>
+        <span class="sub" style="margin-left:auto">Chrome helper · ${totalShown} in queue</span>
+      </div>
+      <div class="foldergrid" style="padding:12px 16px 0;margin:0">
+        ${folders.map(f=>`<button type="button" class="foldertile ${folder===f.id?"on":""}" data-folder="${f.id}"><span class="cnt">${f.count}</span>${f.label}</button>`).join("")}
+      </div>
+      <div id="importQueue" style="padding:8px 0 4px">
+        ${loading?`<div class="rdx-empty">Fetching extension captures from NestOS…</div>`:
+          !RESDEX_QUEUE.length?`<div class="rdx-empty">
+            <b>NestOS has no helper captures yet.</b><br>
+            On the <a href="/extension-demo" target="_blank">test page</a> or Naukri, use the NestOS panel → <b>Send to NestOS</b>. Stay on this screen — new sends appear automatically.
+          </div>`:
+          queue.length?queue.map(q=>`
+          <div class="importrow">
+            <div>
+              <div class="nm">${q.name}</div>
+              <div class="meta">${q.role} · ${q.exp||"—"} · ${q.ctc||"—"} · ${q.loc||"—"} · <span class="tag">Extension · ${q.folder}</span>${q.freshness?` · ${q.freshness}`:""}</div>
+            </div>
+            <div class="actions"><button class="btn pri sm" data-import-id="${q.id}">Save to NestOS</button></div>
+          </div>`).join("")
+          :`<div class="rdx-empty">No people in “${folder}”. Try <b>Shortlist</b> or <b>Everything captured</b>.</div>`}
+      </div>
+    </div>
+
+    </div>`;
+}
+
+function vIaas(){
+  const cols=[["Requested","New"],["Assigned","Assigned"],["Scheduled","Scheduled"],["Report Pending","Needs notes"],["Delivered","Delivered"]];
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">This month</div><div class="v">31</div></div>
+    <div class="kpi"><div class="l">Avg report time</div><div class="v">1m 53s</div></div>
+    <div class="kpi"><div class="l">Pending reports</div><div class="v">${INTERVIEWS.filter(i=>i.status==="Report Pending"&&!state.genDone[i.id]).length}</div></div>
+    <div class="kpi"><div class="l">On-time</div><div class="v">100%</div></div>
+  </div>
+  <div class="card"><div class="hd"><h3>Interview pipeline</h3><span class="sub">Click a card to open</span><div class="sp"></div>
+    <button class="btn pri sm" id="newIaasReq">${GLYPH.plus} New request</button>
+  </div>
+  <div class="kanban" style="padding:12px">
+  ${cols.map(([col,label])=>{
+    const cards=INTERVIEWS.filter(i=>(state.genDone[i.id]?"Delivered":i.status)===col);
+    return `<div class="kcol"><div class="kh">${label}<span>${cards.length}</span></div>
+    ${cards.map(i=>`<div class="kcard" data-iv="${i.id}">
+      <div class="t">${i.candidate}</div><div class="s">${i.role}</div>
+      <div class="m"><span class="tag">${i.client}</span>${i.interviewer!=="—"?`<span class="tag">${i.interviewer}</span>`:""}</div>
+      <div class="s" style="margin-top:7px;font-size:10.5px;color:var(--faint)">${i.date}</div>
+      <div style="margin-top:8px">${col==="Requested"?`<button class="btn gho sm" data-act="assign" data-iv="${i.id}">Assign</button>`:col==="Assigned"?`<button class="btn gho sm" data-act="schedule" data-iv="${i.id}">Schedule</button>`:col==="Scheduled"||col==="Report Pending"?`<button class="btn pri sm" data-iv="${i.id}">${col==="Report Pending"?"Continue":"Start"}</button>`:""}</div>
+    </div>`).join("")||`<div style="font-size:11.5px;color:var(--faint);padding:8px 6px">Empty</div>`}</div>`;
+  }).join("")}
+  </div></div>`;
+}
+
+function vClients(){
+  const renewals=CLIENTS.filter(c=>daysTo(c.renewal)<=30).sort((a,b)=>daysTo(a.renewal)-daysTo(b.renewal));
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">Total clients</div><div class="v">${CLIENTS.length}</div><div class="d">across all service lines</div></div>
+    <div class="kpi"><div class="l">Recurring MRR</div><div class="v">${fmtL(CLIENTS.reduce((s,c)=>s+(c.mrr||0),0))}</div><div class="d up">from retainers</div></div>
+    <div class="kpi"><div class="l">Renewals ≤30d</div><div class="v">${renewals.length}</div><div class="d ${renewals.length?"bad":"up"}">${renewals.length?"action required":"none pending"}</div></div>
+    <div class="kpi"><div class="l">Churn signals</div><div class="v">${CLIENTS.filter(c=>c.churn).length}</div><div class="d warn">AI-monitored</div></div>
+  </div>
+  <div class="grid32">
+    <div class="card"><div class="hd"><h3>Client accounts</h3><span class="sub">Full CRM · click any row for account detail</span><div class="sp"></div><button class="btn gho sm" id="addClientBtn">${GLYPH.plus} Add client</button></div>
+  <table><thead><tr><th>Client</th><th>Services</th><th class="num">Revenue</th><th>Renewal</th><th>Health</th><th>Owner · Last contact</th></tr></thead><tbody>
+  ${CLIENTS.map(c=>{
+    const d=daysTo(c.renewal);
+    const rn = d<=30?`<span class="pill red">${d} days</span>`:new Date(c.renewal).toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+    return `<tr class="click" data-cl="${c.id}"><td><b>${c.name}</b><br><span style="color:var(--muted);font-size:11.5px">${c.industry}</span>${c.churn?`<br><span class="pill amber" style="margin-top:4px">churn signal</span>`:""}</td>
+    <td>${c.services.map(s=>`<span class="tag">${s}</span>`).join("")}</td>
+    <td class="num">${c.mrr?fmtL(c.mrr)+"<span style='color:var(--muted);font-size:11px'>/mo</span>":c.fee}</td>
+    <td>${rn}</td>
+    <td><span class="healthbar"><i style="width:${c.health}%;background:${healthColor(c.health)}"></i></span><b class="num" style="font-size:12px">${c.health}</b></td>
+    <td style="font-size:12px">${c.owner}<br><span style="color:var(--muted);font-size:11.5px">${c.last}</span></td></tr>`;
+  }).join("")}
+  </tbody></table></div>
+    <div>
+      <div class="card"><div class="hd"><h3>Renewal calendar</h3><span class="sub">Next 90 days</span></div><div class="bd">
+        ${CLIENTS.sort((a,b)=>daysTo(a.renewal)-daysTo(b.renewal)).slice(0,5).map(c=>`<div class="projrow" style="padding:6px 0;border-bottom:1px solid var(--line)"><span>${c.name}</span><b style="color:${daysTo(c.renewal)<=30?"var(--red)":"inherit"}">${new Date(c.renewal).toLocaleDateString("en-IN",{day:"numeric",month:"short"})} · ${daysTo(c.renewal)}d</b></div>`).join("")}
+      </div></div>
+      <div class="card"><div class="hd"><h3>Attention needed</h3></div><div class="bd">${alertsBlock()}</div></div>
+    </div>
+  </div>
+`;
+}
+
+function vLeads(){
+  return `
+
+  <div class="kpis">
+    <div class="kpi"><div class="l">Open enquiries</div><div class="v">${LEADS.length}</div><div class="d">people who reached out</div></div>
+    <div class="kpi"><div class="l">Call today</div><div class="v">${LEADS.filter(l=>l.score==="Hot").length}</div><div class="d bad">hot — sales priority</div></div>
+    <div class="kpi"><div class="l">Possible revenue</div><div class="v">₹4.4L/mo</div><div class="d up">if top 2 convert</div></div>
+    <div class="kpi"><div class="l">Main source</div><div class="v">Website</div><div class="d">chat assistant</div></div>
+  </div>
+  <div class="card"><div class="hd"><h3>Website & inbound enquiries</h3><span class="sub">Convert to client when ready</span></div>
+  <table><thead><tr><th>Person / company</th><th>What they want</th><th>How they found us</th><th>Priority</th><th>Received</th><th>Status</th><th></th></tr></thead><tbody>
+  ${LEADS.map((l,i)=>`<tr><td><b>${l.name}</b><br><span style="color:var(--muted);font-size:11.5px">${l.company||"No company name"}</span></td>
+  <td>${l.intent}</td><td>${l.source}</td>
+  <td><span class="pill ${l.score==="Hot"?"red":l.score==="Warm"?"amber":"grey"}">${l.score}</span></td>
+  <td>${l.date}</td><td><span class="pill ${l.status==="New"?"blue":"grey"}">${l.status}</span></td>
+  <td>${l.status!=="Converted"?`<button class="btn gho sm" data-convert="${i}">Add as client</button>`:`<span class="pill mint">Now a client</span>`}</td></tr>`).join("")}
+  </tbody></table></div>`;
+}
+
+function vRevenue(){
+  const maxT=Math.max(...REVENUE.trend.map(t=>t[1]));
+  return `
+  <div class="kpis">
+    <div class="kpi">${spark([4.6,4.9,5.3,5.6,6.0,6.3])}<div class="l">MRR</div><div class="v">${fmtL(REVENUE.mrr)}</div><div class="d up">↑ 5.0% vs June</div></div>
+    <div class="kpi"><div class="l">ARR run-rate</div><div class="v">${fmtL(REVENUE.arr)}</div><div class="d">from recurring retainers</div></div>
+    <div class="kpi"><div class="l">Project revenue (Q)</div><div class="v">${fmtL(REVENUE.projectQ)}</div><div class="d">Custom software dev</div></div>
+    <div class="kpi"><div class="l">Placement fees (Q)</div><div class="v">${fmtL(REVENUE.placementQ)}</div><div class="d warn">2 searches late-stage</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="hd"><h3>Revenue by service line</h3></div><div class="bd">
+      ${REVENUE.lines.map(([l,v])=>`<div class="bar"><span class="bl">${l}</span><span class="bt2"><i style="width:${Math.round(v/920000*100)}%"></i></span><span class="bv">${fmtL(v)}</span></div>`).join("")}
+      <div style="margin-top:14px;border-top:1px solid var(--line-2);padding-top:13px">
+      ${REVENUE.split.map(([l,p,c])=>`<div class="bar"><span class="bl">${l}</span><span class="bt2"><i style="width:${p}%;background:${c}"></i></span><span class="bv">${p}%</span></div>`).join("")}
+      </div>
+    </div></div>
+    <div class="card"><div class="hd"><h3>MRR trend</h3><span class="sub">₹ lakh, last 6 months</span></div><div class="bd">
+      <div class="trend">${REVENUE.trend.map(([m,v],i)=>`<div class="tb ${i===REVENUE.trend.length-1?"cur":""}"><i style="height:${Math.round(v/maxT*100)}%"></i><span>${m}</span></div>`).join("")}</div>
+      <div class="alertrow blue" style="margin-top:15px"><span class="dot"></span><div><b>Concentration alert:</b> Trigo Health = 38% of MRR (threshold 30%). Two open leads would bring this under threshold if converted.</div></div>
+    </div></div>
+  </div>
+  <div class="card"><div class="hd"><h3>Revenue by client</h3><span class="sub">Per-account MRR · concentration alert at 30%</span></div>
+  <table><thead><tr><th>Client</th><th>Services</th><th class="num">MRR</th><th class="num">Share</th><th>Health</th></tr></thead><tbody>
+  ${CLIENTS.filter(c=>c.mrr).sort((a,b)=>b.mrr-a.mrr).map(c=>{
+    const pct=Math.round(c.mrr/REVENUE.mrr*100);
+    return `<tr class="click" data-cl="${c.id}"><td><b>${c.name}</b></td><td style="font-size:11.5px">${c.services.join(" · ")}</td><td class="num">${fmtL(c.mrr)}/mo</td><td class="num"><b style="color:${pct>30?"var(--red)":"inherit"}">${pct}%</b></td><td>${c.health}</td></tr>`;
+  }).join("")}
+  </tbody></table></div>
+  <div class="card"><div class="hd"><h3>Live invoicing (IaaS · Staff Aug · Talent Acq)</h3><span class="sub">${LIVE_API_OK?"Connected to NestOS API":"API offline"} · GST-aware drafts</span></div>
+  <div class="bd">
+    <button class="btn pri sm" id="createLiveInvoice" style="margin-bottom:12px">${GLYPH.plus} Create test IaaS invoice</button>
+    ${LIVE_INVOICES.length?`<table><thead><tr><th>Invoice</th><th>Client</th><th>Line</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>
+    ${LIVE_INVOICES.map(inv=>{
+      const total=Math.round(inv.amount*(1+inv.gst_percent/100));
+      return `<tr><td><b>${inv.invoice_no}</b></td><td>${inv.client_name}<br><span style="color:var(--muted);font-size:11px">${inv.description}</span></td><td>${inv.service_line}</td><td class="num">₹${total.toLocaleString("en-IN")}</td><td><span class="pill ${inv.status==="Paid"?"mint":inv.status==="Overdue"?"red":"amber"}">${inv.status}</span></td></tr>`;
+    }).join("")}
+    </tbody></table>`:`<div style="font-size:12px;color:var(--muted)">No live invoices yet — create one to show Mani.</div>`}
+  </div></div>
+  <div class="card"><div class="hd"><h3>AI monthly narrative</h3><span class="sub">Plain-English financial intelligence, written from the live numbers</span></div><div class="bd">
+    <div class="narrative"><div class="nl">${GLYPH.nl} July 2026, to date</div>
+    Recurring revenue is healthy and compounding: MRR grew 5.0% on the back of Kredmint's IaaS expansion, and Staff Augmentation remains the largest, most stable line at ₹4.25L/month. The risk picture has two items: Aurelia Systems' engagement has fallen 40% in three weeks with its renewal 18 days out — treat the renewal call as a save call — and revenue concentration in Trigo Health (38%) remains above threshold. Placement fees are quiet this month but two NovaCart searches are late-stage; expect conversion within the quarter. Recommended focus: close the Finlytica IaaS lead (+₹2.2L MRR potential) and complete both renewal calls before the 19th.</div>
+  </div></div>`;
+}
+
+
+function buildPerformanceReport(member, monthLabel){
+  const m=member.monthly;
+  return `NESTOS — MONTHLY PERFORMANCE REPORT
+HummingBrains Technologies Pvt Ltd
+Confidential
+
+Employee: ${member.name}
+Role: ${member.role}
+Office: ${member.office}
+Report period: ${monthLabel}
+Generated: ${new Date().toLocaleString("en-IN")}
+
+── SUMMARY ──
+Performance score: ${m.score}/100
+Average utilization: ${m.utilAvg}%
+Hours logged: ${m.hoursLogged}h
+
+── DELIVERY METRICS ──
+Interviews conducted: ${m.interviews}
+Reports delivered: ${m.reports}
+Placements: ${m.placements}
+Client calls: ${m.clientCalls}
+Requirements handled: ${m.requirements}
+Validation flags: ${m.validationFlags}
+
+── IaaS (if applicable) ──
+Avg report TAT: ${member.avgTat}
+
+── AI NARRATIVE ──
+${member.name} maintained ${m.utilAvg >= 80 ? "strong" : "adequate"} utilization this month. ${m.interviews ? `Delivered ${m.reports} interview reports with consistent quality.` : "Focused on client-facing and requirement work."} ${m.validationFlags ? `Note: ${m.validationFlags} activity validation flag(s) require review.` : "No validation flags — verified activity only."}
+
+── VERIFIED ACTIVITY POLICY ──
+Scores reflect logged, validated work only. Unlogged work earns zero credit.
+
+Generated by NestOS · Full data export available to admin at any time.
+`;
+}
+
+function downloadEmployeeReport(id){
+  const member=TEAM.find(t=>t.id===id);
+  if(!member)return;
+  const month=REPORT_MONTHS.find(x=>x.id===state.reportMonth)||REPORT_MONTHS[0];
+  const text=buildPerformanceReport(member, month.label);
+  const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`NestOS_Performance_${member.name.replace(/\s/g,"_")}_${month.id}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`Downloaded ${month.label} report for ${member.name}`);
+}
+
+function downloadAllReports(){
+  const month=REPORT_MONTHS.find(x=>x.id===state.reportMonth)||REPORT_MONTHS[0];
+  const combined=TEAM.map(t=>buildPerformanceReport(t,month.label)).join("\n\n"+"═".repeat(60)+"\n\n");
+  const blob=new Blob([combined],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`NestOS_Team_Performance_${month.id}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`Downloaded all ${TEAM.length} performance reports · ${month.label}`);
+}
+
+function vTeam(){
+  const isAdmin=state.role==="admin";
+  return `
+  <div class="livehdr"><span class="live-dot"></span><span style="font-weight:600;font-size:13px">Live employee tracking</span><span style="font-size:11px;color:var(--faint);margin-left:auto">Auto-refreshes every 6 seconds</span></div>
+  <div class="livegrid">${buildLiveCards()}</div>
+
+  ${isAdmin?`
+  <div class="card"><div class="hd"><h3>Monthly performance reports</h3><span class="sub">Admin · download per employee or full team export</span></div>
+    <div class="bd">
+      <div class="repbar">
+        <label style="font-size:11px;font-weight:600;color:var(--faint)">Report month</label>
+        <select id="reportMonth">${REPORT_MONTHS.map(m=>`<option value="${m.id}" ${m.id===state.reportMonth?"selected":""}>${m.label}</option>`).join("")}</select>
+        <button class="btn pri sm" id="dlAllReports">${GLYPH.bolt} Download all reports</button>
+      </div>
+      <table><thead><tr><th>Employee</th><th>Office</th><th class="num">Score</th><th class="num">Utilization</th><th class="num">Hours</th><th></th></tr></thead><tbody>
+      ${TEAM.map(t=>`<tr>
+        <td><b>${t.name}</b><br><span style="color:var(--muted);font-size:11.5px">${t.role}</span></td>
+        <td>${t.office}</td>
+        <td class="num"><b>${t.monthly.score}</b></td>
+        <td class="num">${t.monthly.utilAvg}%</td>
+        <td class="num">${t.monthly.hoursLogged}h</td>
+        <td><button class="btn gho sm" data-dlrep="${t.id}">Download</button></td>
+      </tr>`).join("")}
+      </tbody></table>
+    </div>
+  </div>`:""}
+
+  <div class="grid32" style="margin-top:12px">
+    <div class="card"><div class="hd"><h3>Team overview</h3><span class="sub">Delivery & utilization, this month</span></div>
+    <table><thead><tr><th>Member</th><th>Interviews</th><th>Reports</th><th>Avg TAT</th><th>Utilization</th><th>Status</th></tr></thead><tbody>
+    ${TEAM.map(t=>{
+      const l=state.liveTrack[t.id]||{status:t.status};
+      return `<tr><td><b>${t.name}</b><br><span style="color:var(--muted);font-size:11.5px">${t.role}</span></td>
+    <td class="num">${t.interviews||"—"}</td><td class="num">${t.reports||"—"}</td><td class="num">${t.avgTat}</td>
+    <td><span class="healthbar"><i style="width:${t.util}%;background:${healthColor(t.util)}"></i></span><b class="num" style="font-size:12px">${t.util}%</b></td>
+    <td><span class="statusdot ${l.status}">${STATUS_LABEL[l.status]||l.status}</span></td></tr>`;
+    }).join("")}
+    </tbody></table></div>
+    <div class="card"><div class="hd"><h3>Activity validation</h3><span class="sub">Integrity checks · ConnectOS pattern</span></div><div class="bd">
+      ${VALIDATION.map(v=>`<div class="alertrow amber"><span class="dot"></span><div><b>${v.who}:</b> ${v.what}<br><span style="font-size:11px;color:var(--muted)">Rule: ${v.rule} · ${v.when}</span></div></div>`).join("")}
+      <div style="font-size:11.5px;color:var(--faint);margin-top:6px">Flags require review before counting toward activity scores. Unlogged work earns zero credit.</div>
+    </div></div>
+  </div>`;
+}
+
+function buildAuditRows(){
+  return state.auditLog.map(e=>`<div class="auditrow">
+    <span style="color:var(--muted);font-size:11.5px">${e.ts}</span>
+    <span><b>${e.user}</b> — ${e.action}</span>
+    <span><span class="tag">${e.module}</span></span>
+    <span class="${e.type==="idle"?"flag":""}">${e.type}</span>
+    <span class="${e.ok?"ok":"bad"}">${e.ok?"Compliant":"Flagged"}</span>
+  </div>`).join("");
+}
+
+function buildUtilBar(p){
+  const total=p.active+p.idle+p.meeting+p.focus+p.away||1;
+  const pct=v=>Math.round(v/total*100);
+  return `<span class="utilstack" title="Active ${pct(p.active)}% · Idle ${pct(p.idle)}%"><i class="act" style="width:${pct(p.active)}%"></i><i class="mtg" style="width:${pct(p.meeting)}%"></i><i class="fcs" style="width:${pct(p.focus)}%"></i><i class="idl" style="width:${pct(p.idle+p.away)}%"></i></span>`;
+}
+
+function vAudit(){
+  const totalActive=AUDIT_PROFILES.reduce((s,p)=>s+p.active,0).toFixed(1);
+  const totalIdle=AUDIT_PROFILES.reduce((s,p)=>s+p.idle+p.away,0).toFixed(1);
+  const flags=AUDIT_PROFILES.reduce((s,p)=>s+p.flags,0)+VALIDATION.length;
+  const compliance=Math.round(AUDIT_PROFILES.reduce((s,p)=>s+p.score,0)/AUDIT_PROFILES.length);
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">Verified active time</div><div class="v">${totalActive}h</div><div class="d up">team today · logged & validated</div></div>
+    <div class="kpi"><div class="l">Idle / unverified</div><div class="v">${totalIdle}h</div><div class="d ${totalIdle>2?"warn":""}">does not count toward scores</div></div>
+    <div class="kpi"><div class="l">Compliance score</div><div class="v">${compliance}%</div><div class="d up">enterprise audit standard</div></div>
+    <div class="kpi"><div class="l">Open flags</div><div class="v">${flags}</div><div class="d ${flags?"bad":"up"}">${flags?"requires review":"all clear"}</div></div>
+  </div>
+  <div class="grid32">
+    <div class="card"><div class="hd"><h3>Employee time breakdown</h3><span class="sub">Active · meeting · focus · idle — today</span><div class="sp"></div><button class="btn gho sm" id="exportAudit">Export audit log</button></div>
+    <table><thead><tr><th>Employee</th><th>Time split</th><th class="num">Active</th><th class="num">Idle</th><th class="num">Score</th><th>Flags</th></tr></thead><tbody>
+    ${TEAM.map(t=>{const p=AUDIT_PROFILES.find(x=>x.id===t.id);
+      return `<tr><td><b>${t.name}</b><br><span style="color:var(--muted);font-size:11px">${t.role}</span></td>
+      <td>${buildUtilBar(p)}</td>
+      <td class="num"><b>${p.active}h</b></td>
+      <td class="num" style="color:${p.idle+p.away>0.8?"var(--amber)":"inherit"}">${(p.idle+p.away).toFixed(1)}h</td>
+      <td class="num"><b>${p.score}</b></td>
+      <td>${p.flags?`<span class="pill amber">${p.flags} flag</span>`:`<span class="pill mint">Clear</span>`}</td></tr>`;
+    }).join("")}
+    </tbody></table></div>
+    <div class="card"><div class="hd"><h3>Compliance policies</h3><span class="sub">DPDP · verified activity · immutable trail</span></div><div class="bd policygrid">
+      <div class="policytile"><h5>Verified activity only</h5><p>Unlogged work earns zero credit. Scores reflect validated sessions only — same principle as ConnectOS, enterprise-grade.</p></div>
+      <div class="policytile"><h5>Idle detection</h5><p>Keyboard/mouse inactivity &gt;8 min flagged. Away status requires reason on return for audit trail.</p></div>
+      <div class="policytile"><h5>Immutable audit log</h5><p>Every action timestamped with user, module, duration. Cannot be edited — admin export for compliance review.</p></div>
+      <div class="policytile"><h5>DPDP Act 2023</h5><p>12-month retention · auto-cleanup · full data export on request. Candidate PII access logged.</p></div>
+    </div></div>
+  </div>
+  <div class="card"><div class="hd"><h3>Live audit trail</h3><span class="sub">Immutable · updates in real time</span><div class="sp"></div><span class="live-dot"></span><span style="font-size:11px;color:var(--faint)">Live</span></div>
+  <div id="auditLogLive">
+    <div class="auditrow hd"><span>Time</span><span>Event</span><span>Module</span><span>Type</span><span>Status</span></div>
+    ${buildAuditRows()}
+  </div></div>`;
+}
+
+function vActivity(){
+  const me=currentUserName();
+  const filt=state.activityFilter||"all";
+  let rows=myOutreachLogs();
+  if(filt!=="all")rows=rows.filter(o=>o.type===filt);
+  const todayCount=state.outreachLog.filter(o=>o.user===me&&o.ts.startsWith("Today")).length;
+  return `
+  <div class="kpis">
+    <div class="kpi"><div class="l">Logged today</div><div class="v">${todayCount}</div><div class="d">${isRecruiter()?"your verified outreach":"team-wide today"}</div></div>
+    <div class="kpi"><div class="l">Calls (week)</div><div class="v">${ANALYTICS.outreach.calls}</div><div class="d up">↑ vs last week</div></div>
+    <div class="kpi"><div class="l">Messages</div><div class="v">${ANALYTICS.outreach.messages}</div><div class="d">WhatsApp + internal</div></div>
+    <div class="kpi"><div class="l">Incomplete</div><div class="v">${state.outreachLog.filter(o=>!o.verified).length}</div><div class="d warn">needs context</div></div>
+  </div>
+  <div class="logbtns">
+    <button class="logbtn" data-logtype="Call"><span class="em">📞</span> Log call</button>
+    <button class="logbtn" data-logtype="WhatsApp"><span class="em">💬</span> Log WhatsApp</button>
+    <button class="logbtn" data-logtype="Email"><span class="em">✉️</span> Log email</button>
+    <button class="logbtn" data-logtype="LinkedIn"><span class="em">🔗</span> Log LinkedIn outreach</button>
+    ${canAssignTasks()?`<button class="btn gho sm" style="margin-left:auto" data-go="analytics">Open analytics</button>`:""}
+  </div>
+  <div class="card"><div class="hd"><h3>Activity log</h3>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${["all","Call","WhatsApp","Email","LinkedIn"].map(f=>`<button class="btn ${filt===f?"pri":"gho"} sm" data-actfilt="${f}">${f==="all"?"All":f}</button>`).join("")}
+    </div></div>
+  <div class="bd" style="padding:0">
+    <div class="outrow hd"><span>When</span><span>Detail</span><span>Type</span><span>Duration</span><span>Status</span></div>
+    ${rows.length?buildOutreachRows(rows):`<div style="padding:20px;color:var(--muted);font-size:12px">No activity logged yet. Use the buttons above or End day to capture work.</div>`}
+  </div></div>`;
+}
+
+function vAnalytics(){
+  const tab=state.analyticsTab||"pipeline";
+  const tabs=isRecruiter()?[["pipeline","Pipeline"],["sourcing","Sourcing"],["outreach","Outreach"],["iaas","Interviews"]]:[["pipeline","Pipeline"],["sourcing","Sourcing"],["outreach","Outreach"],["team","Team"],["iaas","IaaS"],["leads","Leads"]];
+  const intro="";
+  let body="";
+  if(tab==="pipeline"){
+    body=`<div class="grid2"><div class="card"><div class="hd"><h3>Candidate pipeline</h3><span class="sub">Talent Hub stages · live</span></div><div class="bd">${renderFunnel(ANALYTICS.pipeline.stages)}</div></div>
+    <div class="card"><div class="hd"><h3>Weekly movement</h3><span class="sub">Sourced → screening → interview</span></div><div class="bd">${renderBarChart(ANALYTICS.pipeline.weekly[2],["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],100)}</div></div></div>`;
+  }else if(tab==="sourcing"){
+    body=`<div class="grid2"><div class="card"><div class="hd"><h3>Sourcing channels</h3></div><div class="bd">${renderFunnel(ANALYTICS.sourcing.channels)}</div></div>
+    <div class="card"><div class="hd"><h3>Resdex efficiency</h3></div><div class="bd">
+      <div class="kpis" style="margin-bottom:0"><div class="kpi"><div class="l">Imports this week</div><div class="v">${ANALYTICS.sourcing.importsWeek}</div></div>
+      <div class="kpi"><div class="l">CV credits saved</div><div class="v">${ANALYTICS.sourcing.creditsSaved}</div><div class="d up">duplicate guard</div></div></div>
+    </div></div></div>`;
+  }else if(tab==="outreach"){
+    body=`<div class="kpis"><div class="kpi"><div class="l">Calls</div><div class="v">${ANALYTICS.outreach.calls}</div></div>
+    <div class="kpi"><div class="l">Messages</div><div class="v">${ANALYTICS.outreach.messages}</div></div>
+    <div class="kpi"><div class="l">Emails</div><div class="v">${ANALYTICS.outreach.emails}</div></div>
+    <div class="kpi"><div class="l">LinkedIn</div><div class="v">${ANALYTICS.outreach.linkedin}</div></div></div>
+    <div class="card"><div class="hd"><h3>Outreach volume — last 7 days</h3></div><div class="bd">${renderBarChart(ANALYTICS.outreach.weekly[0],["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],110)}</div></div>`;
+  }else if(tab==="team"){
+    body=`<div class="grid2"><div class="card"><div class="hd"><h3>Utilization & scores</h3></div><div class="bd">${ANALYTICS.team.scores.map(([n,s])=>`<div class="funnelrow" style="margin-bottom:8px"><span>${n}</span><div class="bar"><i style="width:${s}%"></i></div><b>${s}</b></div>`).join("")}
+    <div style="font-size:11.5px;color:var(--muted);margin-top:10px">Avg utilization ${ANALYTICS.team.utilAvg}% · ${ANALYTICS.team.flags} validation flag(s)</div></div></div>
+    <div class="card"><div class="hd"><h3>Sign-out compliance</h3><span class="sub">End-of-day extra work capture</span></div><div class="bd">
+      ${state.signOutRequests.slice(0,4).map(s=>`<div style="font-size:12px;padding:8px 0;border-bottom:1px solid var(--line)"><b>${s.user}</b> · ${s.date} · <span class="pill ${s.status==="Pending"?"amber":"mint"}">${s.status}</span>${s.extraWork?`<br><span style="color:var(--muted)">${s.extraWork.slice(0,80)}…</span>`:""}</div>`).join("")}
+    </div></div></div>`;
+  }else if(tab==="iaas"){
+    body=`<div class="kpis"><div class="kpi"><div class="l">Interviews (month)</div><div class="v">${ANALYTICS.iaas.volume}</div></div>
+    <div class="kpi"><div class="l">Reports delivered</div><div class="v">${ANALYTICS.iaas.delivered}</div></div>
+    <div class="kpi"><div class="l">Avg report TAT</div><div class="v">${ANALYTICS.iaas.avgTat}</div><div class="d up">AI-assisted</div></div></div>
+    <div class="card"><div class="hd"><h3>IaaS volume trend</h3></div><div class="bd">${renderBarChart(ANALYTICS.iaas.weekly[0],["W1","W2","W3","W4","W5","W6","W7"],100)}</div></div>`;
+  }else{
+    body=`<div class="grid2"><div class="card"><div class="hd"><h3>Lead funnel</h3></div><div class="bd">${renderFunnel(ANALYTICS.leads.funnel)}</div></div>
+    <div class="card"><div class="hd"><h3>Lead KPIs</h3></div><div class="bd"><div class="kpis" style="margin-bottom:0">
+      <div class="kpi"><div class="l">New</div><div class="v">${ANALYTICS.leads.new}</div></div>
+      <div class="kpi"><div class="l">Hot</div><div class="v">${ANALYTICS.leads.hot}</div></div>
+      <div class="kpi"><div class="l">Converted</div><div class="v">${ANALYTICS.leads.converted}</div></div>
+    </div></div></div></div>`;
+  }
+  return `${intro}
+  <div class="anatabs">${tabs.map(([id,l])=>`<button class="anatab ${tab===id?"on":""}" data-anatab="${id}">${l}</button>`).join("")}</div>
+  ${body}
+  `;
+}
+
+function renderMsgBubble(m){
+  const attach=m.attach?`<div class="attach">📄 ${m.attach} · ATS-ready profile</div>`:"";
+  return `<div class="bubble ${m.from}">${m.text}${attach}<div class="meta">${m.from==="them"?m.who+" · ":""}${m.time}</div></div>`;
+}
+
+function vWorkspace(){
+  const peer=state.wsPeer||2;
+  const msgs=MESSAGES[peer]||[];
+  const me=ROLE_NAMES[state.role];
+  const myTasks=TASKS.filter(t=>t.assignee===me||t.assignee.startsWith(me.split(" ")[0]));
+  const allTasks=state.role==="admin"||state.role==="manager"?TASKS:myTasks;
+  const intro="";
+  const kpis=isRecruiter()?"":`
+  <div class="kpis">
+    <div class="kpi"><div class="l">Team members</div><div class="v">${TEAM.length}</div></div>
+    <div class="kpi"><div class="l">Open tasks</div><div class="v">${TASKS.filter(t=>t.status!=="Done").length}</div></div>
+    <div class="kpi"><div class="l">Resumes shared</div><div class="v">18</div></div>
+    <div class="kpi"><div class="l">Unread</div><div class="v">3</div></div>
+  </div>`;
+  return `
+  ${kpis}
+  <div class="wsgrid">
+    <div class="pdir"><div class="phd">Directory</div>
+    ${TEAM.map(t=>`<button class="pitem ${peer===t.id?"on":""}" data-peer="${t.id}">
+      <div class="av">${t.name[0]}${(t.name.split(" ")[1]||"")[0]||""}</div>
+      <div><div class="nm">${t.name}</div><div class="st"><span class="statusdot ${state.liveTrack[t.id]?.status||t.status}">${STATUS_LABEL[state.liveTrack[t.id]?.status||t.status]}</span></div></div>
+    </button>`).join("")}
+    </div>
+    <div class="msgpane"><div class="mhd"><div class="av" style="width:28px;height:28px;border-radius:50%;background:var(--accent-tint);display:grid;place-items:center;font-weight:700;font-size:11px;color:var(--accent)">${TEAM.find(t=>t.id===peer)?.name[0]||"?"}</div><b>${TEAM.find(t=>t.id===peer)?.name||"Select someone"}</b><div class="sp"></div>
+      <button class="btn gho sm" id="shareResumeWs">Share resume</button>
+    </div>
+    <div class="msgbody" id="wsMsgBody">${msgs.map(renderMsgBubble).join("")}</div>
+    <div class="msginput"><input id="wsMsgInput" placeholder="Message ${TEAM.find(t=>t.id===peer)?.name||"team member"}…"/><button class="btn pri sm" id="wsSend">Send</button></div>
+    </div>
+    <div class="taskcol"><div class="thd">Tasks <span class="pill blue">${allTasks.length} open</span></div>
+    ${allTasks.map(t=>`<div class="taskitem"><div class="tt">${t.title}</div><div class="tm">${t.assignee} · due ${t.due} · ${t.module}</div><div class="tp"><span class="pill ${t.priority==="High"?"red":t.priority==="Medium"?"amber":"grey"}">${t.priority}</span><span class="tag">${t.status}</span>${canAssignTasks()&&t.status!=="Done"?`<button class="btn gho sm" data-done-task="${t.id}" style="margin-left:auto">Mark done</button>`:""}</div></div>`).join("")}
+    <div style="padding:10px 12px;border-top:1px solid var(--line)">
+      ${canAssignTasks()?`<button class="btn pri sm" id="newTaskBtn" style="width:100%;justify-content:center">${GLYPH.plus} Assign new task</button>`:`<button class="btn gho sm" id="signOutFromWs" style="width:100%;justify-content:center">End day — log extra work</button>`}
+    </div></div>
+  </div>`;
+}
+
+function vSettings(){
+  return `
+  <div class="grid2">
+    <div class="card"><div class="hd"><h3>Users & roles</h3></div>
+    <table><thead><tr><th>User</th><th>Role</th><th>Access</th></tr></thead><tbody>
+      <tr><td><b>Karthikeyan</b></td><td>Admin</td><td>All modules + revenue + settings</td></tr>
+      <tr><td><b>Priya N.</b></td><td>Manager</td><td>Talent, IaaS, Team, validation</td></tr>
+      <tr><td><b>Arjun M.</b></td><td>Recruiter</td><td>Talent + assigned IaaS only</td></tr>
+      <tr><td><b>Divya R.</b></td><td>Sales</td><td>Clients, leads, revenue (read)</td></tr>
+      <tr><td><b>Sanjay K.</b></td><td>Recruiter</td><td>Talent + assigned IaaS only</td></tr>
+    </tbody></table>
+    <div class="bd" style="border-top:1px solid var(--line)"><button class="btn gho sm">${GLYPH.plus} Invite team member</button><span style="font-size:11.5px;color:var(--faint);margin-left:10px">Onboarding takes two minutes, not two days</span></div>
+    </div>
+    <div>
+      <div class="card"><div class="hd"><h3>Video meetings</h3><span class="sub">Google Meet · Teams · Zoom — OAuth connected</span></div><div class="bd">
+        ${VIDEO_PROVIDERS.map(v=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)">
+          <span style="font-size:20px">${v.id==="meet"?"🟢":v.id==="teams"?"🟦":"🔵"}</span>
+          <div style="flex:1"><b style="font-size:12.5px">${v.name}</b><br><span style="font-size:11px;color:var(--muted)">${v.desc}</span></div>
+          <span class="pill mint">Connected</span>
+        </div>`).join("")}
+        <div class="narrative" style="margin-top:12px"><div class="nl">${GLYPH.nl} Live</div>Auto-generated on IaaS schedule · calendar sync · join time logged in audit trail.</div>
+      </div></div>
+      <div class="card"><div class="hd"><h3>ATS connectors</h3><span class="sub">Two-way sync · Live</span></div><div class="bd">
+        ${ATS_CONNECTORS.map(a=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)">
+          <span style="font-size:18px">${a.status==="connected"?"🔗":a.status==="pending"?"⏳":"○"}</span>
+          <div style="flex:1"><b style="font-size:12.5px">${a.name}</b><br><span style="font-size:11px;color:var(--muted)">${a.client}${a.status==="connected"?` · ${a.pushed} pushed · ${a.pulled} pulled · ${a.lastSync}`:""}</span></div>
+          <span class="pill ${a.status==="connected"?"mint":a.status==="pending"?"amber":"grey"}">${a.status==="connected"?"Connected":a.status==="pending"?"Setup pending":"Available"}</span>
+          ${a.status==="connected"?`<button class="btn gho sm" data-ats="${a.id}">Sync</button>`:a.status==="pending"?`<button class="btn pri sm" data-connect="${a.id}">Connect</button>`:""}
+        </div>`).join("")}
+        <div class="narrative" style="margin-top:12px"><div class="nl">${GLYPH.nl} How ATS sync works</div>Push candidates & IaaS reports into the client's ATS. Status changes (screening, offer, rejected) sync back nightly. First connector chosen by which ATS your clients actually run — no vendor lock-in.</div>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Platform modules</h3></div><div class="bd">
+        <div class="field"><label>Resdex Sourcing</label><div class="val"><span class="pill mint">Live</span> <span style="font-size:12px;color:var(--muted)">Browser helper · CV credits · import queue</span></div></div>
+        <div class="field"><label>IaaS Operations</label><div class="val"><span class="pill mint">Live</span></div></div>
+        <div class="field"><label>Team & audit</label><div class="val"><span class="pill mint">Live</span></div></div>
+        <div class="field"><label>Client CRM</label><div class="val"><span class="pill mint">Live</span></div></div>
+        <div class="field"><label>Revenue dashboard</label><div class="val"><span class="pill mint">Live</span></div></div>
+        <div class="field"><label>Activity log & analytics</label><div class="val"><span class="pill mint">ConnectOS parity ✓</span> <span style="font-size:12px;color:var(--muted)">Calls · outreach · sign-out · unified analytics</span></div></div>
+        <div class="field"><label>Resume storage</label><div class="val"><span class="pill mint">Live</span></div></div>
+        <div class="field"><label>Data retention (DPDP)</label><div class="val">12 months · auto-cleanup active</div></div>
+        <div class="field"><label>Data ownership</label><div class="val">Full export available at any time — no lock-in</div></div>
+      </div></div>
+      <div class="card"><div class="hd"><h3>Optional add-ons</h3><span class="sub">Future options</span></div><div class="bd">
+        <div class="roadmap">
+        <div class="p4tile"><div class="t">${GLYPH.target} LinkedIn & multi-source sourcing</div><p>Extend sourcing engine beyond Resdex once CV-credit discipline is proven in production.</p></div>
+        <div class="p4tile"><div class="t">${GLYPH.sync} Additional ATS connectors</div><p>Lever, Keka, BambooHR — added on demand based on client ATS footprint.</p></div>
+        </div>
+      </div></div>
+    </div>
+  </div>`;
+}
+
+async function createCandidateManual(payload){
+  if(!LIVE_API_OK){ toast("API offline — run NestOS server"); return null; }
+  const res=await nestosFetch("/api/candidates",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  await syncLiveCandidates();
+  return res.candidate;
+}
+function openAddCandidate(){
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Candidates</div><h2>Add candidate</h2><div style="font-size:12px;color:var(--muted)">Type details now — you can upload a resume after</div></div><button type="button" class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db">
+    <div class="frow">
+      <div class="field"><label>Full name *</label><input id="acName" placeholder="e.g. Priya Sharma" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+      <div class="field"><label>Role / title</label><input id="acRole" placeholder="e.g. Senior React Developer" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>Email</label><input id="acEmail" type="email" placeholder="name@email.com" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+      <div class="field"><label>Phone</label><input id="acPhone" placeholder="+91…" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>Location</label><input id="acLoc" placeholder="Bengaluru" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+      <div class="field"><label>Experience</label><input id="acExp" placeholder="5 yrs" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>CTC</label><input id="acCtc" placeholder="₹24L" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+      <div class="field"><label>Notice</label><input id="acNotice" placeholder="30 days" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+    </div>
+    <div class="field"><label>Skills (comma separated)</label><input id="acSkills" placeholder="React, TypeScript, Node" style="width:100%;border:1px solid var(--line);border-radius:4px;padding:8px 10px"/></div>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button type="button" class="btn pri" id="acSave">Save candidate</button>
+      <button type="button" class="btn gho" id="acCancel">Cancel</button>
+    </div>
+  </div>`;
+  $("#scrim").classList.add("on"); $("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawerQuiet;
+  $("#acCancel").onclick=closeDrawerQuiet;
+  $("#acSave").onclick=async()=>{
+    const name=($("#acName")?.value||"").trim();
+    if(!name){ toast("Name is required"); return; }
+    try{
+      toast("Saving…");
+      const cand=await createCandidateManual({
+        name,
+        role:($("#acRole")?.value||"").trim(),
+        email:($("#acEmail")?.value||"").trim(),
+        phone:($("#acPhone")?.value||"").trim(),
+        location:($("#acLoc")?.value||"").trim(),
+        experience:($("#acExp")?.value||"").trim(),
+        ctc:($("#acCtc")?.value||"").trim(),
+        notice:($("#acNotice")?.value||"").trim(),
+        skills:($("#acSkills")?.value||"").trim(),
+        source:"Manual",
+      });
+      toast(`Added ${name}`);
+      closeDrawerQuiet();
+      state.view="talent";
+      render();
+      if(cand?.id) openCandidate(cand.id);
+    }catch(e){ toast(e.message||"Could not save candidate"); }
+  };
+}
+function closeDrawerQuiet(){
+  $("#scrim").classList.remove("on");
+  $("#drawer").classList.remove("on");
+  state._timer&&clearInterval(state._timer);
+}
+
+function openCandidate(id){
+
+  const c=findCand(id);
+  if(!c)return;
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Talent Hub / Candidate${c.live?` · <span class="pill mint">Live DB</span>`:""}</div><h2>${c.name}</h2><div style="font-size:12px;color:var(--muted)">${c.role} · ${c.service}</div></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db">
+    <div class="frow">
+      <div class="field"><label>Stage</label><div class="val">${c.stage}</div></div>
+      <div class="field"><label>Source</label><div class="val">${c.source||"—"}${c.resdexViewed?` · Resdex viewed ${c.resdexViewed}`:""}${c.parse_method?` · ${c.parse_method}`:""}</div></div>
+      <div class="field"><label>CTC / Notice</label><div class="val">${c.ctc} · ${c.notice}</div></div>
+      <div class="field"><label>Location</label><div class="val">${c.loc}</div></div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>Email</label><div class="val">${c.email||"—"}</div></div>
+      <div class="field"><label>Phone</label><div class="val">${c.phone||"—"}</div></div>
+    </div>
+    <div class="field"><label>Resume on file</label>
+      ${c.resume?`<div class="meetbar" style="background:var(--mint-soft);border-left-color:var(--mint)"><b>📄 ${c.resume}</b><button class="btn gho sm" onclick="toast('Downloading ${c.resume}')">Download</button><button class="btn gho sm" id="candShareInline">Share internally</button></div>`
+      :`<div class="uploadzone" id="candUpload" style="padding:20px"><b>No resume uploaded</b><span>Drop PDF here or click to upload</span></div>`}
+    </div>
+    <div class="field"><label>Skills (parsed)</label><div class="val">${(c.skills||[]).map(s=>`<span class="tag">${s}</span>`).join("")||"—"}</div></div>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+      <button class="btn pri sm" id="candWa" ${c.phone?"":"disabled"}>WhatsApp</button>
+      <button class="btn gho sm" id="candEm" ${c.email?"":"disabled"}>Send email</button>
+      <label class="btn gho sm" style="cursor:pointer">Verify doc<input type="file" id="candVerifyFile" accept=".pdf,image/*" hidden ${c.live?"":"disabled"}/></label>
+      <button class="btn gho sm" id="candShare">Share resume</button>
+      ${!c.atsSynced?`<button class="btn gho sm" id="pushATS">Push to ATS</button>`:`<span class="pill mint" style="align-self:center">ATS: ${c.atsSynced}</span>`}
+    </div>
+    ${LIVE_VERIFICATIONS.filter(v=>String(v.candidate_id)===String(c.id)).slice(0,3).map(v=>`<div style="font-size:12px;margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:8px"><b class="status-${v.status}">${v.status}</b> · ${v.file_name}<br><span style="color:var(--muted)">${v.notes}</span></div>`).join("")}
+  </div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  const cu=$("#candUpload");
+  if(cu)cu.onclick=()=>{c.resume=c.name.replace(/\s/g,"_")+"_Resume.pdf";toast("Resume uploaded & parsed — 28 fields extracted");openCandidate(id);};
+  const cs=$("#candShare");if(cs)cs.onclick=()=>shareResume(c.id,state.wsPeer||2);
+  const csi=$("#candShareInline");if(csi)csi.onclick=()=>shareResume(c.id,state.wsPeer||2);
+  const pa=$("#pushATS");if(pa)pa.onclick=()=>pushCandidateToATS(c.id);
+  const wa=$("#candWa");if(wa)wa.onclick=()=>liveWhatsApp(c.id);
+  const em=$("#candEm");if(em)em.onclick=()=>liveEmail(c.id);
+  const vf=$("#candVerifyFile");if(vf)vf.onchange=e=>{const f=e.target.files?.[0];if(f)liveVerifyDoc(c.id,f);};
+}
+
+function pushCandidateToATS(id){
+  const c=findCand(id); if(!c)return;
+  const conn=ATS_CONNECTORS.find(a=>a.status==="connected")||ATS_CONNECTORS[0];
+  c.atsSynced=conn.name;
+  conn.pushed+=1;
+  state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`ATS push: ${c.name} → ${conn.name} (${conn.client})`,module:"Talent",type:"active",dur:"—",ok:1});
+  toast(`${c.name} pushed to ${conn.name} · structured profile + resume attached`);
+  openCandidate(id);
+}
+
+function syncAtsConnector(id){
+  const a=ATS_CONNECTORS.find(x=>x.id===id); if(!a||a.status!=="connected")return;
+  a.pulled+=Math.floor(Math.random()*3)+1;
+  a.lastSync="Just now";
+  state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`ATS sync: ${a.name} · ${a.pulled} status updates pulled`,module:"Talent",type:"active",dur:"—",ok:1});
+  toast(`${a.name} synced · ${a.pulled} candidate status updates pulled`);
+  render();
+}
+
+function handleResumeUpload_LEGACY_REMOVED(files){
+  /* replaced by live API handleResumeUpload above */
+}
+
+async function importResdexById(id){
+  const q=RESDEX_QUEUE.find(x=>x.id===id); if(!q){toast("Profile not found — pull from Naukri again");return;}
+  try{
+    await nestosFetch("/api/resdex/import/"+q.id,{method:"POST"});
+    state.resdexStep=4;
+    await syncLiveCandidates();
+    await syncLiveResdex();
+    state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`Naukri → NestOS: ${q.name}`,module:"Sourcing",type:"active",dur:"—",ok:1});
+    toast(`Saved ${q.name} from Naukri → All candidates`);
+    render();
+  }catch(e){toast(e.message||"Import failed");}
+}
+
+async function importResdexCandidate(idx){
+  const q=RESDEX_QUEUE[idx]; if(!q)return;
+  return importResdexById(q.id);
+}
+
+/* ══════════════════ DRAWER: INTERVIEW DETAIL ══════════════════ */
+function openInterview(id){
+  const iv=INTERVIEWS.find(i=>i.id===id);
+  const delivered = state.genDone[id]||iv.status==="Delivered";
+  const st=delivered?"Delivered":iv.status;
+  const dr=$("#drawer");
+  let body="";
+  if(st==="Requested"){
+    body=`<div class="wizcard"><h4>Step 2 — Assign interviewer</h4>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">AI ranks panel by skill match, utilization & availability</p>
+      <div class="suggest" data-pick="Priya N."><span class="match">94%</span><div><b>Priya N.</b><br><span style="font-size:11px;color:var(--muted)">Manager · 86% util · panel match for ${iv.stack.split("·")[0].trim()}</span></div></div>
+      <div class="suggest" data-pick="Lakshmi V."><span class="match">91%</span><div><b>Lakshmi V.</b><br><span style="font-size:11px;color:var(--muted)">Panel interviewer · 82% util · ${iv.seniority} specialist</span></div></div>
+      <div class="suggest" data-pick="Arjun M."><span class="match">87%</span><div><b>Arjun M.</b><br><span style="font-size:11px;color:var(--muted)">Recruiter · 78% util · available today</span></div></div>
+      <button class="btn pri" id="confirmAssign" style="width:100%;margin-top:8px">Assign selected interviewer</button></div>`;
+  }else if(st==="Assigned"){
+    body=`<div class="wizcard"><h4>Step 3 — Schedule interview slot + video room</h4>
+      <div class="row"><div><label>Date</label><input type="date" value="2026-07-14" id="schedDate"/></div><div><label>Time (IST)</label><input type="time" value="14:00" id="schedTime"/></div></div>
+      <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);display:block;margin:10px 0 6px">Video provider</label>
+      <div class="vidgrid" id="vidPick">
+      ${VIDEO_PROVIDERS.filter(v=>v.enabled).map(v=>`<div class="vidtile ${state.videoProvider===v.id?"on":""}" data-vid="${v.id}"><div class="logo">${v.id==="meet"?"🟢":v.id==="teams"?"🟦":"🔵"}</div><h5>${v.name}</h5><p>${v.desc}</p></div>`).join("")}
+      </div>
+      <div class="field"><label>Timezone note</label><div class="val" style="font-size:12px;color:var(--muted)">Client ${iv.client} — calendar invite + meeting link sent automatically</div></div>
+      <button class="btn pri" id="confirmSchedule" style="width:100%">Generate meeting link & notify client</button></div>`;
+  }else if(delivered){
+    body=renderReport(iv);
+  }else if(st==="Report Pending"||st==="Scheduled"){
+    const prov=iv.meetProvider||"Google Meet";
+    const link=iv.meetLink||"https://meet.google.com/nest-iaas-demo";
+    body=`${iv.meetLink?`<div class="meetbar"><b>${prov}</b><span class="link">${link}</span><button class="btn pri sm" onclick="toast('Joining ${prov} room — interview timer started')">Join interview room</button><button class="btn gho sm" onclick="toast('Link copied · sent to candidate & client')">Copy link</button></div>`:""}
+    ${renderCapture(iv)}`;
+  }else{
+    body=`<div class="alertrow blue"><span class="dot"></span><div>Assigned to ${iv.interviewer}. Awaiting schedule confirmation.</div></div>`;
+  }
+  dr.innerHTML=`
+  <div class="dh"><div><div class="ctx">IaaS / ${iv.id} · ${st}</div><h2>${iv.candidate}</h2><div style="font-size:12px;color:var(--muted)">${iv.role} (${iv.seniority}) · for ${iv.client}</div></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="flowbar" style="margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 16px">
+    ${["Request","Assign","Schedule","Capture","Report","Deliver"].map((s,i)=>{
+      const map={Requested:0,Assigned:1,Scheduled:2,"Report Pending":3,Delivered:5};
+      const cur=map[st]??2;
+      return `<div class="fstep ${i<cur?"done":i===cur?"cur":""}"><span class="num">${i+1}</span>${s}</div>`;
+    }).join("")}
+  </div>
+  <div class="db" id="dbody">
+    <div class="frow">
+      <div class="field"><label>Client</label><div class="val">${iv.client}</div></div>
+      <div class="field"><label>Interviewer</label><div class="val">${iv.interviewer}</div></div>
+      <div class="field"><label>Tech stack</label><div class="val">${iv.stack}</div></div>
+      <div class="field"><label>Scheduled</label><div class="val">${iv.date}</div></div>
+    </div>
+    ${body}
+  </div>`;
+  $("#scrim").classList.add("on");dr.classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  bindIaasWorkflow(iv);
+  if(st==="Report Pending"||st==="Scheduled") bindCapture(iv);
+}
+
+let pickedInterviewer="Priya N.";
+function bindIaasWorkflow(iv){
+  document.querySelectorAll(".suggest[data-pick]").forEach(s=>{
+    s.onclick=()=>{pickedInterviewer=s.dataset.pick;document.querySelectorAll(".suggest").forEach(x=>x.style.borderColor="");s.style.borderColor="var(--accent)";};
+  });
+  const ca=$("#confirmAssign");
+  if(ca)ca.onclick=()=>{
+    iv.interviewer=pickedInterviewer;iv.status="Assigned";
+    state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`Assigned ${pickedInterviewer} to ${iv.id}`,module:"IaaS",type:"active",dur:"2m",ok:1});
+    toast(`${pickedInterviewer} assigned to ${iv.id}`);closeDrawer();render();
+  };
+  const cs=$("#confirmSchedule");
+  if(cs)cs.onclick=()=>{
+    const prov=VIDEO_PROVIDERS.find(v=>v.id===state.videoProvider)||VIDEO_PROVIDERS[0];
+    iv.status="Scheduled";iv.date=$("#schedDate")?.value||iv.date;
+    iv.meetProvider=prov.name;
+    iv.meetLink=prov.id==="teams"?"https://teams.microsoft.com/l/meetup-join/nest-"+iv.id.slice(-4):prov.id==="zoom"?"https://zoom.us/j/nest"+iv.id.slice(-4):"https://meet.google.com/nest-"+iv.id.slice(-4);
+    state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`Scheduled ${iv.id} · ${prov.name} link generated`,module:"IaaS",type:"meeting",dur:"1m",ok:1});
+    toast(prov.name+" link generated · sent to client & candidate");closeDrawer();render();
+  };
+  document.querySelectorAll(".vidtile[data-vid]").forEach(t=>t.onclick=()=>{state.videoProvider=t.dataset.vid;document.querySelectorAll(".vidtile").forEach(x=>x.classList.remove("on"));t.classList.add("on");});
+}
+
+function openNewIaasRequest(){
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">IaaS / New request</div><h2>Client interview request</h2><div style="font-size:12px;color:var(--muted)">Step 1 — intake form</div></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db">
+    <div class="wizcard"><div class="row"><div><label>Client</label><select id="nrClient">${CLIENTS.filter(c=>c.services.includes("IaaS")||c.services.some(s=>s.includes("IaaS"))).map(c=>`<option>${c.name}</option>`).join("")}<option>Kredmint Technologies</option><option>Trigo Health</option></select></div>
+    <div><label>Seniority</label><select id="nrSen"><option>Senior</option><option>Mid</option><option>Mid–Senior</option><option>Junior</option></select></div></div>
+    <div class="row"><div><label>Role title</label><input id="nrRole" placeholder="e.g. ML Engineer"/></div><div><label>Candidate name</label><input id="nrCand" placeholder="Candidate name"/></div></div>
+    <div class="field"><label>Tech stack</label><input id="nrStack" placeholder="PyTorch · LLMs · MLOps"/></div>
+    <div class="field"><label>Notes for interviewer</label><textarea id="nrNotes" rows="2" placeholder="Client-specific focus areas…"></textarea></div>
+    <button class="btn pri" id="submitIaas" style="width:100%">Submit request → assign interviewer</button></div>
+    <div class="narrative" style="margin-top:12px"><div class="nl">${GLYPH.nl} Per proposal</div>Client submits role, stack, seniority & candidate count. NestOS creates a tracked pipeline item with deadline, owner, and AI interviewer matching — replacing email/WhatsApp coordination.</div>
+  </div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  $("#submitIaas").onclick=()=>{
+    const id="IV-"+(1046+INTERVIEWS.length);
+    INTERVIEWS.unshift({id,client:$("#nrClient").value,candidate:$("#nrCand").value||"New candidate",role:$("#nrRole").value||"Engineer",seniority:$("#nrSen").value,stack:$("#nrStack").value||"—",interviewer:"—",date:"Requested today",status:"Requested"});
+    state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`New IaaS request ${id} created`,module:"IaaS",type:"active",dur:"3m",ok:1});
+    toast("Request "+id+" created — assign interviewer next");closeDrawer();render();setTimeout(()=>openInterview(id),400);
+  };
+}
+
+function openNewTask(){
+  if(!canAssignTasks()){toast("Only admin or manager can assign tasks");return;}
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Workspace / Task</div><h2>Assign task</h2><p style="font-size:12px;color:var(--muted);margin-top:4px">Appears in assignee workspace + task command bar</p></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db"><div class="wizcard">
+    <div class="field"><label>Task title</label><input id="taskTitle" placeholder="e.g. Shortlist 5 profiles for REQ-91"/></div>
+    <div class="row"><div><label>Assign to</label><select id="taskTo">${TEAM.map(t=>`<option>${t.name}</option>`).join("")}</select></div>
+    <div><label>Module</label><select id="taskMod"><option>Staff Aug</option><option>Talent Acq</option><option>IaaS</option><option>Clients</option><option>Sourcing</option></select></div></div>
+    <div class="row"><div><label>Due date</label><input type="date" value="2026-07-12" id="taskDue"/></div>
+    <div><label>Priority</label><select id="taskPri"><option>High</option><option>Medium</option><option>Low</option></select></div></div>
+    <div class="field"><label>Notes for assignee</label><textarea id="taskNotes" rows="2" placeholder="Context, REQ id, client name…"></textarea></div>
+    <button class="btn pri" id="submitTask" style="width:100%">Assign task & notify</button>
+  </div></div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  $("#submitTask").onclick=()=>{
+    const assignee=$("#taskTo").value;
+    TASKS.unshift({id:"T-"+(47+TASKS.length),title:$("#taskTitle").value||"New task",assignee,assigner:ROLE_NAMES[state.role],due:$("#taskDue").value,priority:$("#taskPri").value,module:$("#taskMod").value,status:"Open"});
+    state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`Task assigned: ${$("#taskTitle").value||"New task"} → ${assignee}`,module:"Workspace",type:"active",dur:"—",ok:1});
+    toast("Task assigned to "+assignee+" · notified in Workspace");closeDrawer();render();
+  };
+}
+
+function openLogActivity(presetType){
+  const type=presetType||"Call";
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Activity Log</div><h2>Log ${type}</h2></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db"><div class="wizcard">
+    <div class="field"><label>Type</label><select id="logType">${["Call","WhatsApp","Email","LinkedIn","Message"].map(t=>`<option ${t===type?"selected":""}>${t}</option>`).join("")}</select></div>
+    <div class="field"><label>Who (candidate / client / contact)</label><input id="logTarget" placeholder="e.g. Ritu Sharma or Vantara Retail"/></div>
+    <div class="field"><label>Context</label><input id="logContext" placeholder="REQ-88 follow-up, renewal call, etc."/></div>
+    <div class="row"><div><label>Duration (calls)</label><input id="logDur" placeholder="8m"/></div>
+    <div><label>Module</label><select id="logMod"><option>Sourcing</option><option>Talent</option><option>IaaS</option><option>Clients</option><option>Workspace</option></select></div></div>
+    <div class="field"><label>Outcome</label><textarea id="logOutcome" rows="2" placeholder="Interested · scheduled screen, replied on WhatsApp…"></textarea></div>
+    <button class="btn pri" id="submitLog" style="width:100%">Save to activity log</button>
+  </div></div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  $("#submitLog").onclick=submitActivityLog;
+}
+
+function submitActivityLog(){
+  const type=$("#logType").value,target=$("#logTarget").value.trim(),ctx=$("#logContext").value.trim(),outcome=$("#logOutcome").value.trim();
+  const verified=target&&ctx&&outcome?1:0;
+  const entry={id:"O-"+(102+state.outreachLog.length),user:currentUserName(),type,target:target||"—",context:ctx||"—",module:$("#logMod").value,duration:$("#logDur").value||"—",outcome:outcome||"—",ts:"Today "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"}),verified};
+  state.outreachLog.unshift(entry);
+  state.auditLog.unshift({ts:entry.ts,user:entry.user,action:`${type} logged: ${target} — ${ctx}`,module:entry.module,type:type==="Call"?"meeting":"active",dur:entry.duration,ok:verified});
+  // Persist WhatsApp/Email to live API when possible
+  if(LIVE_API_OK&&(type==="WhatsApp"||type==="Email"||type==="Call"||type==="Message")){
+    const phoneOrEmail=target;
+    if(type==="WhatsApp"&&/\d{8,}/.test(phoneOrEmail.replace(/\D/g,""))){
+      nestosFetch("/api/comms/whatsapp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:phoneOrEmail,message:outcome||ctx||"Follow-up",context:ctx})}).catch(()=>{});
+    }else if(type==="Email"&&/@/.test(phoneOrEmail)){
+      nestosFetch("/api/comms/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({to:phoneOrEmail,subject:ctx||"Follow-up",body:outcome||ctx||"Hello",context:ctx})}).catch(()=>{});
+    }
+  }
+  toast(verified?"Activity logged · verified":"Activity saved · add outcome for full credit");
+  closeDrawer();
+  if(state.view!=="activity"){state.view="activity";}render();
+}
+
+function openSignOut(){
+  const me=currentUserName();
+  const summary=getSignOutSummary(me);
+  if(state.role==="admin"&&pendingSignOuts().length){
+    $("#drawer").innerHTML=`
+    <div class="dh"><div><div class="ctx">Admin / Sign-outs</div><h2>Pending end-of-day reviews</h2></div><button class="x" id="dx">${GLYPH.close}</button></div>
+    <div class="db">${pendingSignOuts().map(s=>`<div class="signpending" style="margin-bottom:12px"><div><b>${s.user}</b> · ${s.date}<br><span class="signsum" style="margin-top:8px;display:block"><b>Auto-captured:</b> ${s.autoSummary}${s.extraWork?`<br><br><b>Extra work reported:</b> ${s.extraWork}`:""}</span></div>
+    <button class="btn pri sm" data-approve-sign="${s.id}">Mark reviewed</button></div>`).join("")}</div>`;
+    $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+    $("#dx").onclick=closeDrawer;
+    $("#drawer").querySelectorAll("[data-approve-sign]").forEach(b=>b.onclick=()=>{
+      const s=state.signOutRequests.find(x=>x.id===b.dataset.approveSign);
+      if(s){s.status="Reviewed";s.adminNote="Reviewed by "+me;toast(s.user+" sign-out reviewed");}
+      closeDrawer();render();
+    });
+    return;
+  }
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">End of day</div><h2>Sign out & notify admin</h2><p style="font-size:12px;color:var(--muted);margin-top:4px">ConnectOS-style — capture work that was not logged during the day</p></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db">
+    <div class="signsum"><b>Already captured today</b><br>${summary}</div>
+    <div class="wizcard">
+      <div class="field"><label>Extra work not logged (optional)</label><textarea id="signExtra" rows="4" placeholder="e.g. 3 WhatsApp follow-ups after 6pm, client call not in system…"></textarea></div>
+      <div class="row"><div><label>Additional calls (count)</label><input type="number" id="signCalls" min="0" value="0"/></div>
+      <div><label>Additional outreach (count)</label><input type="number" id="signOutreach" min="0" value="0"/></div></div>
+      <div class="field"><label>Anything admin should know?</label><input id="signNote" placeholder="Blockers, leave tomorrow, etc."/></div>
+      <button class="btn pri" id="submitSignOut" style="width:100%">Submit sign-out → notify admin</button>
+    </div>
+    <div class="narrative" style="margin-top:12px"><div class="nl">${GLYPH.nl} Why this matters</div>Unlogged work earns zero credit in analytics. Sign-out lets you declare extra effort — admin reviews and can backfill the activity log.</div>
+  </div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  $("#submitSignOut").onclick=submitSignOut;
+}
+
+function submitSignOut(){
+  const me=currentUserName(),extra=$("#signExtra").value.trim(),calls=+$("#signCalls").value||0,outreach=+$("#signOutreach").value||0,note=$("#signNote").value.trim();
+  const autoSummary=getSignOutSummary(me)+(calls?` · +${calls} calls declared`:"")+(outreach?` · +${outreach} outreach declared`:"");
+  state.signOutRequests.unshift({id:"SO-"+(14+state.signOutRequests.length),user:me,date:"Today",autoSummary,extraWork:extra+(note?` Note: ${note}`:""),status:"Pending",adminNote:""});
+  state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:me,action:`Sign-out submitted${extra?" · extra work declared":""}`,module:"Compliance",type:"active",dur:"—",ok:1});
+  toast("Sign-out sent · admin notified"+(state.role==="admin"?" (demo: you are admin)":""));
+  closeDrawer();render();
+}
+
+function shareResume(candidateId,peerId){
+  const c=findCand(candidateId)||CANDIDATES[0];
+  const pid=peerId||state.wsPeer||2;
+  if(!MESSAGES[pid])MESSAGES[pid]=[];
+  MESSAGES[pid].push({from:"me",text:`Sharing ${c.name}'s profile for your review.`,time:"Just now",attach:`${c.name.replace(/\s/g,"_")}_Resume.pdf`});
+  state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:ROLE_NAMES[state.role],action:`Resume shared: ${c.name} → ${TEAM.find(t=>t.id===pid)?.name}`,module:"Workspace",type:"active",dur:"—",ok:1});
+  toast(`Resume shared with ${TEAM.find(t=>t.id===pid)?.name}`);
+  if(state.view==="workspace"){const b=$("#wsMsgBody");if(b)b.innerHTML=MESSAGES[pid].map(renderMsgBubble).join("");b.scrollTop=b.scrollHeight;}
+}
+
+function openShareResume(){
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Workspace / Share</div><h2>Share resume internally</h2></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db"><div class="wizcard">
+    <div class="field"><label>Candidate</label><select id="shareCand">${CANDIDATES.map(c=>`<option value="${c.id}">${c.name} — ${c.role}</option>`).join("")}</select></div>
+    <div class="field"><label>Send to</label><select id="shareTo">${TEAM.map(t=>`<option value="${t.id}">${t.name}</option>`).join("")}</select></div>
+    <button class="btn pri" id="doShare" style="width:100%">Share resume</button>
+  </div></div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+  $("#doShare").onclick=()=>{shareResume(+$("#shareCand").value,+$("#shareTo").value);closeDrawer();};
+}
+
+function exportAuditLog(){
+  const text=`NESTOS ENTERPRISE AUDIT LOG\nHummingBrains Technologies · Confidential\nGenerated: ${new Date().toLocaleString("en-IN")}\n\n`+
+    state.auditLog.map(e=>`[${e.ts}] ${e.user} | ${e.module} | ${e.type} | ${e.ok?"COMPLIANT":"FLAGGED"}\n  ${e.action}`).join("\n\n")+
+    `\n\n── EMPLOYEE TIME BREAKDOWN (TODAY) ──\n`+
+    TEAM.map(t=>{const p=AUDIT_PROFILES.find(x=>x.id===t.id);return `${t.name}: active ${p.active}h · idle ${(p.idle+p.away).toFixed(1)}h · score ${p.score}`;}).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));
+  a.download="NestOS_Audit_Log_"+new Date().toISOString().slice(0,10)+".txt";a.click();
+  toast("Audit log exported — immutable compliance record");
+}
+
+function closeMsgFly(){$("#msgFly").classList.remove("on");state.msgOpen=0;}
+function openMsgFly(){
+  const fly=$("#msgFly");fly.classList.toggle("on");
+  state.msgOpen=fly.classList.contains("on")?1:0;
+  if(state.msgOpen){
+    const preview=Object.entries(MESSAGES).slice(0,4).flatMap(([id,msgs])=>msgs.slice(-1).map(m=>({...m,pid:id})));
+    $("#msgFlyBody").innerHTML=preview.map(m=>`<div style="padding:8px 12px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer" data-gopeer="${m.pid}"><b>${m.who||TEAM.find(t=>t.id==m.pid)?.name}</b><br><span style="color:var(--muted)">${m.text.slice(0,60)}…</span></div>`).join("");
+    $("#msgFlyBody").querySelectorAll("[data-gopeer]").forEach(el=>el.onclick=()=>{state.wsPeer=+el.dataset.gopeer;state.view="workspace";closeMsgFly();render();});
+  }
+}
+
+function renderCapture(iv){
+  return `
+  <div style="display:flex;align-items:center;gap:12px;margin:4px 0 15px">
+    <span class="timer"><span class="rec"></span><span id="tmr">00:00</span>&nbsp;live capture</span>
+    <span style="font-size:11.5px;color:var(--faint)">Structured rubric replaces post-interview memory</span>
+  </div>
+  ${[["Technical competency","tech"],["Communication","comm"],["Problem solving","prob"],["Culture fit","fit"]].map(([l,k])=>`
+  <div class="rubric"><div class="rh"><b>${l}</b><span class="score" id="s-${k}">3</span></div>
+  <input type="range" min="1" max="5" value="3" step="1" data-k="${k}"/>
+  <textarea placeholder="Notes — one line is enough…" data-n="${k}"></textarea></div>`).join("")}
+  <button class="btn pri" id="genBtn" style="width:100%;justify-content:center;padding:12px">End interview & generate report</button>
+  <div style="font-size:11px;color:var(--faint);text-align:center;margin-top:9px">Manual write-up: 45–60 minutes. Watch what happens instead.</div>`;
+}
+
+function bindCapture(iv){
+  const body=$("#dbody"); if(!body)return;
+  let secs=0; const t=$("#tmr");
+  if(t){ state._timer && clearInterval(state._timer);
+    state._timer=setInterval(()=>{secs++;t.textContent=String(Math.floor(secs/60)).padStart(2,"0")+":"+String(secs%60).padStart(2,"0")},1000);}
+  body.querySelectorAll("input[type=range]").forEach(r=>r.oninput=()=>{$("#s-"+r.dataset.k).textContent=r.value});
+  const gen=$("#genBtn");
+  if(gen)gen.onclick=()=>{
+    const scores={},notes={};
+    body.querySelectorAll("input[type=range]").forEach(r=>scores[r.dataset.k]=+r.value);
+    body.querySelectorAll("textarea").forEach(n=>notes[n.dataset.n]=n.value.trim());
+    state._timer&&clearInterval(state._timer);
+    runGeneration(iv,scores,notes);
+  };
+}
+
+function runGeneration(iv,scores,notes){
+  const body=$("#dbody");
+  const steps=["Reading structured rubric","Cross-referencing role requirements","Structuring the assessment","Drafting recommendation","Formatting ATS-compliant output"];
+  body.innerHTML=`<div class="genwrap"><div class="gt">Generating assessment report</div>
+  ${steps.map((s,i)=>`<div class="gstep" id="gs-${i}"><span class="gi"></span>${s}</div>`).join("")}</div>`;
+  let i=0;
+  document.getElementById("gs-0").classList.add("run");
+  const int=setInterval(()=>{
+    document.getElementById("gs-"+i).classList.remove("run");
+    document.getElementById("gs-"+i).classList.add("done");
+    document.getElementById("gs-"+i).querySelector(".gi").textContent="✓";
+    i++;
+    if(i<steps.length){document.getElementById("gs-"+i).classList.add("run")}
+    else{
+      clearInterval(int);
+      const tat=`1m ${String(40+Math.floor(Math.random()*15)).padStart(2,"0")}s`;
+      state.genDone[iv.id]=tat; iv.scores=scores; iv.notes=notes; iv.tat=tat;
+      setTimeout(()=>{
+        body.innerHTML=renderReportInner(iv,scores,notes,tat);
+        iv.status="Delivered";
+        state.auditLog.unshift({ts:new Date().toLocaleString("en-IN",{hour:"2-digit",minute:"2-digit"}),user:iv.interviewer||ROLE_NAMES[state.role],action:`Report ${iv.id} generated & ready for delivery`,module:"IaaS",type:"active",dur:tat,ok:1});
+        renderNav();
+        toast("Report delivered to "+iv.client+" · logged in client record");
+      },350);
+    }
+  },560);
+}
+
+function recFrom(scores){
+  const avg=(scores.tech+scores.comm+scores.prob+scores.fit)/4;
+  if(avg>=4.2)return["Strong Hire","var(--mint-soft)","var(--mint)"];
+  if(avg>=3.3)return["Hire","var(--mint-soft)","var(--mint)"];
+  if(avg>=2.5)return["Hire with reservations","var(--amber-soft)","var(--amber)"];
+  return["Do not proceed","var(--red-soft)","var(--red)"];
+}
+function lvl(n){return["","limited","developing","solid","strong","exceptional"][n]}
+
+function renderReportInner(iv,scores,notes,tat){
+  const [rec,bg,fg]=recFrom(scores);
+  const n=k=>notes&&notes[k]?` The interviewer noted: “${notes[k]}.”`:"";
+  return `
+  <div class="payoff"><div class="pl">Report drafting time</div>
+    <div class="row"><span class="old">45–60 min manual</span><span class="arrow">→</span><span class="new">${tat}</span><span class="mult">~28× faster</span></div>
+  </div>
+  <div class="report">
+    <h4>Interview Assessment Report</h4>
+    <div class="meta">${iv.candidate} · ${iv.role} (${iv.seniority}) · Prepared for ${iv.client} · ${iv.id} · Confidential</div>
+    <span class="rec" style="background:${bg};color:${fg}">Recommendation: ${rec}</span>
+    <h5>Technical competency — ${scores.tech}/5</h5>
+    <p>The candidate demonstrated ${lvl(scores.tech)} command of the required stack (${iv.stack}). Responses to core technical scenarios were ${scores.tech>=4?"precise and grounded in production experience":scores.tech>=3?"generally sound, with reasonable depth on fundamentals":"inconsistent, with gaps on fundamentals that would need close supervision"}.${n("tech")}</p>
+    <h5>Communication — ${scores.comm}/5</h5>
+    <p>${scores.comm>=4?"Articulated reasoning clearly and structured answers well; would represent the team confidently in client-facing settings.":scores.comm>=3?"Communicated adequately with occasional prompting needed to structure answers.":"Struggled to structure explanations; communication would be a coaching area."}${n("comm")}</p>
+    <h5>Problem solving — ${scores.prob}/5</h5>
+    <p>${scores.prob>=4?"Broke ambiguous problems down methodically, verbalised trade-offs, and self-corrected under pressure.":scores.prob>=3?"Worked through problems competently with standard approaches; limited exploration of alternatives.":"Required significant guidance to progress through the exercise."}${n("prob")}</p>
+    <h5>Culture & team fit — ${scores.fit}/5</h5>
+    <p>${scores.fit>=4?"Motivations align well with the role and stated team environment; asked substantive questions about ways of working.":scores.fit>=3?"Reasonable alignment; motivations appear pragmatic rather than role-specific.":"Limited signal of alignment with the team's working style."}${n("fit")}</p>
+    <h5>Summary</h5>
+    <p>Overall assessment: <b>${rec}</b> for the ${iv.role} position at ${iv.client}. This report was drafted from the structured rubric captured live during the interview and reviewed by ${iv.interviewer==="—"?"the assigned interviewer":iv.interviewer} before delivery. Formatted for clean import into the client's applicant tracking system.</p>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:15px">
+    <button class="btn mint" onclick="toast('Delivered to ${iv.client} — logged in Client Hub')">Deliver to client</button>
+    <button class="btn gho" onclick="toast('Exported — ATS-compliant structured format')">Export (ATS format)</button>
+  </div>`;
+}
+function renderReport(iv){
+  const scores=iv.scores||{tech:4,comm:4,prob:4,fit:3};
+  return renderReportInner(iv,scores,iv.notes||{},state.genDone[iv.id]||iv.tat||"1m 52s");
+}
+
+/* ══════════════════ DRAWER: CLIENT DETAIL ══════════════════ */
+function openClient(id){
+  const c=CLIENTS.find(x=>x.id===id);
+  const d=daysTo(c.renewal);
+  const ivs=INTERVIEWS.filter(i=>i.client===c.name);
+  $("#drawer").innerHTML=`
+  <div class="dh"><div><div class="ctx">Clients / Account</div><h2>${c.name}</h2><div style="font-size:12px;color:var(--muted)">${c.industry} · Account owner: ${c.owner}</div></div><button class="x" id="dx">${GLYPH.close}</button></div>
+  <div class="db">
+    <div class="frow">
+      <div class="field"><label>Active services</label><div class="val">${c.services.join(" · ")}</div></div>
+      <div class="field"><label>Revenue</label><div class="val">${c.mrr?fmtL(c.mrr)+" / month":c.fee}</div></div>
+      <div class="field"><label>Renewal</label><div class="val">${new Date(c.renewal).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"})} ${d<=30?`<span class="pill red">${d} days</span>`:""}</div></div>
+      <div class="field"><label>Health score</label><div class="val"><span class="healthbar"><i style="width:${c.health}%;background:${healthColor(c.health)}"></i></span><b>${c.health}</b>/100</div></div>
+    </div>
+    ${c.churn?`<div class="alertrow amber"><span class="dot"></span><div><b>Churn signal:</b> ${c.churn}. Recommended: proactive call before the renewal conversation.</div></div>`:""}
+    <div class="field"><label>Account notes</label><div class="val">${c.note}</div></div>
+    ${ivs.length?`<div class="field"><label>IaaS activity</label>
+    <table style="margin-top:4px"><thead><tr><th>ID</th><th>Candidate</th><th>Status</th><th>Report TAT</th></tr></thead><tbody>
+    ${ivs.map(i=>`<tr><td class="num">${i.id}</td><td>${i.candidate}</td><td>${statusPill(state.genDone[i.id]?"Delivered":i.status)}</td><td class="num">${state.genDone[i.id]||i.tat||"—"}</td></tr>`).join("")}
+    </tbody></table></div>`:""}
+    <div class="field"><label>Contact log</label>
+      <div class="val" style="font-size:12.5px;color:var(--muted)">
+      • ${c.last} — ${c.owner}: check-in ${c.churn?"(no response yet)":"call, all healthy"}<br>
+      • 28 Jun — Monthly report delivered automatically<br>
+      • 15 Jun — ${c.services[0]} usage review</div></div>
+  </div>`;
+  $("#scrim").classList.add("on");$("#drawer").classList.add("on");
+  $("#dx").onclick=closeDrawer;
+}
+
+function closeDrawer(){$("#scrim").classList.remove("on");$("#drawer").classList.remove("on");state._timer&&clearInterval(state._timer);render()}
+
+/* ══════════════════ BINDINGS ══════════════════ */
+function bindView(){
+  const ni=$("#newIaasReq"); if(ni)ni.onclick=openNewIaasRequest;
+  document.querySelectorAll("[data-iv]").forEach(el=>{
+    if(el.id==="newIaasReq")return;
+    el.onclick=e=>{if(e.target.closest("[data-act]"))return;openInterview(el.dataset.iv)};
+  });
+  document.querySelectorAll("[data-act]").forEach(el=>el.onclick=e=>{e.stopPropagation();openInterview(el.dataset.iv)});
+  document.querySelectorAll("[data-cl]").forEach(el=>el.onclick=()=>openClient(+el.dataset.cl));
+  document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>goToView(el.dataset.go));
+  document.querySelectorAll("[data-tab]").forEach(el=>el.onclick=()=>{state.talentTab=el.dataset.tab;render()});
+  document.querySelectorAll("[data-peer]").forEach(el=>el.onclick=()=>{state.wsPeer=+el.dataset.peer;render()});
+  document.querySelectorAll("[data-share]").forEach(el=>el.onclick=()=>shareResume(+el.dataset.share,state.wsPeer));
+  const rq=$("#reqSel");
+  if(rq){
+    const draw=()=>{
+      try{
+        const r=REQUIREMENTS.find(x=>x.id===rq.value);
+        const box=$("#matchList"); if(!box||!r) return;
+        box.innerHTML=r.matches.map(([cid,pct,why])=>{
+          const c=CANDIDATES.find(x=>String(x.id)===String(cid));
+          if(!c) return `<div class="matchrow"><span class="pct">${pct}%</span><div><div class="nm">Candidate #${cid}</div><div class="why">${why}</div></div></div>`;
+          return `<div class="matchrow"><span class="pct">${pct}%</span><div><div class="nm">${c.name}</div><div class="why">${c.exp} · ${c.ctc} · ${c.notice} — ${why}</div></div></div>`;
+        }).join("");
+      }catch(err){ console.warn("matchList", err); }
+    };
+    rq.onchange=draw; draw();
+  }
+  const ex=$("#atsExport"); if(ex)ex.onclick=()=>toast(`Exported ${CANDIDATES.length} candidates — structured, parse-clean ATS format`);
+  document.querySelectorAll("[data-ats]").forEach(b=>b.onclick=()=>syncAtsConnector(b.dataset.ats));
+  document.querySelectorAll("[data-connect]").forEach(b=>b.onclick=()=>{const a=ATS_CONNECTORS.find(x=>x.id===b.dataset.connect);if(a){a.status="connected";a.lastSync="Just now";toast(`${a.name} connected · OAuth complete`);render();}});
+  document.querySelectorAll("[data-cand]").forEach(el=>el.onclick=()=>openCandidate(el.dataset.cand));
+  // Folder tabs: client-side only — do NOT re-fetch (that was wiping results / sticking wrong)
+  document.querySelectorAll("[data-folder]").forEach(el=>el.onclick=()=>{
+    state.resdexFolder=el.dataset.folder;
+    render();
+  });
+  document.querySelectorAll("[data-import-id]").forEach(el=>el.onclick=()=>importResdexById(el.dataset.importId));
+  document.querySelectorAll("[data-import]").forEach(el=>el.onclick=()=>importResdexCandidate(+el.dataset.import));
+  const uz=$("#uploadZone"),rf=$("#resumeFile");
+  if(rf){
+    rf.onchange=e=>{ handleResumeUpload(e.target.files); e.target.value=""; };
+  }
+  if(uz&&rf){
+    uz.ondragover=e=>{e.preventDefault();uz.classList.add("drag")};
+    uz.ondragleave=()=>uz.classList.remove("drag");
+    uz.ondrop=e=>{e.preventDefault();uz.classList.remove("drag");handleResumeUpload(e.dataTransfer.files)};
+  }
+  const urb=$("#uploadResumeBtn"); if(urb&&rf) urb.onclick=e=>{e.preventDefault(); rf.click();};
+  const acb=$("#addCandidateBtn"); if(acb) acb.onclick=e=>{e.preventDefault(); openAddCandidate();};
+  const cli=$("#createLiveInvoice");if(cli)cli.onclick=()=>liveCreateInvoice();
+  const rs=$("#runResdexSearch");if(rs)rs.onclick=async()=>{
+    state.resdexQuery=($("#rdxKw")?.value||"").trim();
+    state.resdexLoc=($("#rdxLoc")?.value||"").trim();
+    toast("Filtering extension captures…");
+    const n=await syncLiveResdex({query:state.resdexQuery,location:state.resdexLoc});
+    toast(n?`${n} in NestOS capture queue`:"No matches — clear filters");
+    render();
+  };
+  const clr=$("#clearResdexSearch");if(clr)clr.onclick=async()=>{
+    state.resdexQuery="";
+    state.resdexLoc="";
+    await syncLiveResdex({query:"",location:""});
+    render();
+  };
+  const openLogin=$("#openNaukriLogin");
+  if(openLogin)openLogin.addEventListener("click",()=>{state.resdexStep=Math.max(state.resdexStep,2); toast("Naukri opened — Send from NestOS helper panel");});
+  const pull=$("#pullNaukriShortlist");
+  if(pull)pull.onclick=async()=>{
+    toast("Refreshing extension captures…");
+    const n=await syncLiveResdex({query:"",location:""});
+    toast(n?`${n} profile(s) in NestOS from helper`:"No helper captures yet — Send from extension first");
+    render();
+  };
+  const saveAll=$("#saveAllResdex");
+  if(saveAll)saveAll.onclick=async()=>{
+    const folder=state.resdexFolder||"Shortlist";
+    const ids=RESDEX_QUEUE.filter(q=>folder==="All"||q.folder===folder).map(q=>q.id);
+    if(!ids.length){toast("Nothing to save");return;}
+    try{
+      const res=await nestosFetch("/api/resdex/import-bulk",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ids})});
+      state.resdexStep=4;
+      await syncLiveCandidates();
+      await syncLiveResdex();
+      toast(`Saved ${res.imported||0} to All candidates`);
+      render();
+    }catch(e){toast(e.message||"Bulk save failed");}
+  };
+  const rdxKw=$("#rdxKw"); if(rdxKw) rdxKw.onkeydown=e=>{if(e.key==="Enter") $("#runResdexSearch")?.click()};
+  const rdxLoc=$("#rdxLoc"); if(rdxLoc) rdxLoc.onkeydown=e=>{if(e.key==="Enter") $("#runResdexSearch")?.click()};
+  const ri=$("#resdexImport"); if(ri)ri.onclick=()=>goToView("sourcing");
+  const rm=$("#reportMonth");
+  if(rm)rm.onchange=e=>{state.reportMonth=e.target.value;render()};
+  const da=$("#dlAllReports");
+  if(da)da.onclick=()=>downloadAllReports();
+  document.querySelectorAll("[data-dlrep]").forEach(b=>b.onclick=()=>downloadEmployeeReport(b.dataset.dlrep));
+  const ea=$("#exportAudit"); if(ea)ea.onclick=exportAuditLog;
+  const nt=$("#newTaskBtn"); if(nt)nt.onclick=openNewTask;
+  const sow=$("#signOutFromWs"); if(sow)sow.onclick=openSignOut;
+  document.querySelectorAll("[data-logtype]").forEach(b=>b.onclick=()=>openLogActivity(b.dataset.logtype));
+  document.querySelectorAll("[data-actfilt]").forEach(b=>b.onclick=()=>{state.activityFilter=b.dataset.actfilt;render()});
+  document.querySelectorAll("[data-anatab]").forEach(b=>b.onclick=()=>{state.analyticsTab=b.dataset.anatab;render()});
+  document.querySelectorAll("[data-review-sign]").forEach(b=>b.onclick=()=>{
+    const s=state.signOutRequests.find(x=>x.id===b.dataset.reviewSign);
+    if(s){s.status="Reviewed";s.adminNote="Reviewed by "+currentUserName();toast(s.user+" sign-out reviewed");render();}
+  });
+  document.querySelectorAll("[data-done-task]").forEach(b=>b.onclick=()=>{
+    const t=TASKS.find(x=>x.id===b.dataset.doneTask);if(t){t.status="Done";toast("Task marked done: "+t.title);render();}
+  });
+  const sr=$("#shareResumeBtn"); if(sr)sr.onclick=openShareResume;
+  const srw=$("#shareResumeWs"); if(srw)srw.onclick=openShareResume;
+  const at=$("#assignTaskBtn"); if(at)at.onclick=openNewTask;
+  const ws=$("#wsSend");
+  if(ws)ws.onclick=()=>{
+    const inp=$("#wsMsgInput"),txt=inp?.value?.trim(); if(!txt)return;
+    const peer=state.wsPeer||2;
+    if(!MESSAGES[peer])MESSAGES[peer]=[];
+    MESSAGES[peer].push({from:"me",text:txt,time:"Just now"});
+    const peerName=TEAM.find(t=>t.id===peer)?.name||"team";
+    state.outreachLog.unshift({id:"O-"+(102+state.outreachLog.length),user:currentUserName(),type:"Message",target:peerName,context:"Workspace thread",module:"Workspace",duration:"—",outcome:"Sent",ts:"Today "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"}),verified:1});
+    inp.value="";$("#wsMsgBody").innerHTML=MESSAGES[peer].map(renderMsgBubble).join("");
+    toast("Message sent · logged in activity");
+  };
+  const wsi=$("#wsMsgInput");
+  if(wsi)wsi.onkeydown=e=>{if(e.key==="Enter")$("#wsSend")?.click()};
+}
+
+$("#scrim").onclick=closeDrawer;
+$("#msgBtn").onclick=openMsgFly;
+$("#msgFlyX").onclick=closeMsgFly;
+$("#logActBtn").onclick=()=>openLogActivity("Call");
+$("#signOutBtn").onclick=openSignOut;
+const logoutBtn=$("#logoutBtn");
+if(logoutBtn)logoutBtn.onclick=async()=>{
+  try{await nestosFetch("/api/auth/logout",{method:"POST"});}catch(_){}
+  sessionStorage.removeItem("nestos_token");
+  location.href="/";
+};
+document.addEventListener("click",e=>{if(state.msgOpen&&!e.target.closest("#msgFly")&&!e.target.closest("#msgBtn"))closeMsgFly();});
+(async()=>{
+  const okAuth=await ensureAuth();
+  if(!okAuth) return;
+  const ok=await syncLiveCandidates();
+  if(ok) toast(`Signed in as ${LIVE_USER.name} · DB + Resdex + model live`);
+  else toast("API offline — run: cd NestOS && npm run dev");
+  render();
+})();
+</script>
+</body>
+</html>

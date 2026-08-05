@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Resdex Demo — NestOS helper test page</title>
+<style>
+  body{margin:0;font:14px/1.45 "Segoe UI",system-ui,sans-serif;background:#f0f3f7;color:#1c2430}
+  .top{background:#2557a7;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px}
+  .top b{font-size:16px}
+  .top span{opacity:.85;font-size:13px}
+  .note{max-width:900px;margin:16px auto;padding:12px 14px;background:#fff8e6;border:1px solid #ecd9a0;border-radius:8px;font-size:13px}
+  .wrap{max-width:900px;margin:0 auto 40px;padding:0 16px}
+  .card{background:#fff;border:1px solid #d5dde8;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+  .card h3{margin:0 0 4px;font-size:15px;color:#2557a7}
+  .card .role{font-weight:600;font-size:13px;margin-bottom:6px}
+  .meta{color:#5c6b7a;font-size:12.5px}
+  .skills{margin-top:8px;font-size:12px;color:#334}
+  .tag{display:inline-block;background:#eef3fb;border-radius:4px;padding:2px 7px;margin-right:4px}
+</style>
+</head>
+<body>
+  <div class="top">
+    <b>Naukri Resdex</b>
+    <span>Demo results page — for NestOS Chrome helper testing (not the real Naukri site)</span>
+  </div>
+  <div class="note">
+    <b>How to test:</b> Load the NestOS Chrome helper → open this page → use the NestOS panel (bottom-right) →
+    <b>Scan page</b> → <b>Send to NestOS</b> → in NestOS click <b>Pull into NestOS</b> / refresh Find on Naukri.
+  </div>
+  <div class="wrap">
+    <div class="card" data-nestos-profile data-name="Aisha Rahman" data-role="Senior React Developer" data-exp="6 yrs" data-ctc="₹28L" data-notice="30 days" data-loc="Bengaluru" data-skills="React,TypeScript,Next.js" data-key="demo-aisha">
+      <h3 data-field="name">Aisha Rahman</h3>
+      <div class="role" data-field="role">Senior React Developer</div>
+      <div class="meta"><span data-field="exp">6 yrs</span> · <span data-field="ctc">₹28L</span> · <span data-field="notice">30 days</span> · <span data-field="loc">Bengaluru</span></div>
+      <div class="skills" data-field="skills"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Next.js</span></div>
+    </div>
+    <div class="card" data-nestos-profile data-name="Mohit Verma" data-role="DevOps Engineer" data-exp="5 yrs" data-ctc="₹24L" data-notice="Immediate" data-loc="Hyderabad" data-skills="AWS,Kubernetes,Terraform" data-key="demo-mohit">
+      <h3 data-field="name">Mohit Verma</h3>
+      <div class="role" data-field="role">DevOps Engineer</div>
+      <div class="meta"><span data-field="exp">5 yrs</span> · <span data-field="ctc">₹24L</span> · <span data-field="notice">Immediate</span> · <span data-field="loc">Hyderabad</span></div>
+      <div class="skills" data-field="skills"><span class="tag">AWS</span><span class="tag">Kubernetes</span><span class="tag">Terraform</span></div>
+    </div>
+    <div class="card" data-nestos-profile data-name="Sana Iqbal" data-role="Java Backend Engineer" data-exp="4.5 yrs" data-ctc="₹22L" data-notice="45 days" data-loc="Pune" data-skills="Java,Spring,Kafka" data-key="demo-sana">
+      <h3 data-field="name">Sana Iqbal</h3>
+      <div class="role" data-field="role">Java Backend Engineer</div>
+      <div class="meta"><span data-field="exp">4.5 yrs</span> · <span data-field="ctc">₹22L</span> · <span data-field="notice">45 days</span> · <span data-field="loc">Pune</span></div>
+      <div class="skills" data-field="skills"><span class="tag">Java</span><span class="tag">Spring</span><span class="tag">Kafka</span></div>
+    </div>
+    <div class="card" data-nestos-profile data-name="Rahul Deshmukh" data-role="Data Engineer" data-exp="7 yrs" data-ctc="₹32L" data-notice="60 days" data-loc="Mumbai" data-skills="Spark,Airflow,Python" data-key="demo-rahul">
+      <h3 data-field="name">Rahul Deshmukh</h3>
+      <div class="role" data-field="role">Data Engineer</div>
+      <div class="meta"><span data-field="exp">7 yrs</span> · <span data-field="ctc">₹32L</span> · <span data-field="notice">60 days</span> · <span data-field="loc">Mumbai</span></div>
+      <div class="skills" data-field="skills"><span class="tag">Spark</span><span class="tag">Airflow</span><span class="tag">Python</span></div>
+    </div>
+  </div>
+</body>
+</html>

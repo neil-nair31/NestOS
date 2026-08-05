@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NestOS Trial — Environment, OCR &amp; WhatsApp Business Costs</title>
+  <style>
+    @page { size: A4; margin: 12mm 11mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: #1c2430;
+      background: #eef1f5;
+      line-height: 1.45;
+      font-size: 9.5pt;
+    }
+    .page {
+      max-width: 210mm;
+      margin: 18px auto;
+      background: #fff;
+      padding: 12mm 14mm;
+      box-shadow: 0 8px 28px rgba(23, 24, 28, 0.1);
+    }
+    @media print {
+      body { background: #fff; }
+      .page { margin: 0; box-shadow: none; max-width: none; padding: 0; }
+      .no-print { display: none !important; }
+      table, .card { break-inside: avoid; }
+    }
+    .print-btn {
+      display: block; margin: 0 auto 12px; padding: 10px 22px;
+      background: #0f4c81; color: #fff; border: none; border-radius: 7px;
+      cursor: pointer; font-size: 10.5pt; font-weight: 600;
+    }
+    .header {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+      border-bottom: 3px solid #0f4c81; padding-bottom: 12px; margin-bottom: 14px;
+    }
+    .brand h1 { font-size: 14.5pt; color: #0f4c81; line-height: 1.2; }
+    .brand p { color: #5c6b7a; font-size: 8.5pt; margin-top: 4px; max-width: 430px; }
+    .doc-meta { text-align: right; font-size: 8.5pt; color: #5c6b7a; white-space: nowrap; }
+    .doc-meta strong { display: block; font-size: 12pt; color: #1c2430; margin-bottom: 3px; }
+    .badge {
+      display: inline-block; margin-top: 6px; font-size: 7.2pt; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      background: #e8f0f8; color: #0f4c81; border: 1px solid #b8cde0;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .parties {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
+    }
+    .party {
+      background: #f8fafc; border: 1px solid #d8dee6; border-radius: 8px;
+      padding: 10px 12px; font-size: 9pt;
+    }
+    .party h3 {
+      font-size: 7pt; text-transform: uppercase; letter-spacing: .1em;
+      color: #5c6b7a; margin-bottom: 5px;
+    }
+    .party .name { font-weight: 700; color: #0f4c81; font-size: 10.5pt; margin-bottom: 3px; }
+    .callout {
+      border-left: 4px solid #0f4c81; background: #f3f6f9;
+      padding: 10px 12px; margin-bottom: 14px; font-size: 9pt;
+    }
+    .pay-band {
+      background: linear-gradient(135deg, #0a355c, #0f4c81); color: #fff;
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .pay-band .lbl { font-size: 8pt; text-transform: uppercase; letter-spacing: .08em; opacity: .9; }
+    .pay-band .amt { font-size: 22pt; font-weight: 800; }
+    .pay-band .sub { font-size: 8pt; opacity: .9; margin-top: 3px; }
+    h2 {
+      font-size: 10.5pt; color: #0f4c81; margin: 14px 0 8px;
+      padding-bottom: 3px; border-bottom: 1px solid #d8dee6;
+    }
+    table {
+      width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 8.4pt;
+    }
+    th {
+      background: #eef4f8; text-align: left; padding: 6px 7px;
+      border-bottom: 2px solid #0f4c81; font-size: 7.2pt; text-transform: uppercase;
+      letter-spacing: .03em; color: #334;
+    }
+    th.r, td.r { text-align: right; }
+    td { padding: 7px; border-bottom: 1px solid #e5e9ef; vertical-align: top; }
+    tr:nth-child(even) td { background: #fafbfd; }
+    tfoot td {
+      font-weight: 700; background: #f8fafc; border-top: 2px solid #1c2430; padding: 8px 7px;
+    }
+    .card {
+      background: #fafbfd; border: 1px solid #d8dee6; border-radius: 8px;
+      padding: 10px 12px; margin-bottom: 10px; font-size: 8.8pt;
+    }
+    .notes {
+      font-size: 8pt; color: #475569; background: #fffbeb;
+      border: 1px solid #fde68a; border-radius: 8px; padding: 10px 12px; margin-top: 8px;
+    }
+    .notes h4 { font-size: 8.5pt; color: #92400e; margin-bottom: 5px; }
+    .notes ul { margin-left: 15px; }
+    .notes li { margin-bottom: 3px; }
+    .sig {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+      margin-top: 26px; font-size: 8pt; color: #5c6b7a;
+    }
+    .sig div { border-top: 1px solid #94a3b8; padding-top: 6px; }
+    .footer {
+      margin-top: 16px; padding-top: 8px; border-top: 1px solid #d8dee6;
+      font-size: 7.5pt; color: #5c6b7a;
+    }
+    .tag {
+      display: inline-block; font-size: 7pt; font-weight: 700;
+      background: #e7f4ee; color: #0f766e; padding: 1px 6px; border-radius: 3px;
+    }
+    ul { margin: 0 0 6px 16px; }
+    li { margin-bottom: 2px; }
+    .muted { color: #5c6b7a; font-size: 8pt; }
+    /* internal only: hide from print by design - user asked not to show pocket split on client bill */
+  </style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">Save / Print as PDF</button>
+
+  <div class="page">
+    <div class="header">
+      <div class="brand">
+        <h1>NestOS Trial — Environment &amp; Channel Costs</h1>
+        <p>
+          Bill for trial-period <b>OCR / document scan pack</b>, <b>WhatsApp Business</b> connectivity for candidate outreach,
+          <b>hosting</b> of the NestOS test URL, storage, and API usage — so HummingBrains can evaluate end-to-end without free-ride infra.
+        </p>
+        <span class="badge">OCR · WhatsApp Business · Hosting · Storage · Trial APIs</span>
+      </div>
+      <div class="doc-meta">
+        <strong>COST SHEET / BILL</strong>
+        <div><b>No:</b> NESTOS-COST-2026-001</div>
+        <div><b>Date:</b> 5 August 2026</div>
+        <div><b>Currency:</b> INR (₹)</div>
+        <div><b>Window:</b> ~2–3 weeks trial</div>
+      </div>
+    </div>
+
+    <div class="parties">
+      <div class="party">
+        <h3>Bill To</h3>
+        <div class="name">HummingBrains Technologies</div>
+        <p>Attn: Mani / trial evaluation<br />NestOS test run · Staff Aug · TA · IaaS</p>
+      </div>
+      <div class="party">
+        <h3>From</h3>
+        <div class="name">Neil Ajith Nair</div>
+        <p>Trial environment + channel tooling for NestOS<br />Phone: 7676733190</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>Why this bill exists:</b> The NestOS trial is free of a <i>product licence</i> charge, but cannot run on zero infra.
+      Resume OCR, WhatsApp Business outreach, public host, file storage and API sessions are paid tools.
+      This sheet is that tooling package for the evaluation period — not NestOS full build / ownership.
+    </div>
+
+    <div class="pay-band">
+      <div>
+        <div class="lbl">Total payable — trial environment pack</div>
+        <div class="sub">Due before multi-user trial links · covers OCR, WhatsApp Business, host, storage, APIs</div>
+      </div>
+      <div class="amt">₹ 12,999</div>
+    </div>
+
+    <h2>1. Cost breakdown</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%">#</th>
+          <th style="width:32%">Item</th>
+          <th>What HummingBrains uses it for on NestOS trial</th>
+          <th class="r" style="width:13%">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>
+            <b>Resume OCR / document intelligence scan pack</b><br />
+            <span class="muted">Trial page volume for PDF resume extraction (name, skills, exp fields)</span>
+          </td>
+          <td>
+            <b>Candidates → upload PDF</b> — NestOS fills structured fields so the CV is usable, not just a download.
+            Sized for multi-user trial (recruiters + manager try real resumes).
+            <br /><span class="tag">OCR scanner</span>
+          </td>
+          <td class="r"><b>3,800</b></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>
+            <b>WhatsApp Business setup + message credits (trial)</b><br />
+            <span class="muted">Business-aligned WhatsApp path for outreach from NestOS candidate drawer</span>
+          </td>
+          <td>
+            Mani asked for day-to-day recruiter outreach that logs cleanly.
+            Covers WhatsApp Business–class onboarding / conversation pack so <b>WhatsApp</b> from a candidate profile
+            is trial-ready (not personal chat-only).
+            <br /><span class="tag">WhatsApp Business</span>
+          </td>
+          <td class="r"><b>3,200</b></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>
+            <b>NestOS trial hosting (always-on style demo host)</b><br />
+            <span class="muted">Public trial URL + app + API for the evaluation window</span>
+          </td>
+          <td>
+            Login, /app, extension capture endpoints, PDF guide downloads — usable from Mani’s / team laptops without VPN.
+            Includes buffer for restarts and keeping the environment alive during agreed trial days.
+            <br /><span class="tag">Hosting</span>
+          </td>
+          <td class="r"><b>2,800</b></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>
+            <b>Resume / file storage + DB (trial data)</b><br />
+            <span class="muted">Uploaded PDFs, capture queue, candidate rows for the trial window</span>
+          </td>
+          <td>
+            Storage for resumes from OCR upload, Resdex → NestOS saves, and verification-related files during eval.
+          </td>
+          <td class="r"><b>900</b></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>
+            <b>Auth, session &amp; API budget</b><br />
+            <span class="muted">Logins · Resdex capture posts · activity / invoice API calls</span>
+          </td>
+          <td>
+            Four roles signing in repeatedly, Naukri helper sends, activity logs, candidate creates for the team.
+          </td>
+          <td class="r"><b>1,100</b></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>
+            <b>Chrome Naukri helper host &amp; re-pack</b><br />
+            <span class="muted">ZIP download endpoint + install guide for Mani’s team</span>
+          </td>
+          <td>
+            Recruits download Load-unpacked extension; capture posts hit NestOS during Resdex trial.
+          </td>
+          <td class="r"><b>700</b></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>
+            <b>Ops buffer (OCR overage · host overage · WA top-up)</b><br />
+            <span class="muted">Small contingency so one heavy test week doesn’t freeze the trial</span>
+          </td>
+          <td>
+            Extra resumes scanned, extra days host online, a few more WhatsApp trial conversations if the team pushes volume.
+          </td>
+          <td class="r"><b>499</b></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="r">Total trial environment pack</td>
+          <td class="r">₹ 12,999</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <h2>2. What the testing environment already serves (with this pack)</h2>
+    <div class="card">
+      <ul>
+        <li><b>Candidates + OCR</b> — manual add, PDF upload, structured fields from scan pack</li>
+        <li><b>WhatsApp from profile</b> — outreach path aligned to WhatsApp Business pack for trial</li>
+        <li><b>Find on Naukri</b> — Chrome helper → capture queue → Save to Candidates</li>
+        <li><b>Interviews (IaaS)</b> — board for assign / schedule / capture practice</li>
+        <li><b>Clients · Leads · Revenue</b> — sales evaluation seats</li>
+        <li><b>Activity / Messages / Analytics</b> — daily-ops discipline check</li>
+        <li><b>Hosted logins</b> — Admin / Manager / Recruiter / Sales on one public trial URL</li>
+      </ul>
+    </div>
+
+    <h2>3. How this money meets Mani’s needs</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Need</th>
+          <th style="width:36%">What this pay covers</th>
+          <th>Result during trial</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Resumes must become data, not dead PDFs</td>
+          <td>OCR / document scan pack</td>
+          <td>Upload CV → fields fill enough to shortlist &amp; match</td>
+        </tr>
+        <tr>
+          <td>Recruiters live on WhatsApp with candidates</td>
+          <td>WhatsApp Business setup + credits</td>
+          <td>Open WhatsApp from NestOS candidate; loggable outreach path</td>
+        </tr>
+        <tr>
+          <td>Whole team must click the same NestOS link</td>
+          <td>Trial hosting pack</td>
+          <td>Remote logins work off the public demo host</td>
+        </tr>
+        <tr>
+          <td>Naukri shortlists must land inside the system</td>
+          <td>API + helper ZIP host</td>
+          <td>Send from helper → Find on Naukri → Save</td>
+        </tr>
+        <tr>
+          <td>Files &amp; profiles must survive the eval week(s)</td>
+          <td>Storage + DB</td>
+          <td>Uploaded/imported candidates stay available till trial ends</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Payment terms</h2>
+    <div class="card">
+      <ul>
+        <li><b>₹12,999</b> payable in full before multi-user trial links and credentials are shared.</li>
+        <li>On payment confirmation → Login URL, 4 role logins, extension ZIP, ops guide.</li>
+        <li>Pack sized for approx. <b>2–3 weeks</b> evaluation with normal recruiter load (dozens of resumes, not bulk OCR production).</li>
+        <li>Heavy overage (e.g. hundreds of OCR pages or large WA campaigns) can be quoted as a small top-up.</li>
+        <li><b>Not a product licence.</b> Full NestOS commercial proposal is separate after trial feedback.</li>
+      </ul>
+    </div>
+
+    <div class="notes">
+      <h4>Notes</h4>
+      <ul>
+        <li>OCR, WhatsApp Business and hosting amounts are <b>trial packages</b> sized for HummingBrains evaluation — not multi-year vendor enterprise contracts under HB’s GSTIN.</li>
+        <li>Public host availability depends on the trial environment staying online during agreed slots.</li>
+        <li>GST extra only if a formal tax invoice is required.</li>
+      </ul>
+    </div>
+
+    <div class="sig">
+      <div>
+        <b>Prepared by</b><br />
+        Neil Ajith Nair<br />
+        Date: 5 August 2026
+      </div>
+      <div>
+        <b>Accepted by (HummingBrains)</b><br />
+        Name / Signature / Date
+      </div>
+    </div>
+
+    <div class="footer">
+      NestOS-COST-2026-001 · ₹12,999 · OCR · WhatsApp Business · Hosting · Storage · API · Helper distribute ·
+      Not full NestOS product price · HummingBrains trial
+    </div>
+  </div>
+</body>
+</html>

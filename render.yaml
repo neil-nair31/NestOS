@@ -1,0 +1,27 @@
+# Render.com — free tier *sleeps* after idle; for no-sleep use Starter paid or Railway volume.
+services:
+  - type: web
+    name: nestos-trial
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4100"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: STORE_MODE
+        value: sqlite
+      - key: DATA_DIR
+        value: /data
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: nestos-data
+      mountPath: /data
+      sizeGB: 1

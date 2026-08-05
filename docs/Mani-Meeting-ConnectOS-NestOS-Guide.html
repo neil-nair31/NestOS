@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mani Meeting Guide — ConnectOS &amp; NestOS</title>
+  <style>
+    @page { size: A4; margin: 11mm 10mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: #17181c;
+      background: #f4f4f1;
+      line-height: 1.45;
+      font-size: 9pt;
+    }
+    .page {
+      max-width: 210mm;
+      margin: 16px auto;
+      background: #fff;
+      padding: 11mm 12mm;
+      box-shadow: 0 6px 24px rgba(23, 24, 28, 0.1);
+    }
+    @media print {
+      body { background: #fff; font-size: 8.5pt; }
+      .page { margin: 0; box-shadow: none; max-width: none; padding: 0; }
+      .no-print { display: none !important; }
+      h2 { break-after: avoid; }
+      table, .card { break-inside: avoid; }
+    }
+    .print-btn {
+      display: block; margin: 0 auto 12px; padding: 9px 20px;
+      background: #0b6b83; color: #fff; border: none; border-radius: 7px;
+      cursor: pointer; font-size: 10pt;
+    }
+    .header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      border-bottom: 3px solid #0b6b53; padding-bottom: 10px; margin-bottom: 12px;
+    }
+    .header h1 { font-size: 15pt; color: #0b6b53; line-height: 1.2; }
+    .header .sub { color: #6b6d72; font-size: 8.5pt; margin-top: 4px; max-width: 420px; }
+    .meta { text-align: right; font-size: 8pt; color: #6b6d72; }
+    .meta strong { display: block; font-size: 10pt; color: #17181c; }
+    h2 {
+      font-size: 10.5pt; color: #0b6b53; margin: 14px 0 8px;
+      padding-bottom: 3px; border-bottom: 1px solid #e8e8e4;
+    }
+    h3 { font-size: 9pt; margin: 10px 0 6px; color: #17181c; }
+    p { margin-bottom: 7px; }
+    ul, ol { margin: 0 0 8px 18px; }
+    li { margin-bottom: 3px; }
+    table {
+      width: 100%; border-collapse: collapse; margin: 8px 0 10px; font-size: 8.2pt;
+    }
+    th, td {
+      border: 1px solid #e8e8e4; padding: 5px 7px; text-align: left; vertical-align: top;
+    }
+    th { background: #f4f4f1; font-weight: 600; color: #3d3f44; }
+    code, pre {
+      font-family: Consolas, "Courier New", monospace; font-size: 7.5pt;
+      background: #f4f4f1; border: 1px solid #e8e8e4; border-radius: 4px;
+    }
+    pre { padding: 8px; margin: 6px 0 10px; white-space: pre-wrap; word-break: break-word; }
+    .tag { display: inline-block; background: #e8f5f0; color: #0b6b53; padding: 1px 6px; border-radius: 4px; font-size: 7.5pt; font-weight: 600; }
+    .card {
+      background: #fafaf8; border: 1px solid #e8e8e4; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 8px;
+    }
+    .quote {
+      border-left: 3px solid #0b6b53; padding: 6px 10px; margin: 8px 0;
+      background: #f4f4f1; font-style: italic; font-size: 8.5pt;
+    }
+    .cheat { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cheat .card h3 { margin-top: 0; color: #0b6b53; }
+    .notes td { height: 22px; }
+    .footer { margin-top: 14px; padding-top: 8px; border-top: 1px solid #e8e8e4; font-size: 7.5pt; color: #6b6d72; }
+    .ok { color: #0b6b53; font-weight: 700; }
+    .no { color: #c44; font-weight: 700; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  </style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">Print / Save as PDF</button>
+  <div class="page">
+
+    <div class="header">
+      <div>
+        <h1>Mani Meeting Guide</h1>
+        <p class="sub">Step-by-step demo script for <strong>ConnectOS</strong> and <strong>NestOS</strong> — plus discovery questions and troubleshooting.</p>
+      </div>
+      <div class="meta">
+        <strong>Jul 2026</strong>
+        45–60 min meeting<br />
+        HummingBrains / RTS ops
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Purpose:</strong> Walk Mani through both platforms, show what exists today vs roadmap, capture what he still needs.<br />
+      <strong>You bring:</strong> Laptop · this PDF · internet optional for NestOS (works offline)
+    </div>
+
+    <h2>1. One-minute framing (say this first)</h2>
+    <table>
+      <tr><th>Product</th><th>Who it's for</th><th>What it solves today</th></tr>
+      <tr>
+        <td><strong>ConnectOS</strong></td>
+        <td>ConnectorsHR (website + admin)</td>
+        <td>Website enquiries in one inbox — candidates, employers, careers, contact — CV download + CSV export.</td>
+      </tr>
+      <tr>
+        <td><strong>NestOS</strong></td>
+        <td>HummingBrains / RTS staffing</td>
+        <td>Talent, Naukri sourcing, IaaS interviews, clients, revenue, activity logging, tasks, analytics.</td>
+      </tr>
+    </table>
+    <p><strong>Key line:</strong> ConnectOS = lead capture + admin for a marketing site. NestOS = full recruitment ops (demo). NestOS uses ConnectOS patterns for <strong>verified activity</strong>, <strong>sign-out</strong>, and <strong>analytics</strong>.</p>
+
+    <h2>2. Before the meeting — checklist</h2>
+    <h3>ConnectOS (live stack)</h3>
+    <pre># Terminal 1 — API
+cd connectosWebsite1\server
+npm install && npm run migrate && npm run seed:admin && npm run dev
+
+# Terminal 2 — Website
+cd connectosWebsite1\client
+npm install && npm run dev</pre>
+    <ul>
+      <li>Website: <code>http://localhost:5173</code></li>
+      <li>Admin: <code>http://localhost:5173/admin/login</code></li>
+      <li>Login: <code>server/.env</code> → ADMIN_EMAIL / ADMIN_PASSWORD</li>
+      <li>Backup if DB down: public site + quotation HTML</li>
+      <li>Production: connectorshr.com + /admin</li>
+    </ul>
+    <h3>NestOS (no build)</h3>
+    <ol>
+      <li>Open <code>NestOS\nestos-v2-demo.html</code> in Chrome/Edge (double-click)</li>
+      <li>Default role: <strong>Recruiter — Arjun M.</strong></li>
+      <li>Sanity check (F12 console): <code>typeof state !== "undefined" && state.deliveryPhase</code></li>
+    </ol>
+
+    <h2>3. ConnectOS demo (~15 min)</h2>
+    <p class="quote">“Someone fills a form → hits our API → appears in ConnectOS admin with type, CV, source page — no lost WhatsApp/email leads.”</p>
+    <table>
+      <tr><th>Step</th><th>Action</th><th>Talking point</th></tr>
+      <tr><td>1</td><td>Home, Job Hunter, For Employers, Contact</td><td>Every form posts to ConnectOS API</td></tr>
+      <tr><td>2</td><td>Submit test lead (Mani Demo)</td><td>Live proof of pipeline</td></tr>
+      <tr><td>3</td><td>Admin → filter, search, detail, CV, CSV</td><td>Sales/ops export to Excel or CRM</td></tr>
+      <tr><td>4</td><td>What it does NOT do</td><td>No pipeline, Resdex, tasks, IaaS → NestOS</td></tr>
+    </table>
+
+    <h2>4. NestOS demo (~25 min)</h2>
+    <p><strong>File:</strong> nestos-v2-demo.html · <strong>Role switcher:</strong> top-right dropdown</p>
+
+    <h3>Part A — Recruiter (Arjun M.) ~12 min</h3>
+    <table>
+      <tr><th>#</th><th>Nav / action</th><th>What to say</th></tr>
+      <tr><td>1</td><td>Home</td><td>One screen for today — interviews, Naukri, tasks</td></tr>
+      <tr><td>2</td><td>Run today's interview</td><td>IaaS live capture · AI report ~2 min vs 45–60 min</td></tr>
+      <tr><td>3</td><td>Find on Naukri (Resdex)</td><td>Import CV in one click · no duplicate credit waste</td></tr>
+      <tr><td>4</td><td>Add to Candidates</td><td>Permanent firm asset in Talent Hub</td></tr>
+      <tr><td>5</td><td>All candidates</td><td>Profiles, resume, match to jobs</td></tr>
+      <tr><td>6</td><td>Log calls &amp; outreach</td><td>Call / WhatsApp / Email / LinkedIn — log one live</td></tr>
+      <tr><td>7</td><td>Header <strong>End day</strong></td><td>Extra unlogged work → notifies admin</td></tr>
+      <tr><td>8</td><td>Messages &amp; tasks</td><td>Internal chat + assigned tasks</td></tr>
+      <tr><td>9</td><td>My analytics</td><td>Pipeline + outreach · verified only</td></tr>
+    </table>
+    <p><span class="tag">Live demo</span> Log call → Demo Candidate · REQ-88 · Interested → show <strong>Verified</strong>. End day → “2 WhatsApp follow-ups not logged” → submit.</p>
+
+    <h3>Part B — Admin (Karthikeyan) ~10 min</h3>
+    <table>
+      <tr><th>#</th><th>Nav / action</th><th>What to say</th></tr>
+      <tr><td>1</td><td>Dashboard</td><td>Resdex imports, ATS sync, sign-out reviews</td></tr>
+      <tr><td>2</td><td>Sign-out reviews</td><td>Approve recruiter sign-out from Part A</td></tr>
+      <tr><td>3</td><td>Task command bar (bottom)</td><td>Assign without leaving screen</td></tr>
+      <tr><td>4</td><td>Workspace → Assign task</td><td>Pick person, due date, module</td></tr>
+      <tr><td>5</td><td>Analytics tabs</td><td>Pipeline · Sourcing · Outreach · Team · IaaS · Leads</td></tr>
+      <tr><td>6</td><td>Team &amp; Tracking</td><td>Live status · utilization</td></tr>
+      <tr><td>7</td><td>Audit &amp; Compliance</td><td>Idle vs active · verified activity</td></tr>
+      <tr><td>8</td><td>Clients + Revenue</td><td>CRM, renewals, MRR</td></tr>
+      <tr><td>9</td><td>Resdex + Settings</td><td>ATS connectors (Greenhouse, Workday)</td></tr>
+    </table>
+
+    <h3>Part C — Phases (if asked)</h3>
+    <table>
+      <tr><th>Phase</th><th>Modules</th><th>Demo</th></tr>
+      <tr><td>1</td><td>Talent Hub, Workspace, Activity, Analytics</td><td>Live</td></tr>
+      <tr><td>2</td><td>Clients, Leads, Revenue</td><td>Live</td></tr>
+      <tr><td>3</td><td>IaaS, Team &amp; Tracking, Audit</td><td>Live</td></tr>
+      <tr><td>4</td><td>Resdex Sourcing, ATS sync</td><td>Live</td></tr>
+    </table>
+
+    <h2>5. ConnectOS vs NestOS</h2>
+    <table>
+      <tr><th>Capability</th><th>ConnectOS</th><th>NestOS</th></tr>
+      <tr><td>Website lead forms</td><td class="ok">✓</td><td>Leads (sales)</td></tr>
+      <tr><td>Admin inbox + CSV</td><td class="ok">✓</td><td>Workspace + audit</td></tr>
+      <tr><td>CV storage</td><td class="ok">✓</td><td>Talent Hub + Resdex</td></tr>
+      <tr><td>Call / outreach logging</td><td class="no">✗</td><td class="ok">✓ Activity log</td></tr>
+      <tr><td>End-of-day sign-out</td><td class="no">✗</td><td class="ok">✓</td></tr>
+      <tr><td>Task assignment</td><td class="no">✗</td><td class="ok">✓ Task bar</td></tr>
+      <tr><td>Pipeline analytics</td><td class="no">✗</td><td class="ok">✓</td></tr>
+      <tr><td>IaaS + AI reports</td><td class="no">✗</td><td class="ok">✓</td></tr>
+      <tr><td>Naukri Resdex</td><td class="no">✗</td><td class="ok">✓</td></tr>
+      <tr><td>Client CRM / MRR</td><td class="no">✗</td><td class="ok">✓</td></tr>
+    </table>
+
+    <h2>6. Questions to ask Mani (take notes)</h2>
+    <div class="two">
+      <div>
+        <h3>Operations</h3>
+        <ol>
+          <li>Where do recruiters spend most time?</li>
+          <li>How do you track who called whom?</li>
+          <li>Utilization — data or gut feel?</li>
+          <li>End of day if work wasn't logged?</li>
+        </ol>
+        <h3>RTS workflow</h3>
+        <ol start="5">
+          <li>Staff aug vs TA vs IaaS — priority?</li>
+          <li>Resdex credit pain?</li>
+          <li>Which ATS do clients use?</li>
+          <li>Meet / Teams / Zoom for interviews?</li>
+        </ol>
+      </div>
+      <div>
+        <h3>People &amp; overlap</h3>
+        <ol start="9">
+          <li>Who assigns tasks?</li>
+          <li>Sales: revenue only or pipeline too?</li>
+          <li>EU team — same workflows?</li>
+          <li>Public website + lead inbox needed?</li>
+          <li>Website leads → auto client in NestOS?</li>
+        </ol>
+        <h3>Success</h3>
+        <ol start="14">
+          <li>One thing in 4 weeks to impress?</li>
+          <li>What makes recruiters use it daily?</li>
+        </ol>
+      </div>
+    </div>
+    <table class="notes">
+      <tr><th>#</th><th>His answer</th><th>Priority H/M/L</th></tr>
+      <tr><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td></tr>
+    </table>
+
+    <h2>7. What he might ask — be ready</h2>
+    <table>
+      <tr><th>Question</th><th>Response</th></tr>
+      <tr><td>Merge ConnectOS + NestOS?</td><td>Same patterns; one product = NestOS absorbs website forms + API. Scope talk.</td></tr>
+      <tr><td>Real Naukri integration?</td><td>Demo is workflow mock; production needs extension or API + legal.</td></tr>
+      <tr><td>Mobile app?</td><td>Responsive web first is faster.</td></tr>
+      <tr><td>Payroll / billing?</td><td>Revenue is intelligence, not accounting.</td></tr>
+      <tr><td>Cost / timeline?</td><td>Phased NestOS proposal + ConnectOS quotation.</td></tr>
+      <tr><td>Junior recruiter friendly?</td><td>Yes — start in Recruiter role; plain nav by design.</td></tr>
+      <tr><td>DPDP / security?</td><td>Audit + export in demo; production needs hosting + DPA.</td></tr>
+    </table>
+
+    <h2>8. Agenda (45 min)</h2>
+    <table>
+      <tr><th>Time</th><th>Block</th></tr>
+      <tr><td>0–5</td><td>Framing: ConnectOS vs NestOS</td></tr>
+      <tr><td>5–20</td><td>ConnectOS live demo</td></tr>
+      <tr><td>20–45</td><td>NestOS recruiter → admin</td></tr>
+      <tr><td>45–55</td><td>Discovery questions</td></tr>
+      <tr><td>55–60</td><td>Next steps</td></tr>
+    </table>
+
+    <h2>9. Troubleshooting</h2>
+    <ul>
+      <li><strong>NestOS blank:</strong> Ctrl+Shift+R · check F12 console · try another browser</li>
+      <li><strong>Jump screen:</strong> <code>state.view = "analytics"; render();</code></li>
+      <li><strong>ConnectOS empty admin:</strong> start server :4000 · migrate · seed admin</li>
+      <li><strong>CORS:</strong> CORS_ORIGIN = http://localhost:5173 in server .env</li>
+    </ul>
+    <pre>node -e "const fs=require('fs');const h=fs.readFileSync('NestOS/nestos-v2-demo.html','utf8');new Function(h.match(/&lt;script&gt;([\s\S]*)&lt;\/script&gt;/)[1]);console.log('OK')"</pre>
+
+    <h2>10. Cheat sheet</h2>
+    <div class="cheat">
+      <div class="card">
+        <h3>ConnectOS</h3>
+        <p><strong>Start:</strong> client + server npm run dev</p>
+        <p><strong>Site:</strong> localhost:5173</p>
+        <p><strong>Admin:</strong> /admin/login</p>
+        <p><strong>Path:</strong> Job Hunter → submit → inbox → CSV</p>
+      </div>
+      <div class="card">
+        <h3>NestOS</h3>
+        <p><strong>Open:</strong> nestos-v2-demo.html</p>
+        <p><strong>Recruiter:</strong> Home → Resdex → Log call → End day</p>
+        <p><strong>Admin:</strong> Sign-out → Tasks → Analytics → Audit</p>
+        <p><strong>Roles:</strong> top-right dropdown</p>
+      </div>
+    </div>
+
+    <h2>11. Follow-up email (template)</h2>
+    <pre>Hi Mani,
+
+Thanks for your time today.
+
+ConnectOS — website enquiries → secure admin inbox (types, CVs, CSV).
+NestOS — talent, IaaS, Resdex, activity logging, tasks, analytics.
+
+You mentioned: [top 2–3 needs].
+
+Proposed next step: [priority item].
+
+Happy to send a short proposal once you confirm priority.
+
+— [Your name]</pre>
+
+    <div class="footer">
+      ConnectOS &amp; NestOS meeting guide · Jul 2026 · NestOS includes activity log, sign-out, task dock, analytics (ConnectOS parity).
+    </div>
+  </div>
+</body>
+</html>

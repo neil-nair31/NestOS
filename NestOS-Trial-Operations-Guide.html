@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NestOS Trial Operations Guide — HummingBrains</title>
+  <style>
+    @page { size: A4; margin: 12mm 11mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: #1c2430;
+      background: #eef1f5;
+      line-height: 1.45;
+      font-size: 9.2pt;
+    }
+    .page {
+      max-width: 210mm;
+      margin: 16px auto;
+      background: #fff;
+      padding: 12mm 13mm;
+      box-shadow: 0 6px 24px rgba(23, 24, 28, 0.1);
+    }
+    @media print {
+      body { background: #fff; }
+      .page { margin: 0; box-shadow: none; max-width: none; padding: 0; }
+      .no-print { display: none !important; }
+      h2, h3 { break-after: avoid; }
+      table, .card, .role { break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+    }
+    .print-btn {
+      display: block; margin: 0 auto 12px; padding: 10px 22px;
+      background: #0f4c81; color: #fff; border: none; border-radius: 7px;
+      cursor: pointer; font-size: 10.5pt; font-weight: 600;
+    }
+    .header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      border-bottom: 3px solid #0f4c81; padding-bottom: 10px; margin-bottom: 14px; gap: 16px;
+    }
+    .header h1 { font-size: 16pt; color: #0f4c81; line-height: 1.2; }
+    .header .sub { color: #5c6b7a; font-size: 8.5pt; margin-top: 4px; max-width: 460px; }
+    .meta { text-align: right; font-size: 8pt; color: #5c6b7a; white-space: nowrap; }
+    .meta strong { display: block; font-size: 10pt; color: #1c2430; }
+    h2 {
+      font-size: 11.5pt; color: #0f4c81; margin: 16px 0 8px;
+      padding-bottom: 3px; border-bottom: 1px solid #d8dee6;
+    }
+    h3 { font-size: 9.5pt; margin: 12px 0 6px; color: #1c2430; }
+    p { margin-bottom: 7px; }
+    ul, ol { margin: 0 0 9px 18px; }
+    li { margin-bottom: 3px; }
+    table {
+      width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 8.3pt;
+    }
+    th, td {
+      border: 1px solid #d8dee6; padding: 5px 7px; text-align: left; vertical-align: top;
+    }
+    th { background: #f3f6f9; font-weight: 600; color: #334; }
+    code {
+      font-family: Consolas, "Courier New", monospace; font-size: 7.8pt;
+      background: #f3f6f9; border: 1px solid #d8dee6; border-radius: 3px; padding: 0 4px;
+    }
+    .card {
+      background: #fafbfd; border: 1px solid #d8dee6; border-radius: 6px;
+      padding: 9px 11px; margin-bottom: 9px;
+    }
+    .role {
+      border: 1px solid #d8dee6; border-left: 4px solid #0f4c81;
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; background: #fff;
+    }
+    .role.manager { border-left-color: #1f6b54; }
+    .role.recruiter { border-left-color: #b45309; }
+    .role.sales { border-left-color: #7c3aed; }
+    .role h3 { margin-top: 0; color: #0f4c81; }
+    .role.manager h3 { color: #1f6b54; }
+    .role.recruiter h3 { color: #b45309; }
+    .role.sales h3 { color: #5b21b6; }
+    .tag {
+      display: inline-block; background: #e8f0f8; color: #0f4c81;
+      padding: 1px 7px; border-radius: 4px; font-size: 7.5pt; font-weight: 600; margin-right: 4px;
+    }
+    .quote {
+      border-left: 3px solid #0f4c81; padding: 7px 11px; margin: 8px 0 12px;
+      background: #f3f6f9; font-size: 8.5pt;
+    }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .footer {
+      margin-top: 16px; padding-top: 8px; border-top: 1px solid #d8dee6;
+      font-size: 7.5pt; color: #5c6b7a;
+    }
+    .ok { color: #1f6b54; font-weight: 700; }
+    .warn { color: #9a3412; font-weight: 600; }
+    a.linkish { color: #0f4c81; font-weight: 600; word-break: break-all; }
+    .toc a { color: #0f4c81; text-decoration: none; }
+    .toc li { margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+  <button class="print-btn no-print" onclick="window.print()">Save / Print as PDF</button>
+  <div class="page">
+    <div class="header">
+      <div>
+        <h1>NestOS Trial — Full Operations Guide</h1>
+        <div class="sub">
+          Complete trial pack for HummingBrains: every link, login, role walkthrough,
+          screen-by-screen controls, Chrome Naukri helper, and business value for the firm.
+        </div>
+      </div>
+      <div class="meta">
+        <strong>HummingBrains · NestOS</strong>
+        Trial build · July 2026<br/>
+        For Mani &amp; recruiting / sales leadership
+      </div>
+    </div>
+
+    <div class="quote">
+      <b>What NestOS is:</b> the daily operating system for HummingBrains staffing —
+      Staff Augmentation, Talent Acquisition, and Interview-as-a-Service (IaaS).
+      Recruiters source and track people; managers run interviews and quality;
+      sales owns clients and revenue; admin sees the full firm picture.
+      <br/><br/>
+      <b>What this trial is:</b> a live product you can click through and comment on —
+      <i>not</i> final handover. Use it → note what to change → then decide next steps.
+    </div>
+
+    <h2>Contents</h2>
+    <ol class="toc">
+      <li>Trial links</li>
+      <li>Login accounts</li>
+      <li>Access matrix (who sees what)</li>
+      <li>Role-by-role demo process</li>
+      <li>Top bar &amp; global actions</li>
+      <li>Screen-by-screen: every option explained</li>
+      <li>Chrome Naukri helper</li>
+      <li>End-to-end firm loop</li>
+      <li>Business value for HummingBrains</li>
+      <li>Feedback checklist for Mani’s team</li>
+    </ol>
+
+    <h2 id="links">1. Trial links (send / bookmark these)</h2>
+    <p class="warn">The public demo runs through a temporary tunnel on the host PC. Keep that PC awake and NestOS running while the team tests. If the PC sleeps, links stop working.</p>
+    <table>
+      <thead><tr><th>What</th><th>Link</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Login</b></td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/">https://presenting-madonna-ability-okay.trycloudflare.com/</a></td>
+        </tr>
+        <tr>
+          <td><b>App (after login)</b></td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/app">https://presenting-madonna-ability-okay.trycloudflare.com/app</a></td>
+        </tr>
+        <tr>
+          <td><b>This guide (web)</b></td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/trial-guide">https://presenting-madonna-ability-okay.trycloudflare.com/trial-guide</a></td>
+        </tr>
+        <tr>
+          <td><b>This guide (PDF)</b></td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/downloads/nestos-trial-guide.pdf">https://presenting-madonna-ability-okay.trycloudflare.com/downloads/nestos-trial-guide.pdf</a></td>
+        </tr>
+        <tr>
+          <td><b>Chrome helper install guide</b></td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/extension-guide">https://presenting-madonna-ability-okay.trycloudflare.com/extension-guide</a></td>
+        </tr>
+        <tr>
+          <td><b>Download Chrome helper (ZIP)</b></td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/downloads/nestos-naukri-helper.zip">https://presenting-madonna-ability-okay.trycloudflare.com/downloads/nestos-naukri-helper.zip</a></td>
+        </tr>
+        <tr>
+          <td><b>Resdex practice page</b> (no Naukri login needed)</td>
+          <td><a class="linkish" href="https://presenting-madonna-ability-okay.trycloudflare.com/extension-demo">https://presenting-madonna-ability-okay.trycloudflare.com/extension-demo</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p><b>In the Chrome extension popup, NestOS URL must be:</b><br/>
+      <code>https://presenting-madonna-ability-okay.trycloudflare.com</code>
+      (not <code>localhost</code> when testing remotely).
+    </p>
+
+    <h2 id="logins">2. Login accounts</h2>
+    <table>
+      <thead><tr><th>Role</th><th>Represents</th><th>Email</th><th>Password</th></tr></thead>
+      <tbody>
+        <tr><td><b>Recruiter</b></td><td>Day-to-day sourcing &amp; interviews — <b>start here</b></td><td><code>recruiter@hummingbrains.com</code></td><td><code>Recruiter@123</code></td></tr>
+        <tr><td><b>Manager</b></td><td>Delivery / interviewer lead</td><td><code>manager@hummingbrains.com</code></td><td><code>Manager@123</code></td></tr>
+        <tr><td><b>Sales</b></td><td>Accounts / growth</td><td><code>sales@hummingbrains.com</code></td><td><code>Sales@123</code></td></tr>
+        <tr><td><b>Admin</b></td><td>Founder / ops owner</td><td><code>admin@hummingbrains.com</code></td><td><code>Admin@123</code></td></tr>
+      </tbody>
+    </table>
+    <p>Use <b>Log out</b> (top right), then sign in as another role to compare menus.</p>
+
+    <h2 id="matrix">3. Access matrix — who sees what</h2>
+    <table>
+      <thead>
+        <tr><th>Screen</th><th>Recruiter</th><th>Manager</th><th>Sales</th><th>Admin</th><th>Job it does</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Home</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td>Today’s priorities</td></tr>
+        <tr><td>Candidates</td><td class="ok">Yes</td><td class="ok">Yes</td><td>—</td><td class="ok">Yes</td><td>Firm talent database</td></tr>
+        <tr><td>Find on Naukri</td><td class="ok">Yes</td><td class="ok">Yes</td><td>—</td><td class="ok">Yes</td><td>Resdex captures → NestOS</td></tr>
+        <tr><td>Interviews (IaaS)</td><td class="ok">Yes</td><td class="ok">Yes</td><td>—</td><td class="ok">Yes</td><td>Run / deliver interviews</td></tr>
+        <tr><td>Log activity</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td>Calls, WhatsApp, email</td></tr>
+        <tr><td>Messages &amp; tasks</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td>Internal coordination</td></tr>
+        <tr><td>Analytics</td><td class="ok">Own</td><td class="ok">Team</td><td class="ok">Sales lens</td><td class="ok">Full</td><td>Verified activity numbers</td></tr>
+        <tr><td>Clients</td><td>—</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td>CRM &amp; renewals</td></tr>
+        <tr><td>Leads</td><td>—</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td>Website enquiries</td></tr>
+        <tr><td>Revenue</td><td>—</td><td class="ok">Yes</td><td class="ok">Yes</td><td class="ok">Yes</td><td>MRR / invoices</td></tr>
+        <tr><td>Team / Audit</td><td>—</td><td class="ok">Yes</td><td>—</td><td class="ok">Yes</td><td>Utilization &amp; trail</td></tr>
+        <tr><td>Settings</td><td>—</td><td>—</td><td>—</td><td class="ok">Yes</td><td>Users &amp; integrations</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="roles">4. Role-by-role demo process</h2>
+
+    <div class="role recruiter">
+      <h3>A. Recruiter — 15–20 minutes (start here)</h3>
+      <p><span class="tag">Login</span> <code>recruiter@hummingbrains.com</code> / <code>Recruiter@123</code></p>
+      <p><b>Goal:</b> prove “find people → keep them in NestOS → interview → prove outreach.”</p>
+      <ol>
+        <li><b>Home</b> — KPIs for interviews needing you, Naukri captures, candidates, tasks. Click any KPI or “Do next”.</li>
+        <li><b>Candidates</b>
+          <ul>
+            <li><b>Add candidate manually</b> → fill name/role/skills → Save → profile drawer opens.</li>
+            <li><b>Upload resume</b> → drop/click PDF → NestOS parses text fields and adds/updates the person.</li>
+            <li>Open a row → try WhatsApp / Email / Share.</li>
+          </ul>
+        </li>
+        <li><b>Find on Naukri</b> (core demo)
+          <ul>
+            <li>Download ZIP → unzip → Chrome Load unpacked → folder <code>nestos-naukri-helper</code>.</li>
+            <li>Extension popup: NestOS URL = <b>public trial URL</b> → sign in as recruiter.</li>
+            <li>Open Resdex practice page → Scan → <b>Send to NestOS</b>.</li>
+            <li>Back in NestOS → captures appear → <b>Save</b> / <b>Save all</b> → Candidates.</li>
+          </ul>
+        </li>
+        <li><b>Interviews</b> — open a pending card; walk assign → schedule → capture → report.</li>
+        <li><b>Log activity</b> — log Call / WhatsApp with an outcome note.</li>
+        <li><b>Messages &amp; tasks</b> — message a teammate; check tasks; try <b>End day</b> if shown.</li>
+        <li><b>My numbers</b> — pipeline / sourcing / outreach / interviews.</li>
+      </ol>
+      <p><b>Useful for recruiters:</b> one workspace instead of Naukri + folders + WhatsApp + Excel. Profiles stay with the firm. Outreach is provable.</p>
+    </div>
+
+    <div class="role manager">
+      <h3>B. Manager — 10–15 minutes</h3>
+      <p><span class="tag">Login</span> <code>manager@hummingbrains.com</code> / <code>Manager@123</code></p>
+      <p><b>Goal:</b> prove delivery control — interviews, team visibility, quality trail.</p>
+      <ol>
+        <li><b>Home</b> — alerts, pending reports, quick links.</li>
+        <li><b>Interviews</b> — full IaaS board; <b>New request</b>; assign interviewer; open capture demo.</li>
+        <li><b>Candidates / Find on Naukri</b> — same tools as recruiters for oversight on mandates.</li>
+        <li><b>Team</b> — who is online / interviewing / on a call.</li>
+        <li><b>Audit</b> — immutable action log (ConnectOS-style verification flavour).</li>
+        <li><b>Clients / Leads / Revenue</b> — see what drives interview volume and retainers.</li>
+        <li><b>Analytics</b> — team scores, IaaS volume, report TAT.</li>
+        <li>Assign a task from Messages (managers can assign).</li>
+      </ol>
+      <p><b>Useful for managers:</b> SLA and bottlenecks are visible before the client escalates. Less “status only in standup.”</p>
+    </div>
+
+    <div class="role sales">
+      <h3>C. Sales / Accounts — 10 minutes</h3>
+      <p><span class="tag">Login</span> <code>sales@hummingbrains.com</code> / <code>Sales@123</code></p>
+      <p><b>Goal:</b> prove growth → delivery handoff without recruiter clutter.</p>
+      <ol>
+        <li><b>Home</b> — MRR, renewals soon, open leads.</li>
+        <li><b>Leads</b> — Hot / Warm / Cold enquiries; convert one to a client.</li>
+        <li><b>Clients</b> — health, renewal countdown, churn signal, last contact; open a row.</li>
+        <li><b>Revenue</b> — MRR / ARR / invoice path for billing conversations.</li>
+        <li><b>Activity / Messages</b> — log a client call so renewals aren’t only tribal knowledge.</li>
+      </ol>
+      <p><b>Useful for sales:</b> renewals and concentration risk surface early. Converted leads become recruiter work (mandates / IaaS) without re-typing.</p>
+    </div>
+
+    <div class="role">
+      <h3>D. Admin — 10 minutes</h3>
+      <p><span class="tag">Login</span> <code>admin@hummingbrains.com</code> / <code>Admin@123</code></p>
+      <p><b>Goal:</b> see the full firm operating picture + configuration.</p>
+      <ol>
+        <li>Walk the full left menu (everything managers + sales see).</li>
+        <li><b>Settings</b> — users/roles, Meet/Teams/Zoom, ATS connector concept, data ownership.</li>
+        <li>Review recruiter <b>End day / sign-out</b> extras if pending.</li>
+        <li>Trace the loop: Lead → Client → Mandate/IaaS → Candidates → Placement/Invoice.</li>
+      </ol>
+      <p><b>Useful for leadership:</b> one picture across Staff Aug, TA, and IaaS — not a spreadsheet per person.</p>
+    </div>
+
+    <h2 id="topbar">5. Top bar &amp; global actions</h2>
+    <table>
+      <thead><tr><th>Control</th><th>What it does</th><th>Who uses it</th></tr></thead>
+      <tbody>
+        <tr><td>Search</td><td>Quick find (candidates / clients / interviews) — trial UI stub for navigation habit</td><td>All</td></tr>
+        <tr><td>Log activity (icon)</td><td>Opens log form for a call / outreach without leaving the page</td><td>All</td></tr>
+        <tr><td>Messages (icon)</td><td>Quick message flyout → full Messages &amp; tasks</td><td>All</td></tr>
+        <tr><td>Tasks (icon)</td><td>Jumps to Messages &amp; tasks board</td><td>All</td></tr>
+        <tr><td>End day</td><td>Declare extra work not yet logged (ConnectOS-style). Admin reviews.</td><td>Recruiter / Manager (Admin reviews)</td></tr>
+        <tr><td>Log out</td><td>Ends session — switch roles for the trial</td><td>All</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="screens">6. Screen-by-screen — every option &amp; why it matters</h2>
+
+    <h3>Home</h3>
+    <div class="card">
+      Role-specific dashboard. KPIs are shortcuts into real work. Not a marketing collage.
+      <br/><b>Company value:</b> each person lands on “what to do next,” not a blank ATS.
+    </div>
+
+    <h3>Candidates</h3>
+    <div class="card">
+      <ul>
+        <li><b>Tabs</b> — All / Staff Aug / Talent Acq / IaaS filters (aligns to HB service lines).</li>
+        <li><b>Upload resume(s)</b> — PDF preferred; NestOS extracts name, skills, experience when text is readable.</li>
+        <li><b>Add candidate manually</b> — create without a file; attach resume later in the drawer.</li>
+        <li><b>Row click → drawer</b> — stage, source, CTC/notice, contact, skills, WhatsApp, Email, Verify doc, Share, Push to ATS (demo).</li>
+        <li><b>Match to open job</b> — pick a requirement; ranked fits illustrate mandate matching.</li>
+      </ul>
+      <b>Company value:</b> every CV becomes a firm asset — searchable history, not “lost in Downloads.”
+    </div>
+
+    <h3>Find on Naukri</h3>
+    <div class="card">
+      <ul>
+        <li><b>Download extension / Install guide</b> — remote install pack for Mani’s team.</li>
+        <li><b>Refresh now</b> — pull latest helper captures from NestOS.</li>
+        <li><b>Folders</b> — Shortlist / Personal / Viewed / Emailed / All (mirrors Resdex habits).</li>
+        <li><b>Save / Save all</b> — promote captures into Candidates.</li>
+        <li><b>Filter</b> — keyword / location on the capture queue.</li>
+      </ul>
+      <b>Company value:</b> Naukri has no public API. Recruiters keep searching on Resdex; NestOS becomes the system of record. Fewer duplicate CV views, faster handoff to interviews.
+    </div>
+
+    <h3>Interviews (IaaS)</h3>
+    <div class="card">
+      <ul>
+        <li><b>Kanban</b> — New → Assigned → Scheduled → Needs notes → Delivered.</li>
+        <li><b>New request</b> — client asks HB to interview on their behalf.</li>
+        <li><b>Card actions</b> — Assign, Schedule (Meet/Teams/Zoom style link), Start/Continue capture, AI-assisted report, deliver to client.</li>
+      </ul>
+      <b>Company value:</b> scales Interview-as-a-Service without 45–60 min manual write-ups. Report TAT becomes a sales proof point.
+    </div>
+
+    <h3>Log activity</h3>
+    <div class="card">
+      <ul>
+        <li>Buttons: Call / WhatsApp / Email / LinkedIn.</li>
+        <li>Filters by type; incomplete logs stay flagged.</li>
+        <li>Recruiters see their own trail; managers/admins see team.</li>
+      </ul>
+      <b>Company value:</b> ConnectOS discipline — if it isn’t logged, it doesn’t count in analytics.
+    </div>
+
+    <h3>Messages &amp; tasks</h3>
+    <div class="card">
+      Directory chat, attach/share resumes into threads, task list with due date &amp; priority.
+      Managers/admins can assign tasks; recruiters complete theirs.
+      <br/><b>Company value:</b> stops “find that CV in WhatsApp from Tuesday.”
+    </div>
+
+    <h3>Analytics</h3>
+    <div class="card">
+      Tabs for Pipeline, Sourcing, Outreach, Interviews / IaaS, plus Team &amp; Leads for leadership.
+      Built on verified activity, not verbal estimates.
+      <br/><b>Company value:</b> same window language as ConnectOS — one place for performance conversations.
+    </div>
+
+    <h3>Clients</h3>
+    <div class="card">
+      Services, MRR/fees, renewal countdown, health, churn flags, owner, last contact; click for detail.
+      <br/><b>Company value:</b> renewals don’t slip unnoticed; MRR concentration risk is visible.
+    </div>
+
+    <h3>Leads</h3>
+    <div class="card">
+      Website / referral enquiries. Hot / Warm / Cold. Convert → Client.
+      Sales owns this; recruiters receive work after conversion.
+      <br/><b>Company value:</b> inbound interest becomes pipeline with clear ownership.
+    </div>
+
+    <h3>Revenue</h3>
+    <div class="card">
+      MRR / ARR / project / placement views and invoice workflow for trial billing discussions.
+      <br/><b>Company value:</b> finance and delivery share one narrative — not separate trackers.
+    </div>
+
+    <h3>Team &amp; Audit</h3>
+    <div class="card">
+      Live people status; immutable action trail. Supports utilisation talks without micromanagement theatre.
+    </div>
+
+    <h3>Settings (Admin only)</h3>
+    <div class="card">
+      Users &amp; roles, video providers, ATS connector status, data retention / export posture (no lock-in).
+    </div>
+
+    <h2 id="helper">7. Chrome Naukri helper — checklist</h2>
+    <ol>
+      <li>Download ZIP: <code>/downloads/nestos-naukri-helper.zip</code></li>
+      <li>Unzip — folder must contain <code>manifest.json</code></li>
+      <li>Chrome → <code>chrome://extensions</code> → Developer mode ON → <b>Load unpacked</b></li>
+      <li>Select <code>nestos-naukri-helper</code></li>
+      <li>Popup → NestOS URL = public trial base → recruiter login</li>
+      <li>Practice on <code>/extension-demo</code>, then real Naukri Resdex</li>
+      <li>If you see <b>“Sign in via the NestOS helper popup first”</b> — open the extension icon and sign in (the page panel cannot log you in by itself)</li>
+    </ol>
+
+    <h2 id="loop">8. End-to-end firm loop (what “good” looks like)</h2>
+    <ol>
+      <li>Website enquiry lands in <b>Leads</b> (Sales).</li>
+      <li>Sales converts → <b>Client</b> with service line (Staff Aug / TA / IaaS).</li>
+      <li>Mandate or interview request appears for recruiting.</li>
+      <li>Recruiter sources on Naukri → helper → <b>Find on Naukri</b> → <b>Candidates</b>.</li>
+      <li>Outreach logged; shortlist shared in Messages.</li>
+      <li>IaaS interview run → report delivered; or TA/Staff Aug stage moves forward.</li>
+      <li>Invoice / retainer visible under <b>Revenue</b>; renewals watched on <b>Clients</b>.</li>
+    </ol>
+
+    <h2 id="value">9. Business outcomes NestOS is aiming at</h2>
+    <ul>
+      <li><b>Faster placements</b> — shortlists and history live in one hub.</li>
+      <li><b>Lower Resdex waste</b> — firm-owned profiles after first capture; less re-viewing the same CV.</li>
+      <li><b>Scalable IaaS</b> — structured capture + fast reports protect margins on interview volume.</li>
+      <li><b>Account protection</b> — renewal and churn signals before revenue walks out.</li>
+      <li><b>Manager visibility</b> — verified activity instead of verbal stand-ups only.</li>
+      <li><b>Cleaner growth loop</b> — website lead → sales → client → recruiter delivery.</li>
+      <li><b>Recruiter sanity</b> — less tab-switching; work counts when logged.</li>
+    </ul>
+
+    <h2 id="feedback">10. Feedback checklist for Mani &amp; team</h2>
+    <div class="two">
+      <div class="card">
+        <h3>Please try</h3>
+        <ul>
+          <li>Recruiter path: manual add + PDF upload + Naukri helper + Save</li>
+          <li>One IaaS card through to report</li>
+          <li>Sales: lead → client + open a renewal alert</li>
+          <li>Manager: assign interview + glance Team/Audit</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Please tell us</h3>
+        <ul>
+          <li>Field names / stages you actually use</li>
+          <li>Which Naukri folders matter most</li>
+          <li>Who must approve interviews / invoices</li>
+          <li>Must-have ATS (Greenhouse, Workday, Zoho…)</li>
+          <li>Anything confusing or missing for real HB workflow</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      NestOS full trial operations guide · HummingBrains Technologies · Pragma delivery partner ·
+      Public demo URL is temporary (Cloudflare quick tunnel). Permanent hosting can be set up after trial feedback.
+      PDF also available at <code>/downloads/nestos-trial-guide.pdf</code>.
+    </div>
+  </div>
+</body>
+</html>

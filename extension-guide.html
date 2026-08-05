@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Install NestOS Naukri Helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+body{margin:0;font:15px/1.55 "Source Sans 3",Segoe UI,sans-serif;color:#1c2430;background:#eef1f5}
+.bar{background:#0f4c81;color:#fff;padding:14px 24px;font-weight:600}
+.wrap{max-width:720px;margin:28px auto;padding:0 16px 48px}
+.card{background:#fff;border:1px solid #d8dee6;padding:24px 28px;margin-bottom:16px}
+h1{font-size:22px;margin:0 0 8px}
+h2{font-size:16px;margin:0 0 10px}
+p,li{color:#334;font-size:14.5px}
+ol{padding-left:20px}
+code{background:#f3f6f9;padding:1px 6px;border-radius:4px;font-size:13px}
+a{color:#0f4c81;font-weight:600}
+.btn{display:inline-block;margin-top:8px;padding:10px 14px;background:#0f4c81;color:#fff;text-decoration:none;border-radius:6px;font-size:14px}
+.btn.gho{background:#fff;color:#0f4c81;border:1px solid #0f4c81}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.note{background:#f3f6f9;border-left:3px solid #0f4c81;padding:10px 12px;font-size:13.5px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="bar">NestOS · Chrome helper install</div>
+<div class="wrap">
+  <div class="card">
+    <h1>Connect Naukri Resdex → NestOS</h1>
+    <p>Recruiters keep working on Naukri. The NestOS helper captures shortlisted / visible CVs and sends them into NestOS <b>Find on Naukri</b> → <b>Candidates</b>.</p>
+    <div class="btns">
+      <a class="btn" href="/downloads/nestos-naukri-helper.zip" download>Download Chrome extension (ZIP)</a>
+      <a class="btn gho" href="/extension-demo">Open Resdex test page</a>
+      <a class="btn gho" href="/app">Open NestOS</a>
+    </div>
+  </div>
+  <div class="card">
+    <h2>1. Download &amp; unzip</h2>
+    <ol>
+      <li>Click <b>Download Chrome extension (ZIP)</b> above</li>
+      <li>Unzip the file — you should get a folder named <code>nestos-naukri-helper</code> that contains <code>manifest.json</code></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>2. Load it in Chrome</h2>
+    <ol>
+      <li>Open <code>chrome://extensions</code></li>
+      <li>Turn on <b>Developer mode</b> (top right)</li>
+      <li>Click <b>Load unpacked</b></li>
+      <li>Select the unzipped <code>nestos-naukri-helper</code> folder (the one with <code>manifest.json</code> inside)</li>
+    </ol>
+    <div class="note">Chrome cannot install a ZIP directly — always unzip first, then Load unpacked.</div>
+  </div>
+  <div class="card">
+    <h2>3. Sign in (important)</h2>
+    <ol>
+      <li>Click the NestOS extension icon in Chrome</li>
+      <li><b>NestOS URL</b> — paste the same NestOS link you use in the browser (for remote trial, use the public demo URL, not localhost)</li>
+      <li>Sign in: <code>recruiter@hummingbrains.com</code> / <code>Recruiter@123</code></li>
+    </ol>
+    <div class="note">If you see “Sign in via the NestOS helper popup first”, this step was skipped.</div>
+  </div>
+  <div class="card">
+    <h2>4. Capture CVs</h2>
+    <ol>
+      <li><b>Practice (no Naukri login):</b> open the Resdex test page → Scan → Send to NestOS</li>
+      <li><b>Live:</b> open <a href="https://www.naukri.com/recruit/login" target="_blank" rel="noopener">Naukri recruiter login</a> → Resdex → use the NestOS panel → Send to NestOS</li>
+      <li>In NestOS: <b>Find on Naukri</b> — captures appear automatically. Click <b>Save to NestOS</b> or <b>Save all</b></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>Note</h2>
+    <p>Naukri does not provide a public API. This helper reads profiles <b>already visible in your browser session</b> after you search on Resdex — it does not log into Naukri for you or bypass CV credits.</p>
+  </div>
+</div>
+</body>
+</html>
