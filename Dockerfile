@@ -24,14 +24,15 @@ RUN npm run build -w server \
   && mkdir -p downloads /tmp/nestos-naukri-helper /data/uploads \
   && chmod -R 777 /data \
   && cp -r extension/. /tmp/nestos-naukri-helper/ \
-  && (cd /tmp && zip -r /nestos/downloads/nestos-naukri-helper.zip nestos-naukri-helper)
+  && (cd /tmp && zip -r /nestos/downloads/nestos-naukri-helper.zip nestos-naukri-helper) \
+  && test -f /nestos/server/dist/index.js
 
-# Do NOT bake PORT — Railway injects it at runtime. Hardcoding 4100 breaks healthchecks.
+# Never hardcode PORT — Railway injects it at runtime
 ENV NODE_ENV=production
-ENV HOST=0.0.0.0
 ENV STORE_MODE=sqlite
 ENV DATA_DIR=/data
 ENV COOKIE_SECURE=1
 
 WORKDIR /nestos/server
-CMD ["node", "dist/index.js"]
+# Log PORT then start so Deploy Logs show why listen fails
+CMD ["sh", "-c", "echo \"[NestOS] starting PORT=${PORT:-unset} NODE=$(node -v)\" && ls -la dist && exec node dist/index.js"]

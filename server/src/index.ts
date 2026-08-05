@@ -9,7 +9,6 @@ import { fileURLToPath } from "url";
  * Always return 200 on /api/health once the HTTP server is up.
  */
 const port = Number(process.env.PORT) || 4100;
-const host = process.env.HOST || "0.0.0.0";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const NESTOS_ROOT = path.resolve(__dirname, "../..");
 
@@ -24,14 +23,14 @@ app.get("/api/health", (_req, res) => {
     ready,
     product: "NestOS",
     port,
-    host,
     bootError,
     ...healthExtra,
   });
 });
 
-const server = app.listen(port, host, () => {
-  console.log(`NestOS HTTP up on http://${host}:${port} (PORT=${process.env.PORT ?? "unset"})`);
+// Do not pass a host — Railway probes IPv4/IPv6; binding only 0.0.0.0 can miss.
+const server = app.listen(port, () => {
+  console.log(`NestOS HTTP up on port ${port} (PORT env=${process.env.PORT ?? "unset"})`);
   void boot();
 });
 
