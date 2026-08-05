@@ -34,7 +34,6 @@ ENV DATA_DIR=/data
 ENV COOKIE_SECURE=1
 
 EXPOSE 4100
-VOLUME ["/data"]
 
 WORKDIR /nestos/server
 CMD ["npx", "tsx", "src/index.ts"]
